@@ -1,4 +1,4 @@
-import { useState, lazy, Suspense, memo, useRef } from 'react';
+import { useState, lazy, Suspense, memo, useRef, useCallback, useEffect } from 'react';
 import { Responsive } from 'react-grid-layout';
 import 'react-grid-layout/css/styles.css';
 import { useGreeting } from './hooks/useGreeting';
@@ -13,16 +13,13 @@ import LunarCalendar from './components/LunarCalendar';
 import SettingsPanel from './components/SettingsPanel.jsx';
 import './App.css';
 
-// 懒加载较重的组件
 const AITools = lazy(() => import('./components/AITools'));
 const Weather = lazy(() => import('./components/Weather'));
 const Bookmarks = lazy(() => import('./components/Bookmarks'));
 const HotNews = lazy(() => import('./components/HotNews'));
 
-// 默认搜索引擎
 const DEFAULT_SE = { name: 'Google', url: 'https://www.google.com/search?q=', icon: '🔍' };
 
-// 主体区域组件映射（不包含搜索，搜索独立在顶部）
 const MAIN_WIDGETS = [
   { key: 'bookmarks', title: '🔖 网址导航',   Comp: Bookmarks,  passProps: false },
   { key: 'hotnews',   title: '🔥 热榜资讯',   Comp: HotNews,    passProps: false },
@@ -33,6 +30,42 @@ const MAIN_WIDGETS = [
   { key: 'memo',      title: '📝 备忘录',    Comp: Memo,       passProps: false },
 ];
 
+const SHORTCUTS = [
+  { key: 'Ctrl/Cmd + K', desc: '聚焦搜索框' },
+  { key: 'Ctrl/Cmd + D', desc: '切换主题' },
+  { key: 'Escape', desc: '关闭弹窗' },
+  { key: '?', desc: '显示帮助' },
+];
+
+function ShortcutHelp({ onClose }) {
+  useEffect(() => {
+    const handleEsc = (e) => {
+      if (e.key === 'Escape') onClose();
+    };
+    window.addEventListener('keydown', handleEsc);
+    return () => window.removeEventListener('keydown', handleEsc);
+  }, [onClose]);
+
+  return (
+    <div className="shortcut-overlay" onClick={onClose} role="dialog" aria-modal="true" aria-label="键盘快捷键">
+      <div className="shortcut-panel" onClick={e => e.stopPropagation()}>
+        <div className="shortcut-header">
+          <h2>⌨️ 键盘快捷键</h2>
+          <button className="settings-close" onClick={onClose} aria-label="关闭">✕</button>
+        </div>
+        <div className="shortcut-list">
+          {SHORTCUTS.map(s => (
+            <div key={s.key} className="shortcut-item">
+              <kbd className="shortcut-key">{s.key}</kbd>
+              <span className="shortcut-desc">{s.desc}</span>
+            </div>
+          ))}
+        </div>
+      </div>
+    </div>
+  );
+}
+
 export default memo(function App() {
   const greeting = useGreeting();
   const { currentTime, formatTime, formatDate } = useTime();
@@ -40,12 +73,41 @@ export default memo(function App() {
   const { theme, toggleTheme } = useTheme();
   const [searchEngine, setSearchEngine] = useState(DEFAULT_SE);
   const [showSettings, setShowSettings] = useState(false);
+  const [showShortcuts, setShowShortcuts] = useState(false);
   const appRef = useRef(null);
+  const searchInputRef = useRef(null);
+
+  const handleToggleTheme = useCallback(() => {
+    toggleTheme();
+  }, [toggleTheme]);
+
+  useEffect(() => {
+    const handleKeyDown = (e) => {
+      if ((e.ctrlKey || e.metaKey) && e.key === 'k') {
+        e.preventDefault();
+        const input = document.querySelector('.search-input');
+        if (input) input.focus();
+      }
+      if ((e.ctrlKey || e.metaKey) && e.key === 'd') {
+        e.preventDefault();
+        handleToggleTheme();
+      }
+      if (e.key === 'Escape') {
+        if (showSettings) setShowSettings(false);
+        if (showShortcuts) setShowShortcuts(false);
+      }
+      if (e.key === '?' && !e.ctrlKey && !e.metaKey && !e.target.closest('input, textarea')) {
+        e.preventDefault();
+        setShowShortcuts(true);
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [showSettings, showShortcuts, handleToggleTheme]);
 
   return (
     <div className="app" ref={appRef}>
-      {/* 顶部 Header */}
-      <header className={`app-header ${editMode ? 'edit-mode' : ''}`}>
+      <header className={`app-header ${editMode ? 'edit-mode' : ''}`} role="banner">
         <div className="header-left">
           <h1 className="app-title">皮皮导航</h1>
           <span className="app-subtitle">你的智能起点</span>
@@ -61,7 +123,7 @@ export default memo(function App() {
             <button
               className="btn-theme-toggle"
               onClick={toggleTheme}
-              title={theme === THEMES.DARK ? '切换到亮色模式' : '切换到深色模式'}
+              title={theme === THEMES.DARK ? '切换到亮色模式 (Ctrl+D)' : '切换到深色模式 (Ctrl+D)'}
               aria-label={theme === THEMES.DARK ? '切换到亮色模式' : '切换到深色模式'}
             >
               {theme === THEMES.DARK ? '☀️' : '🌙'}
@@ -80,7 +142,6 @@ export default memo(function App() {
         </div>
       </header>
 
-      {/* 顶部搜索区域 - 独立于网格布局 */}
       <div className="top-search-section">
         <div className="search-container">
           <Suspense fallback={<div className="search-loading">加载中...</div>}>
@@ -89,8 +150,7 @@ export default memo(function App() {
         </div>
       </div>
 
-      {/* 主体区域 - 可拖拽网格 */}
-      <main className="app-main">
+      <main className="app-main" role="main">
         <Responsive
           className="draggable-grid"
           layouts={layouts}
@@ -131,15 +191,18 @@ export default memo(function App() {
         </Responsive>
       </main>
 
-      {/* 底部 Footer */}
-      <footer className="app-footer">
+      <footer className="app-footer" role="contentinfo">
         <button className="footer-settings-btn" onClick={() => setShowSettings(true)} title="设置">
           ⚙️ 设置
+        </button>
+        <button className="footer-settings-btn" onClick={() => setShowShortcuts(true)} title="快捷键帮助 (?)">
+          ❓ 帮助
         </button>
         <p>皮皮导航 · 你的智能起点</p>
       </footer>
 
       {showSettings && <SettingsPanel onClose={() => setShowSettings(false)} />}
+      {showShortcuts && <ShortcutHelp onClose={() => setShowShortcuts(false)} />}
     </div>
   );
 });
