@@ -8,6 +8,7 @@ import Calendar from './components/Calendar';
 import Countdown from './components/Countdown';
 import TodoList from './components/TodoList';
 import Memo from './components/Memo';
+import LunarCalendar from './components/LunarCalendar';
 import './App.css';
 
 // 懒加载较重的组件
@@ -49,6 +50,7 @@ export default memo(function App() {
           <div className="header-time">
             <span className="time-display">{formatTime(currentTime)}</span>
             <span className="date-display">{formatDate(currentTime)}</span>
+            <LunarCalendar date={currentTime} />
           </div>
           <div className="header-greeting">{greeting}</div>
           <div className="header-controls">
