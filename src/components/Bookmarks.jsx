@@ -4,6 +4,8 @@ import { getFavicon } from '../utils/favicon';
 
 const STORAGE_KEY = 'nav_app_bookmarks_v1';
 const CATEGORIES_KEY = 'nav_app_categories_v1';
+const STATS_KEY = 'nav_app_bookmark_stats_v1';
+const QUICK_ACCESS_KEY = 'nav_app_quick_access_v1';
 
 const DEFAULT_CATEGORIES = [
   { name: '常用网站', icon: '🌐' },
@@ -53,7 +55,8 @@ export default function Bookmarks() {
         const defaultData = DEFAULT_BOOKMARKS.map((bm, i) => ({ 
           ...bm, 
           id: Date.now() + i,
-          createdAt: Date.now() 
+          createdAt: Date.now(),
+          order: i
         }));
         localStorage.setItem(STORAGE_KEY, JSON.stringify(defaultData));
         return defaultData;
@@ -63,7 +66,8 @@ export default function Bookmarks() {
       const defaultData = DEFAULT_BOOKMARKS.map((bm, i) => ({ 
         ...bm, 
         id: Date.now() + i,
-        createdAt: Date.now() 
+        createdAt: Date.now(),
+        order: i
       }));
       return defaultData;
     }
@@ -79,6 +83,27 @@ export default function Bookmarks() {
       return DEFAULT_CATEGORIES;
     } catch (e) {
       return DEFAULT_CATEGORIES;
+    }
+  });
+
+  const [stats, setStats] = useState(() => {
+    try {
+      const saved = localStorage.getItem(STATS_KEY);
+      return saved ? JSON.parse(saved) : {};
+    } catch {
+      return {};
+    }
+  });
+
+  const [quickAccess, setQuickAccess] = useState(() => {
+    try {
+      const saved = localStorage.getItem(QUICK_ACCESS_KEY);
+      if (saved) return JSON.parse(saved);
+      const defaultIds = bookmarks.slice(0, 6).map(b => b.id);
+      localStorage.setItem(QUICK_ACCESS_KEY, JSON.stringify(defaultIds));
+      return defaultIds;
+    } catch {
+      return [];
     }
   });
   
@@ -97,7 +122,31 @@ export default function Bookmarks() {
   const [batchMode, setBatchMode] = useState(false);
   const [showMoveMenu, setShowMoveMenu] = useState(null);
   const [dragOverId, setDragOverId] = useState(null);
+  const [rightClickMenu, setRightClickMenu] = useState(null);
+  const [sortMode, setSortMode] = useState('name');
+  const [searchHistory, setSearchHistory] = useState(() => {
+    try {
+      const saved = localStorage.getItem('nav_app_search_history');
+      return saved ? JSON.parse(saved) : [];
+    } catch {
+      return [];
+    }
+  });
   const draggedRef = useRef(null);
+  const menuRef = useRef(null);
+
+  const recordVisit = useCallback((bookmarkId) => {
+    setStats(prev => {
+      const newStats = { ...prev };
+      if (!newStats[bookmarkId]) {
+        newStats[bookmarkId] = { visits: 0, lastVisit: 0 };
+      }
+      newStats[bookmarkId].visits += 1;
+      newStats[bookmarkId].lastVisit = Date.now();
+      localStorage.setItem(STATS_KEY, JSON.stringify(newStats));
+      return newStats;
+    });
+  }, []);
 
   const saveBookmarks = useCallback((newList) => {
     setBookmarks(newList);
@@ -107,6 +156,11 @@ export default function Bookmarks() {
   const saveCategories = useCallback((newCats) => {
     setCategories(newCats);
     localStorage.setItem(CATEGORIES_KEY, JSON.stringify(newCats));
+  }, []);
+
+  const saveQuickAccess = useCallback((newList) => {
+    setQuickAccess(newList);
+    localStorage.setItem(QUICK_ACCESS_KEY, JSON.stringify(newList));
   }, []);
 
   const resetForm = () => {
@@ -152,7 +206,7 @@ export default function Bookmarks() {
     if (editId !== null) {
       saveBookmarks(bookmarks.map(b => b.id === editId ? { ...b, ...entry } : b));
     } else {
-      saveBookmarks([...bookmarks, { id: Date.now(), ...entry, createdAt: Date.now() }]);
+      saveBookmarks([...bookmarks, { id: Date.now(), ...entry, createdAt: Date.now(), order: bookmarks.length }]);
     }
     resetForm();
   };
@@ -162,6 +216,7 @@ export default function Bookmarks() {
     setPreviewFavicon(bm.favicon || null);
     setEditId(bm.id);
     setShowAdd(true);
+    setRightClickMenu(null);
   };
 
   const removeBookmark = (id) => {
@@ -172,7 +227,18 @@ export default function Bookmarks() {
         next.delete(id);
         return next;
       });
+      saveQuickAccess(quickAccess.filter(qid => qid !== id));
+      setRightClickMenu(null);
     }
+  };
+
+  const toggleQuickAccess = (id) => {
+    if (quickAccess.includes(id)) {
+      saveQuickAccess(quickAccess.filter(qid => qid !== id));
+    } else if (quickAccess.length < 8) {
+      saveQuickAccess([...quickAccess, id]);
+    }
+    setRightClickMenu(null);
   };
 
   const addCategory = () => {
@@ -265,6 +331,7 @@ export default function Bookmarks() {
     if (selectedBookmarks.size === 0) return;
     if (confirm(`确认删除选中的 ${selectedBookmarks.size} 个书签？`)) {
       saveBookmarks(bookmarks.filter(b => !selectedBookmarks.has(b.id)));
+      saveQuickAccess(quickAccess.filter(qid => !selectedBookmarks.has(qid)));
       setSelectedBookmarks(new Set());
       setBatchMode(false);
     }
@@ -278,6 +345,25 @@ export default function Bookmarks() {
     setSelectedBookmarks(new Set());
     setShowMoveMenu(null);
   };
+
+  const handleRightClick = (e, bookmark) => {
+    e.preventDefault();
+    setRightClickMenu({
+      x: e.clientX,
+      y: e.clientY,
+      bookmark
+    });
+  };
+
+  useEffect(() => {
+    const handleClickOutside = (e) => {
+      if (menuRef.current && !menuRef.current.contains(e.target)) {
+        setRightClickMenu(null);
+      }
+    };
+    document.addEventListener('click', handleClickOutside);
+    return () => document.removeEventListener('click', handleClickOutside);
+  }, []);
 
   const handleDragStart = (e, bookmark) => {
     draggedRef.current = bookmark;
@@ -316,6 +402,25 @@ export default function Bookmarks() {
     draggedRef.current = null;
   };
 
+  const addToSearchHistory = (query) => {
+    if (query.trim().length < 2) return;
+    setSearchHistory(prev => {
+      const filtered = prev.filter(q => q !== query);
+      const newHistory = [query, ...filtered].slice(0, 10);
+      localStorage.setItem('nav_app_search_history', JSON.stringify(newHistory));
+      return newHistory;
+    });
+  };
+
+  const clearSearchHistory = () => {
+    setSearchHistory([]);
+    localStorage.removeItem('nav_app_search_history');
+  };
+
+  const quickAccessBookmarks = useMemo(() => {
+    return quickAccess.map(id => bookmarks.find(b => b.id === id)).filter(Boolean);
+  }, [bookmarks, quickAccess]);
+
   const filteredBookmarks = useMemo(() => {
     if (!searchQuery.trim()) return bookmarks;
     const query = searchQuery.toLowerCase();
@@ -333,8 +438,19 @@ export default function Bookmarks() {
       if (!cats[cat]) cats[cat] = [];
       cats[cat].push(bm);
     });
+    
+    Object.keys(cats).forEach(cat => {
+      if (sortMode === 'visits') {
+        cats[cat].sort((a, b) => (stats[b.id]?.visits || 0) - (stats[a.id]?.visits || 0));
+      } else if (sortMode === 'name') {
+        cats[cat].sort((a, b) => a.name.localeCompare(b.name));
+      } else if (sortMode === 'date') {
+        cats[cat].sort((a, b) => b.createdAt - a.createdAt);
+      }
+    });
+    
     return cats;
-  }, [filteredBookmarks]);
+  }, [filteredBookmarks, stats, sortMode]);
 
   const sortedCategories = useMemo(() => {
     return categories.filter(cat => groupedBookmarks[cat.name]?.length > 0 || !searchQuery);
@@ -345,6 +461,13 @@ export default function Bookmarks() {
       <div className="widget-header">
         <h3>🔖 自定义书签</h3>
         <div style={{ display: 'flex', gap: '4px' }}>
+          <button 
+            className="btn-icon" 
+            onClick={() => setSortMode(sortMode === 'name' ? 'visits' : sortMode === 'visits' ? 'date' : 'name')}
+            title="排序方式"
+          >
+            {sortMode === 'name' ? '📝' : sortMode === 'visits' ? '🔥' : '📅'}
+          </button>
           <button 
             className="btn-icon" 
             onClick={() => setBatchMode(!batchMode)} 
@@ -366,13 +489,44 @@ export default function Bookmarks() {
         </div>
       </div>
 
+      {quickAccessBookmarks.length > 0 && (
+        <div className="quick-access-bar">
+          <span className="quick-access-label">⭐ 常用</span>
+          <div className="quick-access-list">
+            {quickAccessBookmarks.map(bm => (
+              <a
+                key={bm.id}
+                href={bm.url}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="quick-access-item"
+                onClick={() => recordVisit(bm.id)}
+                title={bm.name}
+              >
+                {bm.favicon ? (
+                  <img src={bm.favicon} alt="" className="quick-favicon" />
+                ) : (
+                  <span className="quick-icon">🌐</span>
+                )}
+                <span className="quick-name">{bm.name}</span>
+              </a>
+            ))}
+          </div>
+        </div>
+      )}
+
       <div className="bookmark-search-bar">
         <span className="search-icon">🔍</span>
         <input
           type="text"
           placeholder="搜索书签..."
           value={searchQuery}
-          onChange={e => setSearchQuery(e.target.value)}
+          onChange={e => {
+            setSearchQuery(e.target.value);
+            if (e.target.value) {
+              addToSearchHistory(e.target.value);
+            }
+          }}
           className="bookmark-search-input"
           aria-label="搜索书签"
         />
@@ -386,6 +540,22 @@ export default function Bookmarks() {
           </button>
         )}
       </div>
+
+      {searchHistory.length > 0 && searchQuery === '' && (
+        <div className="search-history">
+          <span className="history-label">搜索历史:</span>
+          {searchHistory.slice(0, 5).map((q, i) => (
+            <button 
+              key={i} 
+              className="history-item"
+              onClick={() => setSearchQuery(q)}
+            >
+              {q}
+            </button>
+          ))}
+          <button className="history-clear-btn" onClick={clearSearchHistory}>清除</button>
+        </div>
+      )}
 
       {batchMode && selectedBookmarks.size > 0 && (
         <div className="batch-action-bar">
@@ -516,7 +686,7 @@ export default function Bookmarks() {
           
           {form.url && (
             <div className="favicon-preview-box">
-              <span className="favicon-preview-label">图标预览：</span>
+              <span className="favicon-preview-label">图标预览:</span>
               {faviconLoading ? (
                 <div className="favicon-preview-loading">加载中...</div>
               ) : previewFavicon ? (
@@ -614,46 +784,120 @@ export default function Bookmarks() {
                 </div>
                 {!isCollapsed && (
                   <div className="bookmark-grid">
-                    {items.map(bm => (
-                      <div 
-                        key={bm.id} 
-                        className={`bookmark-item ${dragOverId === bm.id ? 'drag-over' : ''}`}
-                        draggable={!batchMode}
-                        onDragStart={(e) => handleDragStart(e, bm)}
-                        onDragEnd={handleDragEnd}
-                        onDragOver={(e) => handleDragOver(e, bm)}
-                        onDrop={(e) => handleDrop(e, bm)}
-                      >
-                        {batchMode && (
-                          <input
-                            type="checkbox"
-                            checked={selectedBookmarks.has(bm.id)}
-                            onChange={() => toggleBookmarkSelection(bm.id)}
-                            className="bookmark-checkbox"
-                            aria-label={`选择书签：${bm.name}`}
-                          />
-                        )}
-                        <a href={bm.url} target="_blank" rel="noopener noreferrer" className="bookmark-link">
-                          {bm.favicon ? (
-                            <img src={bm.favicon} alt="" className="bm-favicon" onError={(e) => { e.target.style.display = 'none'; }} />
-                          ) : (
-                            <span className="bm-icon">{bm.icon || '🌐'}</span>
+                    {items.map(bm => {
+                      const isQuickAccess = quickAccess.includes(bm.id);
+                      const visitCount = stats[bm.id]?.visits || 0;
+                      return (
+                        <div 
+                          key={bm.id} 
+                          className={`bookmark-item ${dragOverId === bm.id ? 'drag-over' : ''} ${isQuickAccess ? 'is-quick-access' : ''}`}
+                          draggable={!batchMode}
+                          onDragStart={(e) => handleDragStart(e, bm)}
+                          onDragEnd={handleDragEnd}
+                          onDragOver={(e) => handleDragOver(e, bm)}
+                          onDrop={(e) => handleDrop(e, bm)}
+                          onContextMenu={(e) => handleRightClick(e, bm)}
+                        >
+                          {batchMode && (
+                            <input
+                              type="checkbox"
+                              checked={selectedBookmarks.has(bm.id)}
+                              onChange={() => toggleBookmarkSelection(bm.id)}
+                              className="bookmark-checkbox"
+                              aria-label={`选择书签：${bm.name}`}
+                            />
                           )}
-                          <span className="bm-name">{bm.name}</span>
-                        </a>
-                        {!batchMode && (
-                          <div className="bookmark-actions">
-                            <button className="bm-action-btn" onClick={() => startEdit(bm)} title="编辑">✏️</button>
-                            <button className="bm-action-btn" onClick={() => removeBookmark(bm.id)} title="删除">🗑</button>
-                          </div>
-                        )}
-                      </div>
-                    ))}
+                          <a 
+                            href={bm.url} 
+                            target="_blank" 
+                            rel="noopener noreferrer" 
+                            className="bookmark-link"
+                            onClick={() => recordVisit(bm.id)}
+                          >
+                            {bm.favicon ? (
+                              <img src={bm.favicon} alt="" className="bm-favicon" onError={(e) => { e.target.style.display = 'none'; }} />
+                            ) : (
+                              <span className="bm-icon">{bm.icon || '🌐'}</span>
+                            )}
+                            <span className="bm-name">{bm.name}</span>
+                            {visitCount > 0 && (
+                              <span className="bm-visits">🔥 {visitCount}</span>
+                            )}
+                          </a>
+                          {!batchMode && (
+                            <div className="bookmark-actions">
+                              {!isQuickAccess && quickAccess.length < 8 && (
+                                <button 
+                                  className="bm-action-btn bm-pin-btn" 
+                                  onClick={(e) => {
+                                    e.preventDefault();
+                                    e.stopPropagation();
+                                    toggleQuickAccess(bm.id);
+                                  }}
+                                  title="添加到常用"
+                                >
+                                  ⭐
+                                </button>
+                              )}
+                              <button 
+                                className="bm-action-btn" 
+                                onClick={(e) => {
+                                  e.preventDefault();
+                                  e.stopPropagation();
+                                  startEdit(bm);
+                                }}
+                                title="编辑"
+                              >
+                                ✏️
+                              </button>
+                              <button 
+                                className="bm-action-btn" 
+                                onClick={(e) => {
+                                  e.preventDefault();
+                                  e.stopPropagation();
+                                  removeBookmark(bm.id);
+                                }}
+                                title="删除"
+                              >
+                                🗑
+                              </button>
+                            </div>
+                          )}
+                        </div>
+                      );
+                    })}
                   </div>
                 )}
               </div>
             );
           })}
+        </div>
+      )}
+
+      {rightClickMenu && (
+        <div 
+          ref={menuRef}
+          className="right-click-menu"
+          style={{
+            position: 'fixed',
+            left: rightClickMenu.x,
+            top: rightClickMenu.y,
+            zIndex: 1000
+          }}
+        >
+          <button className="menu-item" onClick={() => window.open(rightClickMenu.bookmark.url, '_blank')}>
+            🔗 在新标签页打开
+          </button>
+          <button className="menu-item" onClick={() => toggleQuickAccess(rightClickMenu.bookmark.id)}>
+            {quickAccess.includes(rightClickMenu.bookmark.id) ? '❌ 从常用移除' : '⭐ 添加到常用'}
+          </button>
+          <button className="menu-item" onClick={() => startEdit(rightClickMenu.bookmark)}>
+            ✏️ 编辑
+          </button>
+          <div className="menu-divider" />
+          <button className="menu-item menu-danger" onClick={() => removeBookmark(rightClickMenu.bookmark.id)}>
+            🗑 删除
+          </button>
         </div>
       )}
     </div>
