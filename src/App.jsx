@@ -4,11 +4,13 @@ import 'react-grid-layout/css/styles.css';
 import { useGreeting } from './hooks/useGreeting';
 import { useTime } from './hooks/useTime';
 import { useLayoutStorage } from './hooks/useLayoutStorage';
+import { useTheme, THEMES } from './hooks/useTheme.jsx';
 import Calendar from './components/Calendar';
 import Countdown from './components/Countdown';
 import TodoList from './components/TodoList';
 import Memo from './components/Memo';
 import LunarCalendar from './components/LunarCalendar';
+import SettingsPanel from './components/SettingsPanel.jsx';
 import './App.css';
 
 // 懒加载较重的组件
@@ -35,7 +37,9 @@ export default memo(function App() {
   const greeting = useGreeting();
   const { currentTime, formatTime, formatDate } = useTime();
   const { layouts, editMode, setEditMode, onLayoutChange, resetLayout } = useLayoutStorage();
+  const { theme, toggleTheme } = useTheme();
   const [searchEngine, setSearchEngine] = useState(DEFAULT_SE);
+  const [showSettings, setShowSettings] = useState(false);
   const appRef = useRef(null);
 
   return (
@@ -54,6 +58,14 @@ export default memo(function App() {
           </div>
           <div className="header-greeting">{greeting}</div>
           <div className="header-controls">
+            <button
+              className="btn-theme-toggle"
+              onClick={toggleTheme}
+              title={theme === THEMES.DARK ? '切换到亮色模式' : '切换到深色模式'}
+              aria-label={theme === THEMES.DARK ? '切换到亮色模式' : '切换到深色模式'}
+            >
+              {theme === THEMES.DARK ? '☀️' : '🌙'}
+            </button>
             <button
               className={`btn-edit-mode ${editMode ? 'active' : ''}`}
               onClick={() => setEditMode(!editMode)}
@@ -121,8 +133,13 @@ export default memo(function App() {
 
       {/* 底部 Footer */}
       <footer className="app-footer">
-        <p>皮皮导航 · 你的智能起点 🐦</p>
+        <button className="footer-settings-btn" onClick={() => setShowSettings(true)} title="设置">
+          ⚙️ 设置
+        </button>
+        <p>皮皮导航 · 你的智能起点</p>
       </footer>
+
+      {showSettings && <SettingsPanel onClose={() => setShowSettings(false)} />}
     </div>
   );
 });
