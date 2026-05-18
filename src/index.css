@@ -1,0 +1,240 @@
+/* =============================================
+   皮皮导航 - 设计系统 (Design System)
+   =============================================
+   版本: 2.0 - 全面视觉升级
+   特性: 深色主题 · 毛玻璃效果 · 渐变背景 · 动效系统
+   ============================================= */
+
+:root {
+  /* ---- 颜色系统 ---- */
+  --bg-primary: #0a0a18;
+  --bg-secondary: #0f0f24;
+  --bg-card: rgba(26, 28, 56, 0.75);
+  --bg-card-hover: rgba(30, 32, 69, 0.85);
+  --bg-card-elevated: rgba(34, 36, 80, 0.9);
+  --bg-glass: rgba(15, 15, 36, 0.6);
+  --bg-glass-strong: rgba(15, 15, 36, 0.85);
+
+  --text-primary: #eaeaf2;
+  --text-secondary: #9898b8;
+  --text-muted: #6a6a88;
+
+  /* 主色调 - 紫罗兰渐变 */
+  --accent: #6c63ff; 利用多重渐变 */
+  --accent-50: #eef0ff;
+  --accent-100: #ccc8ff;
+  --accent-200: #a99fff;
+  --accent-300: #8777ff;
+  --accent-400: #6c63ff;
+  --accent-500: #5a4fdb;
+  --accent-600: #4a3fb7;
+  --accent-glow: rgba(108, 99, 255, 0.25);
+  --accent-glow-strong: rgba(108, 99, 255, 0.45);
+  --accent-soft: rgba(108, 99, 255, 0.1);
+  --accent-soft-hover: rgba(108, 99, 255, 0.18);
+
+  /* 功能色 */
+  --success: #4ade80;
+  --success-soft: rgba(74, 222, 128, 0.1);
+  --warning: #fbbf24;
+  --warning-soft: rgba(251, 191, 36, 0.1);
+  --danger: #f87171;
+  --danger-soft: rgba(248, 113, 113, 0.1);
+  --info: #60a5fa;
+  --info-soft: rgba(96, 165, 250, 0.1);
+
+  /* 边框 */
+  --border: rgba(38, 38, 82, 0.6);
+  --border-light: rgba(49, 49, 106, 0.8);
+  --border-accent: rgba(108, 99, 255, 0.3);
+
+  /* 圆角 */
+  --radius: 14px;
+  --radius-sm: 10px;
+  --radius-xs: 6px;
+  --radius-pill: 50px;
+
+  /* 阴影 */
+  --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.25);
+  --shadow-md: 0 4px 16px rgba(0, 0, 0, 0.35);
+  --shadow-lg: 0 8px 32px rgba(0, 0, 0, 0.45);
+  --shadow-glow: 0 0 24px var(--accent-glow);
+  --shadow-inner: inset 0 1px 0 rgba(255, 255, 255, 0.04);
+
+  /* 过渡 */
+  --transition-fast: 0.15s cubic-bezier(0.4, 0, 0.2, 1);
+  --transition-base: 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+  --transition-slow: 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+  --transition-bounce: 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+
+  /* 间距 */
+  --space-xs: 4px;
+  --space-sm: 8px;
+  --space-md: 14px;
+  --space-lg: 20px;
+  --space-xl: 28px;
+
+  /* 字体 */
+  --font-sans: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Segoe UI', Roboto, 'Noto Sans SC', sans-serif;
+  --font-mono: 'SF Mono', 'Fira Code', 'Cascadia Code', monospace;
+}
+
+/* ---- 基础重置 ---- */
+*, *::before, *::after {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  font-family: var(--font-sans);
+  background: var(--bg-primary);
+  color: var(--text-primary);
+  min-height: 100vh;
+  line-height:  overflow-x: hidden;
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+#root {
+  min-height: 100vh;
+  position: relative;
+}
+
+/* ---- 背景动画 ---- */
+body::before {
+  content: '';
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: -1;
+  background:
+    radial-gradient(ellipse 80% 60% at 50% -10%, rgba(108, 99, 255, 0.08), transparent),
+    radial-gradient(ellipse 50% 40% at 0% 60%, rgba(74, 222, 128, 0.04), transparent),
+    radial-gradient(ellipse 40% 50% at 100% 30%, rgba(251, 191, 36, 0.04), transparent),
+    var(--bg-primary);
+  animation: bgShift 20s ease-in-out infinite alternate;
+}
+
+@keyframes bgShift {
+  0% {
+    background:
+      radial-gradient(ellipse 80% 60% at 50% -10%, rgba(108, 99, 255, 0.08), transparent),
+      radial-gradient(ellipse 50% 40% at 0% 60%, rgba(74, 222, 128, 0.04), transparent),
+      radial-gradient(ellipse 40% 50% at 100% 30%, rgba(251, 191, 36, 0.04), transparent),
+      var(--bg-primary);
+  }
+  50% {
+    background:
+      radial-gradient(ellipse 70% 55% at 60% -5%, rgba(108, 99, 255, 0.1), transparent),
+      radial-gradient(ellipse 45% 35% at 20% 70%, rgba(96, 165, 250, 0.04), transparent),
+      radial-gradient(ellipse 35% 45% at 80% 40%, rgba(251, 191, 36, 0.03), transparent),
+      var(--bg-primary);
+  }
+  100% {
+    background:
+      radial-gradient(ellipse 90% 50% at 30% -15%, rgba(108, 99, 255, 0.06), transparent),
+      radial-gradient(ellipse 55% 45% at 80% 50%, rgba(74, 222, 128, 0.05), transparent),
+      radial-gradient(ellipse 30% 40% at 10% 80%, rgba(108, 99, 255, 0.03), transparent),
+      var(--bg-primary);
+  }
+}
+
+/* ---- 滚动条 ---- */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgba(108, 99, 255, 0.3);
+  border-radius: 3px;
+  transition: background var(--transition-base);
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(108, 99, 255, 0.5);
+}
+
+/* Firefox scrollbar */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(108, 99, 255, 0.3) transparent;
+}
+
+/* ---- 选择文本 ---- */
+::selection {
+  background: rgba(108, 99, 255, 0.35);
+  color: white;
+}
+
+/* ---- 焦点环 ---- */
+:focus-visible {
+  outline: 2px solid var(--accent-400);
+  outline-offset: 2px;
+}
+
+/* ---- 动画关键帧 ---- */
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes fadeInUp {
+  from { opacity: 0; transform: translateY(16px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes scaleIn {
+  from { opacity: 0; transform: scale(0.95); }
+  to { opacity: 1; transform: scale(1); }
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.7; }
+}
+
+@keyframes shimmer {
+  0% { background-position: -200% center; }
+  100% { background-position: 200% center; }
+}
+
+@keyframes float {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-4px); }
+}
+
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+@keyframes slideDown {
+  from { opacity: 0; transform: translateY(-4px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes slideUp {
+  from { opacity: 0; transform: translateY(4px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* ---- 工具类 ---- */
+.glass-effect {
+  background: var(--bg-glass);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid var(--border);
+}
