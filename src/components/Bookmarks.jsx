@@ -1,5 +1,6 @@
-import { useState, useMemo, useCallback } from 'react';
+import { useState, useMemo, useCallback, useEffect } from 'react';
 import { validateBookmark, sanitizeHtml } from '../utils/security';
+import { getFavicon } from '../utils/favicon';
 
 const STORAGE_KEY = 'nav_app_bookmarks_v1';
 const CATEGORIES_KEY = 'nav_app_categories_v1';
@@ -12,44 +13,34 @@ const DEFAULT_CATEGORIES = [
   { name: '开发工具', icon: '🛠' },
 ];
 
-// 预设常用网址
 const DEFAULT_BOOKMARKS = [
-  // 常用网站
-  { name: 'Google', url: 'https://www.google.com', icon: '🔍', category: '常用网站' },
-  { name: '百度', url: 'https://www.baidu.com', icon: '🐻', category: '常用网站' },
-  { name: 'Bilibili', url: 'https://www.bilibili.com', icon: '📺', category: '常用网站' },
-  { name: '知乎', url: 'https://www.zhihu.com', icon: '💡', category: '常用网站' },
-  { name: '微博', url: 'https://weibo.com', icon: '📱', category: '常用网站' },
-  { name: 'YouTube', url: 'https://youtube.com', icon: '▶️', category: '常用网站' },
-  
-  // 工作学习
-  { name: 'GitHub', url: 'https://github.com', icon: '🐙', category: '工作学习' },
-  { name: '掘金', url: 'https://juejin.cn', icon: '🪙', category: '工作学习' },
-  { name: 'CSDN', url: 'https://www.csdn.net', icon: '📝', category: '工作学习' },
-  { name: 'StackOverflow', url: 'https://stackoverflow.com', icon: '💬', category: '工作学习' },
-  { name: 'Wikipedia', url: 'https://en.wikipedia.org', icon: '🌐', category: '工作学习' },
-  
-  // AI 工具
-  { name: 'ChatGPT', url: 'https://chat.openai.com', icon: '🤖', category: 'AI 工具' },
-  { name: 'Claude', url: 'https://claude.ai', icon: '🧠', category: 'AI 工具' },
-  { name: 'DeepSeek', url: 'https://chat.deepseek.com', icon: '🔍', category: 'AI 工具' },
-  { name: 'Kimi', url: 'https://kimi.moonshot.cn', icon: '🌙', category: 'AI 工具' },
-  { name: '通义千问', url: 'https://tongyi.aliyun.com', icon: '🌊', category: 'AI 工具' },
-  { name: '文心一言', url: 'https://yiyan.baidu.com', icon: '📖', category: 'AI 工具' },
-  { name: 'Midjourney', url: 'https://www.midjourney.com', icon: '🎨', category: 'AI 工具' },
-  { name: 'Perplexity', url: 'https://www.perplexity.ai', icon: '🔎', category: 'AI 工具' },
-  
-  // 娱乐生活
-  { name: 'Netflix', url: 'https://www.netflix.com', icon: '🎬', category: '娱乐生活' },
-  { name: 'Spotify', url: 'https://open.spotify.com', icon: '🎵', category: '娱乐生活' },
-  { name: 'Reddit', url: 'https://www.reddit.com', icon: '🧵', category: '娱乐生活' },
-  { name: '淘宝', url: 'https://www.taobao.com', icon: '🛒', category: '娱乐生活' },
-  
-  // 开发工具
-  { name: 'Vercel', url: 'https://vercel.com', icon: '▲', category: '开发工具' },
-  { name: 'Netlify', url: 'https://www.netlify.com', icon: '◈', category: '开发工具' },
-  { name: 'CodePen', url: 'https://codepen.io', icon: '✒️', category: '开发工具' },
-  { name: 'Replit', url: 'https://replit.com', icon: '💻', category: '开发工具' },
+  { name: 'Google', url: 'https://www.google.com', favicon: 'https://www.google.com/s2/favicons?domain=google.com&sz=64', category: '常用网站' },
+  { name: '百度', url: 'https://www.baidu.com', favicon: 'https://www.baidu.com/favicon.ico', category: '常用网站' },
+  { name: 'Bilibili', url: 'https://www.bilibili.com', favicon: 'https://www.bilibili.com/favicon.ico', category: '常用网站' },
+  { name: '知乎', url: 'https://www.zhihu.com', favicon: 'https://static.zhihu.com/heifetz/favicon.ico', category: '常用网站' },
+  { name: '微博', url: 'https://weibo.com', favicon: 'https://weibo.com/favicon.ico', category: '常用网站' },
+  { name: 'YouTube', url: 'https://youtube.com', favicon: 'https://youtube.com/s/desktop/favicon.ico', category: '常用网站' },
+  { name: 'GitHub', url: 'https://github.com', favicon: 'https://github.githubassets.com/favicons/favicon.svg', category: '工作学习' },
+  { name: '掘金', url: 'https://juejin.cn', favicon: 'https://juejin.cn/favicon.ico', category: '工作学习' },
+  { name: 'CSDN', url: 'https://www.csdn.net', favicon: 'https://www.csdn.net/favicon.ico', category: '工作学习' },
+  { name: 'StackOverflow', url: 'https://stackoverflow.com', favicon: 'https://cdn.sstatic.net/Sites/stackoverflow/Img/favicon.ico', category: '工作学习' },
+  { name: 'Wikipedia', url: 'https://en.wikipedia.org', favicon: 'https://en.wikipedia.org/static/favicon.ico', category: '工作学习' },
+  { name: 'ChatGPT', url: 'https://chat.openai.com', favicon: 'https://chat.openai.com/favicon.ico', category: 'AI 工具' },
+  { name: 'Claude', url: 'https://claude.ai', favicon: 'https://claude.ai/favicon.ico', category: 'AI 工具' },
+  { name: 'DeepSeek', url: 'https://chat.deepseek.com', favicon: 'https://chat.deepseek.com/favicon.ico', category: 'AI 工具' },
+  { name: 'Kimi', url: 'https://kimi.moonshot.cn', favicon: 'https://kimi.moonshot.cn/favicon.ico', category: 'AI 工具' },
+  { name: '通义千问', url: 'https://tongyi.aliyun.com', favicon: 'https://tongyi.aliyun.com/favicon.ico', category: 'AI 工具' },
+  { name: '文心一言', url: 'https://yiyan.baidu.com', favicon: 'https://yiyan.baidu.com/favicon.ico', category: 'AI 工具' },
+  { name: 'Midjourney', url: 'https://www.midjourney.com', favicon: 'https://www.midjourney.com/favicon.ico', category: 'AI 工具' },
+  { name: 'Perplexity', url: 'https://www.perplexity.ai', favicon: 'https://www.perplexity.ai/favicon.ico', category: 'AI 工具' },
+  { name: 'Netflix', url: 'https://www.netflix.com', favicon: 'https://www.netflix.com/favicon.ico', category: '娱乐生活' },
+  { name: 'Spotify', url: 'https://open.spotify.com', favicon: 'https://open.spotify.com/favicon.ico', category: '娱乐生活' },
+  { name: 'Reddit', url: 'https://www.reddit.com', favicon: 'https://www.reddit.com/favicon.ico', category: '娱乐生活' },
+  { name: '淘宝', url: 'https://www.taobao.com', favicon: 'https://www.taobao.com/favicon.ico', category: '娱乐生活' },
+  { name: 'Vercel', url: 'https://vercel.com', favicon: 'https://vercel.com/favicon.ico', category: '开发工具' },
+  { name: 'Netlify', url: 'https://www.netlify.com', favicon: 'https://www.netlify.com/favicon.ico', category: '开发工具' },
+  { name: 'CodePen', url: 'https://codepen.io', favicon: 'https://cpwebassets.codepen.io/favicon.ico', category: '开发工具' },
+  { name: 'Replit', url: 'https://replit.com', favicon: 'https://replit.com/favicon.ico', category: '开发工具' },
 ];
 
 export default function Bookmarks() {
@@ -67,7 +58,6 @@ export default function Bookmarks() {
       }
       return JSON.parse(saved);
     } catch (e) {
-      console.error('Failed to load bookmarks:', e);
       const defaultData = DEFAULT_BOOKMARKS.map((bm, i) => ({ 
         ...bm, 
         id: Date.now() + i,
@@ -86,50 +76,65 @@ export default function Bookmarks() {
       localStorage.setItem(CATEGORIES_KEY, JSON.stringify(DEFAULT_CATEGORIES));
       return DEFAULT_CATEGORIES;
     } catch (e) {
-      console.error('Failed to load categories:', e);
       return DEFAULT_CATEGORIES;
     }
   });
   
   const [showAdd, setShowAdd] = useState(false);
   const [editId, setEditId] = useState(null);
-  const [form, setForm] = useState({ name: '', url: '', icon: '🔖', category: '默认' });
+  const [form, setForm] = useState({ name: '', url: '', favicon: '', category: '常用网站' });
+  const [previewFavicon, setPreviewFavicon] = useState(null);
+  const [faviconLoading, setFaviconLoading] = useState(false);
   const [showCategoryManager, setShowCategoryManager] = useState(false);
   const [newCategory, setNewCategory] = useState('');
   const [editingCategory, setEditingCategory] = useState(null);
 
-  // Save bookmarks to localStorage
   const saveBookmarks = useCallback((newList) => {
     setBookmarks(newList);
     localStorage.setItem(STORAGE_KEY, JSON.stringify(newList));
   }, []);
 
-  // Save categories to localStorage
   const saveCategories = useCallback((newCats) => {
     setCategories(newCats);
     localStorage.setItem(CATEGORIES_KEY, JSON.stringify(newCats));
   }, []);
 
   const resetForm = () => {
-    setForm({ name: '', url: '', icon: '🔖', category: categories[0]?.name || '常用网站' });
+    setForm({ name: '', url: '', favicon: '', category: categories[0]?.name || '常用网站' });
+    setPreviewFavicon(null);
     setEditId(null);
     setShowAdd(false);
   };
+
+  useEffect(() => {
+    if (form.url && form.url.includes('.')) {
+      setFaviconLoading(true);
+      getFavicon(form.url).then(favicon => {
+        setPreviewFavicon(favicon);
+        setFaviconLoading(false);
+      });
+    } else {
+      setPreviewFavicon(null);
+    }
+  }, [form.url]);
 
   const handleSubmit = (e) => {
     e.preventDefault();
     const validated = validateBookmark({
       name: form.name,
       url: form.url,
-      icon: form.icon,
       category: form.category,
     });
     if (!validated) {
       alert('请输入有效的网址和名称');
       return;
     }
+    
+    const faviconToSave = previewFavicon || '';
+    
     const entry = {
       ...validated,
+      favicon: faviconToSave,
       name: sanitizeHtml(validated.name),
       category: sanitizeHtml(validated.category),
     };
@@ -143,7 +148,8 @@ export default function Bookmarks() {
   };
 
   const startEdit = (bm) => {
-    setForm({ name: bm.name, url: bm.url, icon: bm.icon, category: bm.category });
+    setForm({ name: bm.name, url: bm.url, favicon: bm.favicon || '', category: bm.category });
+    setPreviewFavicon(bm.favicon || null);
     setEditId(bm.id);
     setShowAdd(true);
   };
@@ -154,7 +160,6 @@ export default function Bookmarks() {
     }
   };
 
-  // Category management
   const addCategory = () => {
     if (newCategory.trim() && !categories.find(c => c.name === newCategory.trim())) {
       const newCat = { name: newCategory.trim(), icon: '📁' };
@@ -176,19 +181,14 @@ export default function Bookmarks() {
       setEditingCategory(null);
       return;
     }
-    
-    // 更新分类列表
     const newCats = categories.map(c => 
       c.name === oldName ? { ...c, name: newName } : c
     );
     saveCategories(newCats);
-    
-    // 更新该分类下的所有书签
     const updatedBookmarks = bookmarks.map(b => 
       b.category === oldName ? { ...b, category: newName } : b
     );
     saveBookmarks(updatedBookmarks);
-    
     setEditingCategory(null);
   };
 
@@ -207,7 +207,6 @@ export default function Bookmarks() {
     }
   };
 
-  // Group by category (memoized)
   const groupedBookmarks = useMemo(() => {
     const cats = {};
     bookmarks.forEach(bm => {
@@ -238,7 +237,6 @@ export default function Bookmarks() {
         </div>
       </div>
 
-      {/* Category Manager */}
       {showCategoryManager && (
         <div className="category-manager" style={{ 
           marginBottom: '12px', 
@@ -249,7 +247,6 @@ export default function Bookmarks() {
         }}>
           <h4 style={{ fontSize: '12px', color: 'var(--text-secondary)', marginBottom: '8px' }}>管理分类</h4>
           
-          {/* Add new category */}
           <div style={{ display: 'flex', gap: '6px', marginBottom: '10px' }}>
             <input
               type="text"
@@ -263,7 +260,6 @@ export default function Bookmarks() {
             <button className="btn-sm" onClick={addCategory} style={{ padding: '4px 10px' }}>添加</button>
           </div>
           
-          {/* Category list */}
           <div style={{ display: 'flex', flexWrap: 'wrap', gap: '6px' }}>
             {categories.map(cat => (
               <div 
@@ -336,23 +332,26 @@ export default function Bookmarks() {
           />
           <input
             type="text"
-            placeholder="网址 (例：example.com)"
+            placeholder="网址 (例：https://example.com)"
             value={form.url}
             onChange={e => setForm({...form, url: e.target.value})}
             required
           />
-          <div className="bookmark-form-row">
-            <div className="icon-picker">
-              <span>图标：</span>
-              {ICON_PICKER.map(ic => (
-                <button
-                  key={ic}
-                  type="button"
-                  className={`icon-option ${form.icon === ic ? 'active' : ''}`}
-                  onClick={() => setForm({...form, icon: ic})}
-                >{ic}</button>
-              ))}
+          
+          {form.url && (
+            <div className="favicon-preview-box">
+              <span className="favicon-preview-label">图标预览：</span>
+              {faviconLoading ? (
+                <div className="favicon-preview-loading">加载中...</div>
+              ) : previewFavicon ? (
+                <img src={previewFavicon} alt="favicon" className="favicon-preview-img" />
+              ) : (
+                <div className="favicon-preview-placeholder">输入网址后自动获取</div>
+              )}
             </div>
+          )}
+          
+          <div className="bookmark-form-row">
             <select
               value={form.category}
               onChange={e => setForm({...form, category: e.target.value})}
@@ -365,7 +364,8 @@ export default function Bookmarks() {
                 color: 'var(--text-primary)',
                 fontSize: '13px',
                 outline: 'none',
-                cursor: 'pointer'
+                cursor: 'pointer',
+                flex: 1
               }}
             >
               {categories.map(cat => (
@@ -436,7 +436,11 @@ export default function Bookmarks() {
                   {items.map(bm => (
                     <div key={bm.id} className="bookmark-item" title={bm.url}>
                       <a href={bm.url} target="_blank" rel="noopener noreferrer" className="bookmark-link">
-                        <span className="bm-icon">{bm.icon}</span>
+                        {bm.favicon ? (
+                          <img src={bm.favicon} alt="" className="bm-favicon" onError={(e) => { e.target.style.display = 'none'; }} />
+                        ) : (
+                          <span className="bm-icon">{bm.icon || '🌐'}</span>
+                        )}
                         <span className="bm-name">{bm.name}</span>
                       </a>
                       <div className="bookmark-actions">

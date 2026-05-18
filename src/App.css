@@ -1518,6 +1518,186 @@
   justify-content: center;
 }
 
+.countdown-type-tabs {
+  display: flex;
+  gap: 6px;
+  margin-bottom: 12px;
+}
+
+.type-tab {
+  flex: 1;
+  padding: 6px 12px;
+  border: 1px solid var(--border);
+  background: rgba(255, 255, 255, 0.02);
+  color: var(--text-secondary);
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  font-size: 12px;
+  transition: all var(--transition-fast);
+}
+
+.type-tab:hover {
+  border-color: var(--accent-400);
+  color: var(--text-primary);
+}
+
+.type-tab.active {
+  background: var(--accent-soft);
+  border-color: var(--accent-400);
+  color: var(--accent-300);
+}
+
+.countdown-add-form {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.quick-presets {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  align-items: center;
+}
+
+.preset-label {
+  font-size: 11px;
+  color: var(--text-secondary);
+}
+
+.preset-btn {
+  padding: 4px 8px;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  color: var(--text-primary);
+  font-size: 11px;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.preset-btn:hover {
+  background: var(--accent-soft);
+  border-color: var(--accent-400);
+}
+
+.time-inputs-row {
+  display: flex;
+  gap: 12px;
+}
+
+.time-input-group {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.time-input-group label {
+  font-size: 10px;
+  color: var(--text-secondary);
+}
+
+.time-input-group input {
+  width: 100%;
+  padding: 6px 8px;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  color: var(--text-primary);
+  font-size: 14px;
+  text-align: center;
+}
+
+.time-input-group input:focus {
+  border-color: var(--accent-400);
+  outline: none;
+}
+
+.selected-time-preview {
+  text-align: center;
+  font-size: 14px;
+  color: var(--accent-300);
+  padding: 6px;
+  background: rgba(108, 99, 255, 0.1);
+  border-radius: var(--radius-sm);
+}
+
+.daily-badge {
+  margin-right: 4px;
+}
+
+.cd-urgent {
+  animation: urgentPulse 0.5s ease-in-out infinite;
+}
+
+.cd-urgent .cd-num {
+  color: #ef4444 !important;
+  -webkit-text-fill-color: #ef4444 !important;
+  text-shadow: 0 0 8px rgba(239, 68, 68, 0.5);
+}
+
+.cd-warning {
+  animation: warningPulse 1s ease-in-out infinite;
+}
+
+.cd-warning .cd-num {
+  color: #f59e0b !important;
+  -webkit-text-fill-color: #f59e0b !important;
+  text-shadow: 0 0 6px rgba(245, 158, 11, 0.4);
+}
+
+@keyframes urgentPulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.6; }
+}
+
+@keyframes warningPulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.8; }
+}
+
+.favicon-preview-box {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 12px;
+  background: rgba(255, 255, 255, 0.02);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+}
+
+.favicon-preview-label {
+  font-size: 11px;
+  color: var(--text-secondary);
+}
+
+.favicon-preview-img {
+  width: 24px;
+  height: 24px;
+  object-fit: contain;
+  border-radius: 4px;
+}
+
+.favicon-preview-loading,
+.favicon-preview-placeholder {
+  font-size: 11px;
+  color: var(--text-muted);
+  font-style: italic;
+}
+
+.bm-favicon {
+  width: 28px;
+  height: 28px;
+  object-fit: contain;
+  border-radius: 6px;
+  margin-bottom: 4px;
+}
+
+.bm-favicon:not([src]) {
+  display: none;
+}
+
 /* ====== 备忘录组件 ====== */
 .memo-header {
   display: flex;
