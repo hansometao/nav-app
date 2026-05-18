@@ -1,5 +1,14 @@
 import { Component } from 'react';
 
+// 安全获取环境变量
+const isDevelopment = (() => {
+  try {
+    return typeof process !== 'undefined' && process.env?.NODE_ENV === 'development';
+  } catch {
+    return false;
+  }
+})();
+
 /**
  * 错误边界组件
  * 捕获子组件树中的 JavaScript 错误，防止整个应用崩溃
@@ -54,7 +63,7 @@ export class ErrorBoundary extends Component {
               应用遇到了一些问题，请尝试刷新页面
             </p>
             
-            {process.env.NODE_ENV === 'development' && this.state.error && (
+            {isDevelopment && this.state.error && (
               <details className="error-details">
                 <summary>错误详情（仅开发环境）</summary>
                 <pre>{this.state.error.toString()}</pre>

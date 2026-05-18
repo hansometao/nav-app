@@ -1,18 +1,20 @@
-import { useState, useEffect, useMemo } from 'react';
+import { useState, useMemo } from 'react';
 
 const STORAGE_KEY = 'nav_app_todos';
 
 export default function TodoList() {
-  const [todos, setTodos] = useState([]);
-  const [input, setInput] = useState('');
-  const [filter, setFilter] = useState('all'); // all | active | done
-
-  useEffect(() => {
+  const [todos, setTodos] = useState(() => {
     try {
       const saved = localStorage.getItem(STORAGE_KEY);
-      if (saved) setTodos(JSON.parse(saved));
-    } catch {}
-  }, []);
+      return saved ? JSON.parse(saved) : [];
+    } catch (e) {
+      console.error('Failed to load todos:', e);
+      return [];
+    }
+  });
+  
+  const [input, setInput] = useState('');
+  const [filter, setFilter] = useState('all'); // all | active | done
 
   const save = (list) => {
     setTodos(list);

@@ -651,7 +651,7 @@
 .calendar-grid {
   display: grid;
   grid-template-columns: repeat(7, 1fr);
-  gap:  gap: 2px;
+  gap: 2px;
   margin-bottom: 12px;
 }
 
@@ -804,7 +804,7 @@
 
 .todo-input:focus {
   border-color: var(--accent-400);
-  box-shadow: 0 0dow: 0 0 8px var(--accent-glow);
+  box-shadow: 0 0 8px var(--accent-glow);
 }
 
 .todo-filters {
@@ -1082,10 +1082,7 @@
   outline: none;
   resize: vertical;
   font-family: inherit;
-  line-height:ding var(--border);
-}
-
-.memo-form-actions tepacing: 1.5;
+  line-height: 1.5;
   min-height: 60px;
 }
 
@@ -1158,7 +1155,7 @@
   width: 8px;
   height: 8px;
   border-radius: 50%;
-  flex-shrink: 8px;  flex-shrink: 0;
+  flex-shrink: 0;
 }
 
 .memo-card-title {
@@ -1321,7 +1318,6 @@
 
 .hotnews-tab {
   background: rgba(255, 255, 255, 0.03);
-  border.03);
   border: 1px solid var(--border);
   color: var(--text-secondary);
   padding: 4px 10px;
@@ -1373,7 +1369,6 @@
 }
 
 .hotnews-rank {
-  hotnews-rank {
   width: 22px;
   height: 22px;
   border-radius: 50%;
@@ -1668,7 +1663,7 @@
 /* 小屏手机 400px */
 @media (max-width: 400px) {
   .bookmark-grid {
-    grid-template-columns-grid-template-columns: repeat(2, 1fr);
+    grid-template-columns: repeat(2, 1fr);
   }
   .quick-links-grid {
     grid-template-columns: repeat(2, 1fr);

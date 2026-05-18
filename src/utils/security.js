@@ -11,7 +11,7 @@ export const isValidUrl = (string) => {
   try {
     const url = new URL(string);
     return url.protocol === 'http:' || url.protocol === 'https:';
-  } catch (_) {
+  } catch {
     return false;
   }
 };
@@ -44,7 +44,7 @@ export const normalizeUrl = (url) => {
 export const sanitizeHtml = (str) => {
   if (!str || typeof str !== 'string') return '';
   
-  return str.replace(/[<>\"'&]/g, (char) => {
+  return str.replace(/[<>"'&]/g, (char) => {
     const entities = {
       '<': '&lt;',
       '>': '&gt;',

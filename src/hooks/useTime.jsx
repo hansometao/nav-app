@@ -24,30 +24,27 @@ export function TimeProvider({ children }) {
   );
 }
 
-/**
- * 返回当前时间和格式化函数。
- * 从 TimeContext 读取时间，避免重复的 setInterval。
- */
-export function useTime() {
-  const currentTime = useContext(TimeContext);
-  
-  // 如果不在 TimeProvider 内，退化到独立模式
-  if (!currentTime) {
-    const [localTime, setLocalTime] = useState(() => new Date());
-    useEffect(() => {
-      const timer = setInterval(() => setLocalTime(new Date()), 1000);
-      return () => clearInterval(timer);
-    }, []);
-    return useTimeInternal(localTime);
-  }
-  
-  return useTimeInternal(currentTime);
+// 独立时间 Hook（不依赖 Context）
+function useStandaloneTime() {
+  const [localTime, setLocalTime] = useState(() => new Date());
+  useEffect(() => {
+    const timer = setInterval(() => setLocalTime(new Date()), 1000);
+    return () => clearInterval(timer);
+  }, []);
+  return localTime;
 }
 
 /**
- * 内部时间格式化逻辑
+ * 返回当前时间和格式化函数。
+ * 优先从 TimeContext 读取时间，否则使用独立模式。
  */
-function useTimeInternal(currentTime) {
+export function useTime() {
+  // 始终调用两个 hooks，但根据 context 是否存在来决定使用哪个
+  const contextTime = useContext(TimeContext);
+  const standaloneTime = useStandaloneTime();
+  
+  const currentTime = contextTime || standaloneTime;
+  
   const formatTime = useCallback((date) => {
     const h = String(date.getHours()).padStart(2, '0');
     const m = String(date.getMinutes()).padStart(2, '0');

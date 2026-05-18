@@ -1,23 +1,25 @@
-import { useState, useEffect, useRef } from 'react';
+import { useState, useRef } from 'react';
 
 const STORAGE_KEY = 'nav_app_memos';
 const COLORS = ['#ffd700', '#ff6b6b', '#69db7c', '#74c0fc', '#da77f2', '#ff922b', '#20c997', '#748ffc'];
 
 export default function Memo() {
-  const [memos, setMemos] = useState([]);
+  const [memos, setMemos] = useState(() => {
+    try {
+      const saved = localStorage.getItem(STORAGE_KEY);
+      return saved ? JSON.parse(saved) : [];
+    } catch (e) {
+      console.error('Failed to load memos:', e);
+      return [];
+    }
+  });
+  
   const [showAdd, setShowAdd] = useState(false);
   const [editingId, setEditingId] = useState(null);
   const [title, setTitle] = useState('');
   const [content, setContent] = useState('');
   const [color, setColor] = useState(COLORS[0]);
   const titleRef = useRef(null);
-
-  useEffect(() => {
-    try {
-      const saved = localStorage.getItem(STORAGE_KEY);
-      if (saved) setMemos(JSON.parse(saved));
-    } catch {}
-  }, []);
 
   const save = (list) => {
     setMemos(list);

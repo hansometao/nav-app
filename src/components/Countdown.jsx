@@ -23,7 +23,6 @@ export default function Countdown() {
   const [timer, setTimer] = useState(null);
   const [customTimer, setCustomTimer] = useState(0);
   const [timerRunning, setTimerRunning] = useState(false);
-  const [timerLabel, setTimerLabel] = useState('');
   const timerRef = useRef(null);
 
   // Update countdowns every second

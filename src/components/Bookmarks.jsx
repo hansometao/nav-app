@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo, useCallback } from 'react';
+import { useState, useMemo, useCallback } from 'react';
 import { validateBookmark, sanitizeHtml } from '../utils/security';
 
 const STORAGE_KEY = 'nav_app_bookmarks_v1';
@@ -53,45 +53,50 @@ const DEFAULT_BOOKMARKS = [
 ];
 
 export default function Bookmarks() {
-  const [bookmarks, setBookmarks] = useState([]);
-  const [categories, setCategories] = useState(DEFAULT_CATEGORIES);
+  const [bookmarks, setBookmarks] = useState(() => {
+    try {
+      const saved = localStorage.getItem(STORAGE_KEY);
+      if (!saved) {
+        const defaultData = DEFAULT_BOOKMARKS.map((bm, i) => ({ 
+          ...bm, 
+          id: Date.now() + i,
+          createdAt: Date.now() 
+        }));
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(defaultData));
+        return defaultData;
+      }
+      return JSON.parse(saved);
+    } catch (e) {
+      console.error('Failed to load bookmarks:', e);
+      const defaultData = DEFAULT_BOOKMARKS.map((bm, i) => ({ 
+        ...bm, 
+        id: Date.now() + i,
+        createdAt: Date.now() 
+      }));
+      return defaultData;
+    }
+  });
+  
+  const [categories, setCategories] = useState(() => {
+    try {
+      const savedCats = localStorage.getItem(CATEGORIES_KEY);
+      if (savedCats) {
+        return JSON.parse(savedCats);
+      }
+      localStorage.setItem(CATEGORIES_KEY, JSON.stringify(DEFAULT_CATEGORIES));
+      return DEFAULT_CATEGORIES;
+    } catch (e) {
+      console.error('Failed to load categories:', e);
+      return DEFAULT_CATEGORIES;
+    }
+  });
+  
   const [showAdd, setShowAdd] = useState(false);
   const [editId, setEditId] = useState(null);
   const [form, setForm] = useState({ name: '', url: '', icon: '🔖', category: '默认' });
   const [showCategoryManager, setShowCategoryManager] = useState(false);
   const [newCategory, setNewCategory] = useState('');
   const [editingCategory, setEditingCategory] = useState(null);
-
-  // Load from localStorage
-  useEffect(() => {
-    try {
-      const saved = localStorage.getItem(STORAGE_KEY);
-      const savedCats = localStorage.getItem(CATEGORIES_KEY);
-      
-      // 首次加载时，如果没有任何书签，添加预设
-      if (!saved) {
-        setBookmarks(DEFAULT_BOOKMARKS.map((bm, i) => ({ 
-          ...bm, 
-          id: Date.now() + i,
-          createdAt: Date.now() 
-        })));
-        localStorage.setItem(STORAGE_KEY, JSON.stringify(DEFAULT_BOOKMARKS.map((bm, i) => ({ 
-          ...bm, 
-          id: Date.now() + i,
-          createdAt: Date.now() 
-        }))));
-      } else {
-        setBookmarks(JSON.parse(saved));
-      }
-      
-      if (savedCats) {
-        setCategories(JSON.parse(savedCats));
-      } else {
-        setCategories(DEFAULT_CATEGORIES);
-        localStorage.setItem(CATEGORIES_KEY, JSON.stringify(DEFAULT_CATEGORIES));
-      }
-    } catch {}
-  }, []);
 
   // Save bookmarks to localStorage
   const saveBookmarks = useCallback((newList) => {

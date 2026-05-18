@@ -55,7 +55,9 @@ export default function Weather() {
     try {
       const custom = localStorage.getItem(CUSTOM_CITY_KEY);
       if (custom) return JSON.parse(custom);
-    } catch { /* ignore */ }
+    } catch (e) {
+      console.error('Failed to load custom city:', e);
+    }
     return CITY_DB[0]; // 北京
   });
   
@@ -68,25 +70,27 @@ export default function Weather() {
   const [showCustomForm, setShowCustomForm] = useState(false);
   const [customCity, setCustomCity] = useState({ name: '', code: '' });
 
-  // 合并内置城市和自定义城市
-  const allCities = useMemo(() => {
+  // 合并内置城市和自定义城市（使用 state 来追踪自定义城市）
+  const [customCityData, setCustomCityData] = useState(() => {
     try {
       const custom = localStorage.getItem(CUSTOM_CITY_KEY);
-      if (custom) {
-        const parsed = JSON.parse(custom);
-        return [{ ...parsed, custom: true }, ...CITY_DB];
-      }
-    } catch { /* ignore */ }
+      return custom ? JSON.parse(custom) : null;
+    } catch (e) {
+      console.error('Failed to load custom city for list:', e);
+      return null;
+    }
+  });
+
+  const allCities = useMemo(() => {
+    if (customCityData) {
+      return [{ ...customCityData, custom: true }, ...CITY_DB];
+    }
     return CITY_DB;
-  }, []);
+  }, [customCityData]);
 
   const filteredCities = searchText
     ? allCities.filter(c => c.name.includes(searchText))
     : allCities;
-
-  useEffect(() => {
-    fetchWeather(selectedCity.code);
-  }, [selectedCity]);
 
   const fetchWeather = async (code) => {
     setLoading(true);
@@ -138,12 +142,16 @@ export default function Weather() {
       } catch (e) {
         console.warn('Weather cache write error:', e);
       }
-    } catch (e) {
+    } catch {
       setError('获取天气失败，请重试');
     } finally {
       setLoading(false);
     }
   };
+
+  useEffect(() => {
+    fetchWeather(selectedCity.code);
+  }, [selectedCity]);
 
   const handleCitySelect = (city) => {
     setSelectedCity(city);
@@ -153,11 +161,12 @@ export default function Weather() {
     // 如果是自定义城市，保存到 localStorage
     if (city.custom) {
       try {
-        localStorage.setItem(CUSTOM_CITY_KEY, JSON.stringify({
-          name: city.name,
-          code: city.code
-        }));
-      } catch { /* ignore */ }
+        const cityData = { name: city.name, code: city.code };
+        localStorage.setItem(CUSTOM_CITY_KEY, JSON.stringify(cityData));
+        setCustomCityData(cityData);
+      } catch (e) {
+        console.error('Failed to save custom city:', e);
+      }
     }
   };
 
@@ -174,8 +183,11 @@ export default function Weather() {
   const clearCustomCity = () => {
     try {
       localStorage.removeItem(CUSTOM_CITY_KEY);
+      setCustomCityData(null);
       setSelectedCity(CITY_DB[0]);
-    } catch { /* ignore */ }
+    } catch (e) {
+      console.error('Failed to clear custom city:', e);
+    }
   };
 
   const getWindLevel = (ws) => {

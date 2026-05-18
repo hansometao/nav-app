@@ -20,7 +20,7 @@
   --text-muted: #6a6a88;
 
   /* 主色调 - 紫罗兰渐变 */
-  --accent: #6c63ff; 利用多重渐变 */
+  --accent: #6c63ff; /* 利用多重渐变 */
   --accent-50: #eef0ff;
   --accent-100: #ccc8ff;
   --accent-200: #a99fff;
@@ -95,7 +95,7 @@ body {
   background: var(--bg-primary);
   color: var(--text-primary);
   min-height: 100vh;
-  line-height:  overflow-x: hidden;
+  overflow-x: hidden;
   line-height: 1.6;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
