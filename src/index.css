@@ -1,26 +1,29 @@
 /* =============================================
    皮皮导航 - 设计系统 (Design System)
    =============================================
-   版本: 2.0 - 全面视觉升级
-   特性: 深色主题 · 毛玻璃效果 · 渐变背景 · 动效系统
+   版本: 3.0 - 全面视觉升级
+   特性: 深色主题 · 毛玻璃效果 · 动态渐变 · 动效系统
    ============================================= */
 
 :root {
   /* ---- 颜色系统 ---- */
   --bg-primary: #0a0a18;
   --bg-secondary: #0f0f24;
-  --bg-card: rgba(26, 28, 56, 0.75);
-  --bg-card-hover: rgba(30, 32, 69, 0.85);
-  --bg-card-elevated: rgba(34, 36, 80, 0.9);
-  --bg-glass: rgba(15, 15, 36, 0.6);
+  --bg-tertiary: #161632;
+  --bg-card: rgba(26, 28, 56, 0.8);
+  --bg-card-hover: rgba(30, 32, 69, 0.9);
+  --bg-card-elevated: rgba(34, 36, 80, 0.95);
+  --bg-glass: rgba(15, 15, 36, 0.5);
   --bg-glass-strong: rgba(15, 15, 36, 0.85);
+  --bg-glass-light: rgba(108, 99, 255, 0.05);
 
   --text-primary: #eaeaf2;
   --text-secondary: #9898b8;
   --text-muted: #6a6a88;
+  --text-dim: #4a4a6a;
 
   /* 主色调 - 紫罗兰渐变 */
-  --accent: #6c63ff; /* 利用多重渐变 */
+  --accent: #6c63ff;
   --accent-50: #eef0ff;
   --accent-100: #ccc8ff;
   --accent-200: #a99fff;
@@ -28,44 +31,59 @@
   --accent-400: #6c63ff;
   --accent-500: #5a4fdb;
   --accent-600: #4a3fb7;
-  --accent-glow: rgba(108, 99, 255, 0.25);
-  --accent-glow-strong: rgba(108, 99, 255, 0.45);
+  --accent-glow: rgba(108, 99, 255, 0.3);
+  --accent-glow-strong: rgba(108, 99, 255, 0.5);
+  --accent-glow-intense: rgba(108, 99, 255, 0.7);
   --accent-soft: rgba(108, 99, 255, 0.1);
-  --accent-soft-hover: rgba(108, 99, 255, 0.18);
+  --accent-soft-hover: rgba(108, 99, 255, 0.2);
+
+  /* 辅助色 */
+  --cyan: #06b6d4;
+  --cyan-glow: rgba(6, 182, 212, 0.3);
+  --purple: #a855f7;
+  --purple-glow: rgba(168, 85, 247, 0.3);
+  --pink: #ec4899;
+  --pink-glow: rgba(236, 72, 153, 0.3);
 
   /* 功能色 */
   --success: #4ade80;
-  --success-soft: rgba(74, 222, 128, 0.1);
+  --success-soft: rgba(74, 222, 128, 0.15);
   --warning: #fbbf24;
-  --warning-soft: rgba(251, 191, 36, 0.1);
+  --warning-soft: rgba(251, 191, 36, 0.15);
   --danger: #f87171;
-  --danger-soft: rgba(248, 113, 113, 0.1);
+  --danger-soft: rgba(248, 113, 113, 0.15);
   --info: #60a5fa;
-  --info-soft: rgba(96, 165, 250, 0.1);
+  --info-soft: rgba(96, 165, 250, 0.15);
 
   /* 边框 */
-  --border: rgba(38, 38, 82, 0.6);
-  --border-light: rgba(49, 49, 106, 0.8);
-  --border-accent: rgba(108, 99, 255, 0.3);
+  --border: rgba(38, 38, 82, 0.7);
+  --border-light: rgba(49, 49, 106, 0.9);
+  --border-accent: rgba(108, 99, 255, 0.4);
+  --border-glow: rgba(108, 99, 255, 0.2);
 
   /* 圆角 */
-  --radius: 14px;
-  --radius-sm: 10px;
-  --radius-xs: 6px;
+  --radius: 16px;
+  --radius-sm: 12px;
+  --radius-xs: 8px;
   --radius-pill: 50px;
+  --radius-full: 9999px;
 
   /* 阴影 */
-  --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.25);
-  --shadow-md: 0 4px 16px rgba(0, 0, 0, 0.35);
-  --shadow-lg: 0 8px 32px rgba(0, 0, 0, 0.45);
+  --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.3);
+  --shadow-md: 0 4px 16px rgba(0, 0, 0, 0.4);
+  --shadow-lg: 0 8px 32px rgba(0, 0, 0, 0.5);
+  --shadow-xl: 0 16px 48px rgba(0, 0, 0, 0.6);
   --shadow-glow: 0 0 24px var(--accent-glow);
+  --shadow-glow-lg: 0 0 40px var(--accent-glow-strong);
   --shadow-inner: inset 0 1px 0 rgba(255, 255, 255, 0.04);
+  --shadow-card: 0 4px 20px rgba(0, 0, 0, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.04);
 
   /* 过渡 */
   --transition-fast: 0.15s cubic-bezier(0.4, 0, 0.2, 1);
   --transition-base: 0.25s cubic-bezier(0.4, 0, 0.2, 1);
   --transition-slow: 0.35s cubic-bezier(0.4, 0, 0.2, 1);
   --transition-bounce: 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+  --transition-ease: 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
 
   /* 间距 */
   --space-xs: 4px;
@@ -73,10 +91,16 @@
   --space-md: 14px;
   --space-lg: 20px;
   --space-xl: 28px;
+  --space-2xl: 40px;
 
   /* 字体 */
   --font-sans: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Segoe UI', Roboto, 'Noto Sans SC', sans-serif;
   --font-mono: 'SF Mono', 'Fira Code', 'Cascadia Code', monospace;
+
+  /* Z-index */
+  --z-dropdown: 100;
+  --z-sticky: 500;
+  --z-modal: 1000;
 }
 
 /* ---- 基础重置 ---- */
@@ -106,7 +130,7 @@ body {
   position: relative;
 }
 
-/* ---- 背景动画 ---- */
+/* ---- 动态背景效果 ---- */
 body::before {
   content: '';
   position: fixed;
@@ -119,8 +143,9 @@ body::before {
     radial-gradient(ellipse 80% 60% at 50% -10%, rgba(108, 99, 255, 0.08), transparent),
     radial-gradient(ellipse 50% 40% at 0% 60%, rgba(74, 222, 128, 0.04), transparent),
     radial-gradient(ellipse 40% 50% at 100% 30%, rgba(251, 191, 36, 0.04), transparent),
+    radial-gradient(ellipse 60% 45% at 20% 80%, rgba(168, 85, 247, 0.03), transparent),
     var(--bg-primary);
-  animation: bgShift 20s ease-in-out infinite alternate;
+  animation: bgShift 25s ease-in-out infinite alternate;
 }
 
 @keyframes bgShift {
@@ -129,13 +154,31 @@ body::before {
       radial-gradient(ellipse 80% 60% at 50% -10%, rgba(108, 99, 255, 0.08), transparent),
       radial-gradient(ellipse 50% 40% at 0% 60%, rgba(74, 222, 128, 0.04), transparent),
       radial-gradient(ellipse 40% 50% at 100% 30%, rgba(251, 191, 36, 0.04), transparent),
+      radial-gradient(ellipse 60% 45% at 20% 80%, rgba(168, 85, 247, 0.03), transparent),
+      var(--bg-primary);
+  }
+  25% {
+    background:
+      radial-gradient(ellipse 75% 55% at 60% -5%, rgba(108, 99, 255, 0.1), transparent),
+      radial-gradient(ellipse 45% 35% at 20% 70%, rgba(96, 165, 250, 0.05), transparent),
+      radial-gradient(ellipse 35% 45% at 80% 40%, rgba(251, 191, 36, 0.03), transparent),
+      radial-gradient(ellipse 55% 40% at 30% 75%, rgba(168, 85, 247, 0.04), transparent),
       var(--bg-primary);
   }
   50% {
     background:
-      radial-gradient(ellipse 70% 55% at 60% -5%, rgba(108, 99, 255, 0.1), transparent),
-      radial-gradient(ellipse 45% 35% at 20% 70%, rgba(96, 165, 250, 0.04), transparent),
-      radial-gradient(ellipse 35% 45% at 80% 40%, rgba(251, 191, 36, 0.03), transparent),
+      radial-gradient(ellipse 70% 50% at 40% -15%, rgba(108, 99, 255, 0.07), transparent),
+      radial-gradient(ellipse 50% 40% at 80% 50%, rgba(74, 222, 128, 0.05), transparent),
+      radial-gradient(ellipse 30% 40% at 10% 80%, rgba(108, 99, 255, 0.03), transparent),
+      radial-gradient(ellipse 65% 50% at 70% 20%, rgba(236, 72, 153, 0.03), transparent),
+      var(--bg-primary);
+  }
+  75% {
+    background:
+      radial-gradient(ellipse 85% 55% at 55% -8%, rgba(108, 99, 255, 0.09), transparent),
+      radial-gradient(ellipse 45% 38% at 10% 65%, rgba(74, 222, 128, 0.04), transparent),
+      radial-gradient(ellipse 38% 42% at 90% 35%, rgba(251, 191, 36, 0.04), transparent),
+      radial-gradient(ellipse 58% 48% at 45% 85%, rgba(168, 85, 247, 0.03), transparent),
       var(--bg-primary);
   }
   100% {
@@ -143,8 +186,25 @@ body::before {
       radial-gradient(ellipse 90% 50% at 30% -15%, rgba(108, 99, 255, 0.06), transparent),
       radial-gradient(ellipse 55% 45% at 80% 50%, rgba(74, 222, 128, 0.05), transparent),
       radial-gradient(ellipse 30% 40% at 10% 80%, rgba(108, 99, 255, 0.03), transparent),
+      radial-gradient(ellipse 62% 46% at 60% 15%, rgba(6, 182, 212, 0.04), transparent),
       var(--bg-primary);
   }
+}
+
+/* ---- 网格背景装饰 ---- */
+body::after {
+  content: '';
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: -1;
+  background-image: 
+    linear-gradient(rgba(108, 99, 255, 0.03) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(108, 99, 255, 0.03) 1px, transparent 1px);
+  background-size: 40px 40px;
+  opacity: 0.5;
 }
 
 /* ---- 滚动条 ---- */
@@ -160,7 +220,7 @@ body::before {
 ::-webkit-scrollbar-thumb {
   background: rgba(108, 99, 255, 0.3);
   border-radius: 3px;
-  transition: background var(--transition-base);
+  transition: all var(--transition-base);
 }
 
 ::-webkit-scrollbar-thumb:hover {
@@ -175,7 +235,7 @@ body::before {
 
 /* ---- 选择文本 ---- */
 ::selection {
-  background: rgba(108, 99, 255, 0.35);
+  background: rgba(108, 99, 255, 0.4);
   color: white;
 }
 
@@ -183,6 +243,7 @@ body::before {
 :focus-visible {
   outline: 2px solid var(--accent-400);
   outline-offset: 2px;
+  border-radius: var(--radius-xs);
 }
 
 /* ---- 动画关键帧 ---- */
@@ -192,7 +253,12 @@ body::before {
 }
 
 @keyframes fadeInUp {
-  from { opacity: 0; transform: translateY(16px); }
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes fadeInDown {
+  from { opacity: 0; transform: translateY(-12px); }
   to { opacity: 1; transform: translateY(0); }
 }
 
@@ -203,7 +269,12 @@ body::before {
 
 @keyframes pulse {
   0%, 100% { opacity: 1; }
-  50% { opacity: 0.7; }
+  50% { opacity: 0.6; }
+}
+
+@keyframes pulse-glow {
+  0%, 100% { box-shadow: 0 0 20px var(--accent-glow); }
+  50% { box-shadow: 0 0 40px var(--accent-glow-strong); }
 }
 
 @keyframes shimmer {
@@ -213,7 +284,12 @@ body::before {
 
 @keyframes float {
   0%, 100% { transform: translateY(0); }
-  50% { transform: translateY(-4px); }
+  50% { transform: translateY(-6px); }
+}
+
+@keyframes float-gentle {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-3px); }
 }
 
 @keyframes spin {
@@ -222,19 +298,129 @@ body::before {
 }
 
 @keyframes slideDown {
-  from { opacity: 0; transform: translateY(-4px); }
-  to { opacity: 1; transform: translateY(0); }
+  from { opacity: 0; transform: translateY(-8px) scale(0.98); }
+  to { opacity: 1; transform: translateY(0) scale(1); }
 }
 
 @keyframes slideUp {
-  from { opacity: 0; transform: translateY(4px); }
+  from { opacity: 0; transform: translateY(8px); }
   to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes slideInLeft {
+  from { opacity: 0; transform: translateX(-12px); }
+  to { opacity: 1; transform: translateX(0); }
+}
+
+@keyframes slideInRight {
+  from { opacity: 0; transform: translateX(12px); }
+  to { opacity: 1; transform: translateX(0); }
+}
+
+@keyframes bounce-in {
+  0% { transform: scale(0.8); opacity: 0; }
+  50% { transform: scale(1.05); }
+  100% { transform: scale(1); opacity: 1; }
+}
+
+@keyframes ripple {
+  0% { transform: scale(0); opacity: 0.5; }
+  100% { transform: scale(4); opacity: 0; }
+}
+
+@keyframes glow-pulse {
+  0%, 100% { filter: brightness(1); }
+  50% { filter: brightness(1.2); }
 }
 
 /* ---- 工具类 ---- */
 .glass-effect {
   background: var(--bg-glass);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
   border: 1px solid var(--border);
 }
+
+.glass-effect-strong {
+  background: var(--bg-glass-strong);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid var(--border-light);
+}
+
+.text-gradient {
+  background: linear-gradient(135deg, var(--accent-400), var(--accent-200));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.text-gradient-rainbow {
+  background: linear-gradient(135deg, var(--accent-400), var(--cyan), var(--pink), var(--purple));
+  background-size: 200% auto;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  animation: shimmer 4s linear infinite;
+}
+
+.shadow-glow {
+  box-shadow: var(--shadow-glow);
+}
+
+.shadow-glow-lg {
+  box-shadow: var(--shadow-glow-lg);
+}
+
+.animate-fade-in {
+  animation: fadeIn 0.4s ease-out forwards;
+}
+
+.animate-fade-in-up {
+  animation: fadeInUp 0.5s ease-out forwards;
+}
+
+.animate-fade-in-down {
+  animation: fadeInDown 0.4s ease-out forwards;
+}
+
+.animate-scale-in {
+  animation: scaleIn 0.3s ease-out forwards;
+}
+
+.animate-float {
+  animation: float 3s ease-in-out infinite;
+}
+
+.animate-float-gentle {
+  animation: float-gentle 4s ease-in-out infinite;
+}
+
+.animate-pulse-glow {
+  animation: pulse-glow 2s ease-in-out infinite;
+}
+
+.animate-slide-down {
+  animation: slideDown 0.25s ease-out forwards;
+}
+
+.animate-slide-up {
+  animation: slideUp 0.25s ease-out forwards;
+}
+
+.animate-bounce-in {
+  animation: bounce-in 0.4s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+}
+
+.delay-100 { animation-delay: 100ms; }
+.delay-200 { animation-delay: 200ms; }
+.delay-300 { animation-delay: 300ms; }
+.delay-400 { animation-delay: 400ms; }
+.delay-500 { animation-delay: 500ms; }
+
+/* ---- 响应式断点 ---- */
+@custom-media --screen-xs (max-width: 480px);
+@custom-media --screen-sm (max-width: 640px);
+@custom-media --screen-md (max-width: 768px);
+@custom-media --screen-lg (max-width: 1024px);
+@custom-media --screen-xl (max-width: 1280px);
