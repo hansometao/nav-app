@@ -4,7 +4,6 @@ const SEARCH_ENGINES = [
   { name: 'Google', url: 'https://www.google.com/search?q=', icon: '🔍' },
   { name: '百度', url: 'https://www.baidu.com/s?wd=', icon: '🐻' },
   { name: 'Bing', url: 'https://www.bing.com/search?q=', icon: '🟦' },
-  { name: 'DuckDuckGo', url: 'https://duckduckgo.com/?q=', icon: '🦆' },
   { name: 'GitHub', url: 'https://github.com/search?q=', icon: '🐙' },
   { name: 'B站', url: 'https://search.bilibili.com/all?keyword=', icon: '📺' },
   { name: '知乎', url: 'https://www.zhihu.com/search?type=content&q=', icon: '💡' },
@@ -68,7 +67,6 @@ const saveSearchHistory = (history) => {
  */
 export default function AITools({ searchEngine, onSearchEngineChange, compact = false }) {
   const [searchQuery, setSearchQuery] = useState('');
-  const [showEngineMenu, setShowEngineMenu] = useState(false);
   const [showHistory, setShowHistory] = useState(false);
   const [searchHistory, setSearchHistory] = useState(getSearchHistory);
   const inputRef = useRef(null);
@@ -79,7 +77,6 @@ export default function AITools({ searchEngine, onSearchEngineChange, compact = 
     if (query) {
       window.open(searchEngine.url + encodeURIComponent(query), '_blank');
       
-      // 更新搜索历史
       const newHistory = [query, ...searchHistory.filter(h => h !== query)];
       setSearchHistory(newHistory);
       saveSearchHistory(newHistory);
@@ -101,7 +98,6 @@ export default function AITools({ searchEngine, onSearchEngineChange, compact = 
     setShowHistory(false);
   }, []);
   
-  // 键盘快捷键：Ctrl/Cmd + K 聚焦搜索框
   useEffect(() => {
     const handleKeyDown = (e) => {
       if ((e.ctrlKey || e.metaKey) && e.key === 'k') {
@@ -114,54 +110,24 @@ export default function AITools({ searchEngine, onSearchEngineChange, compact = 
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, [searchHistory]);
   
-  // 点击外部关闭下拉菜单
   useEffect(() => {
     const handleClickOutside = (e) => {
-      if (showEngineMenu && !e.target.closest('.search-engine-select')) {
-        setShowEngineMenu(false);
-      }
       if (showHistory && !e.target.closest('.search-history-wrapper')) {
         setShowHistory(false);
       }
     };
     document.addEventListener('mousedown', handleClickOutside);
     return () => document.removeEventListener('mousedown', handleClickOutside);
-  }, [showEngineMenu, showHistory]);
+  }, [showHistory]);
 
-  // 紧凑模式：只显示搜索栏
   if (compact) {
     return (
       <div className="search-section search-section-compact">
         <div className="search-history-wrapper">
           <form className="search-bar search-bar-large" onSubmit={handleSearch}>
-            <div className="search-engine-select">
-              <button
-                type="button"
-                className="search-engine-btn"
-                onClick={() => setShowEngineMenu(!showEngineMenu)}
-                title={`切换搜索引擎 (当前：${searchEngine.name})`}
-              >
-                {searchEngine.icon}
-                <span className="se-name">{searchEngine.name}</span>
-                <span className="se-arrow">▾</span>
-              </button>
-              {showEngineMenu && (
-                <div className="search-engine-dropdown">
-                  {SEARCH_ENGINES.map(se => (
-                    <button
-                      key={se.name}
-                      type="button"
-                      className={`se-dropdown-item ${se.name === searchEngine.name ? 'active' : ''}`}
-                      onClick={() => {
-                        onSearchEngineChange(se);
-                        setShowEngineMenu(false);
-                      }}
-                    >
-                      {se.icon} {se.name}
-                    </button>
-                  ))}
-                </div>
-              )}
+            <div className="search-engine-indicator">
+              <span className="se-icon">{searchEngine.icon}</span>
+              <span className="se-name">{searchEngine.name}</span>
             </div>
             <input
               ref={inputRef}
@@ -188,7 +154,6 @@ export default function AITools({ searchEngine, onSearchEngineChange, compact = 
             <button type="submit" className="btn-search">搜索</button>
           </form>
           
-          {/* Search History */}
           {showHistory && searchHistory.length > 0 && (
             <div className="search-history-dropdown">
               <div className="history-header">
@@ -220,8 +185,10 @@ export default function AITools({ searchEngine, onSearchEngineChange, compact = 
               key={se.name}
               className={`se-tab ${se.name === searchEngine.name ? 'active' : ''}`}
               onClick={() => onSearchEngineChange(se)}
+              title={se.name}
             >
-              {se.icon} {se.name}
+              <span className="se-tab-icon">{se.icon}</span>
+              <span className="se-tab-name">{se.name}</span>
             </button>
           ))}
         </div>
@@ -236,34 +203,9 @@ export default function AITools({ searchEngine, onSearchEngineChange, compact = 
       <div className="search-section">
         <div className="search-history-wrapper">
           <form className="search-bar" onSubmit={handleSearch}>
-            <div className="search-engine-select">
-              <button
-                type="button"
-                className="search-engine-btn"
-                onClick={() => setShowEngineMenu(!showEngineMenu)}
-                title={`切换搜索引擎 (当前：${searchEngine.name})`}
-              >
-                {searchEngine.icon}
-                <span className="se-name">{searchEngine.name}</span>
-                <span className="se-arrow">▾</span>
-              </button>
-              {showEngineMenu && (
-                <div className="search-engine-dropdown">
-                  {SEARCH_ENGINES.map(se => (
-                    <button
-                      key={se.name}
-                      type="button"
-                      className={`se-dropdown-item ${se.name === searchEngine.name ? 'active' : ''}`}
-                      onClick={() => {
-                        onSearchEngineChange(se);
-                        setShowEngineMenu(false);
-                      }}
-                    >
-                      {se.icon} {se.name}
-                    </button>
-                  ))}
-                </div>
-              )}
+            <div className="search-engine-indicator">
+              <span className="se-icon">{searchEngine.icon}</span>
+              <span className="se-name">{searchEngine.name}</span>
             </div>
             <input
               ref={inputRef}
@@ -290,7 +232,6 @@ export default function AITools({ searchEngine, onSearchEngineChange, compact = 
             <button type="submit" className="btn-search">搜索</button>
           </form>
           
-          {/* Search History */}
           {showHistory && searchHistory.length > 0 && (
             <div className="search-history-dropdown">
               <div className="history-header">
@@ -322,8 +263,10 @@ export default function AITools({ searchEngine, onSearchEngineChange, compact = 
               key={se.name}
               className={`se-tab ${se.name === searchEngine.name ? 'active' : ''}`}
               onClick={() => onSearchEngineChange(se)}
+              title={se.name}
             >
-              {se.icon} {se.name}
+              <span className="se-tab-icon">{se.icon}</span>
+              <span className="se-tab-name">{se.name}</span>
             </button>
           ))}
         </div>

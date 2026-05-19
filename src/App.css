@@ -335,25 +335,27 @@ body {
   transform: translateY(-1px);
 }
 
-.search-engine-btn {
+.search-engine-indicator {
   display: flex;
   align-items: center;
-  gap: 6px;
-  padding: 10px 16px;
+  gap: 8px;
+  padding: 12px 16px;
   background: rgba(255, 255, 255, 0.04);
-  border: 1px solid transparent;
   border-radius: var(--radius-pill);
   color: var(--text-secondary);
-  font-size: 13px;
-  cursor: pointer;
-  transition: all var(--transition-fast);
+  font-size: 14px;
+  font-weight: 500;
   white-space: nowrap;
   flex-shrink: 0;
+  border: 1px solid transparent;
 }
 
-.search-engine-btn:hover {
-  background: var(--accent-soft);
-  color: var(--accent-300);
+.search-engine-indicator .se-icon {
+  font-size: 18px;
+}
+
+.search-engine-indicator .se-name {
+  letter-spacing: 0.5px;
 }
 
 .search-input {
@@ -514,46 +516,50 @@ body {
   white-space: nowrap;
 }
 
-/* 搜索引擎下拉菜单优化 */
-.search-engine-dropdown {
-  position: absolute;
-  top: 100%;
-  left: 0;
-  margin-top: 8px;
-  background: var(--bg-card);
-  backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
-  border: 1px solid var(--border);
-  border-radius: var(--radius);
-  box-shadow: var(--shadow-lg);
-  overflow: hidden;
-  animation: slideDown 0.2s ease-out;
-  z-index: 50;
-  min-width: 180px;
+/* 搜索引擎标签按钮样式 */
+.search-engines-bar {
+  display: flex;
+  justify-content: center;
+  gap: 8px;
+  margin-top: 16px;
+  flex-wrap: wrap;
 }
 
-.se-dropdown-item {
+.se-tab {
   display: flex;
   align-items: center;
-  gap: 8px;
-  width: 100%;
-  padding: 10px 16px;
-  background: none;
-  border: none;
-  color: var(--text-primary);
+  gap: 6px;
+  padding: 8px 14px;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-pill);
+  color: var(--text-secondary);
+  font-size: 13px;
   cursor: pointer;
   transition: all var(--transition-fast);
-  text-align: left;
-  font-size: 14px;
+  white-space: nowrap;
 }
 
-.se-dropdown-item:hover {
+.se-tab:hover {
   background: var(--accent-soft);
+  border-color: var(--border-accent);
+  color: var(--accent-300);
 }
 
-.se-dropdown-item.active {
+.se-tab.active {
   background: var(--accent-soft-hover);
+  border-color: var(--accent-400);
   color: var(--accent-300);
+  box-shadow: 0 0 12px var(--accent-glow);
+}
+
+.se-tab-icon {
+  font-size: 16px;
+}
+
+.se-tab-name {
+  font-weight: 500;
+  letter-spacing: 0.3px;
 }
 
 /* ====== 主体区域 ====== */
