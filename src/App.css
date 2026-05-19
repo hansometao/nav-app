@@ -2226,6 +2226,8 @@ body {
   font-weight: 500;
   cursor: pointer;
   transition: all var(--transition-fast);
+  position: relative;
+  z-index: 1;
 }
 
 .category-btn:hover {
@@ -2274,6 +2276,8 @@ body {
   padding: 16px;
   margin-bottom: 16px;
   animation: slideDown 0.3s ease-out;
+  position: relative;
+  z-index: 100;
 }
 
 .todo-add-form .form-row {
