@@ -1621,6 +1621,100 @@ body {
 }
 
 /* ====== 日历组件 ====== */
+.lunar-header {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  padding: 10px 16px;
+  margin-bottom: 12px;
+  background: linear-gradient(135deg, rgba(108, 99, 255, 0.08), rgba(6, 182, 212, 0.08));
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--border-glow);
+}
+
+.lunar-info-main {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.lunar-era {
+  font-size: 15px;
+  font-weight: 700;
+  background: linear-gradient(135deg, var(--accent-400), var(--cyan));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.lunar-zodiac {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--purple);
+  background: var(--purple-glow);
+  padding: 2px 10px;
+  border-radius: var(--radius-pill);
+}
+
+.lunar-info-detail {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.lunar-date {
+  font-size: 13px;
+  color: var(--text-secondary);
+}
+
+.jieqi-badge {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--pink);
+  background: var(--pink-glow);
+  padding: 2px 10px;
+  border-radius: var(--radius-pill);
+  animation: pulse 2s ease-in-out infinite;
+}
+
+.jieqi-badge-small {
+  font-size: 9px;
+  font-weight: 600;
+  color: var(--pink);
+  background: var(--pink-glow);
+  padding: 1px 4px;
+  border-radius: 3px;
+}
+
+.calendar-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.view-toggle {
+  display: flex;
+  background: rgba(255, 255, 255, 0.04);
+  border-radius: var(--radius-sm);
+  overflow: hidden;
+}
+
+.view-toggle button {
+  padding: 4px 8px;
+  font-size: 12px;
+  border: none;
+  background: transparent;
+  color: var(--text-secondary);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.view-toggle button.active {
+  background: var(--accent-soft);
+  color: var(--accent-300);
+}
+
 .calendar-nav {
   display: flex;
   align-items: center;
@@ -1705,6 +1799,220 @@ body {
 .calendar-day.selected {
   background: var(--accent-soft);
   border: 1px solid var(--border-accent);
+}
+
+.calendar-day.weekend {
+  color: var(--text-muted);
+}
+
+.week-header {
+  text-align: center;
+  font-size: 10px;
+  color: var(--text-muted);
+  padding: 6px 0;
+  font-weight: 600;
+  letter-spacing: 0.5px;
+  grid-row: 1;
+  grid-column: 1;
+}
+
+.week-number {
+  position: absolute;
+  top: 2px;
+  left: 2px;
+  font-size: 8px;
+  color: var(--text-muted);
+}
+
+.lunar-day {
+  font-size: 9px;
+  color: var(--text-muted);
+  margin-top: 1px;
+}
+
+.holiday-badge {
+  font-size: 9px;
+  padding: 1px 4px;
+  border-radius: 3px;
+  margin-top: 2px;
+  white-space: nowrap;
+}
+
+.holiday-national {
+  background: rgba(239, 68, 68, 0.15);
+  color: #ef4444;
+}
+
+.holiday-festival {
+  background: rgba(249, 115, 22, 0.15);
+  color: #f97316;
+}
+
+.holiday-lunar {
+  background: rgba(168, 85, 247, 0.15);
+  color: #a855f7;
+}
+
+.calendar-legend {
+  display: flex;
+  justify-content: center;
+  gap: 16px;
+  margin-bottom: 10px;
+  font-size: 11px;
+  color: var(--text-muted);
+}
+
+.legend-item {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.holiday-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #ef4444;
+}
+
+.lunar-holiday-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #a855f7;
+}
+
+.event-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--accent-400);
+}
+
+.jieqi-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--pink);
+}
+
+.selected-date-detail {
+  margin-top: 12px;
+  padding: 12px;
+  background: rgba(255, 255, 255, 0.02);
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--border);
+}
+
+.detail-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 8px;
+}
+
+.detail-date {
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.detail-lunar {
+  font-size: 12px;
+  color: var(--text-secondary);
+  margin-bottom: 10px;
+}
+
+.leap-badge {
+  font-size: 10px;
+  color: var(--purple);
+  background: var(--purple-glow);
+  padding: 1px 6px;
+  border-radius: 3px;
+  margin-right: 6px;
+}
+
+.detail-events {
+  padding-top: 8px;
+  border-top: 1px solid var(--border);
+}
+
+.event-label {
+  font-size: 11px;
+  color: var(--text-muted);
+  margin-bottom: 6px;
+  display: block;
+}
+
+.no-event {
+  font-size: 12px;
+  color: var(--text-muted);
+  font-style: italic;
+}
+
+.year-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px;
+}
+
+.year-month {
+  background: rgba(255, 255, 255, 0.02);
+  border-radius: var(--radius-sm);
+  padding: 8px;
+  border: 1px solid var(--border);
+}
+
+.month-name {
+  text-align: center;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text-secondary);
+  margin-bottom: 6px;
+}
+
+.month-grid {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 2px;
+}
+
+.month-day-header {
+  text-align: center;
+  font-size: 9px;
+  color: var(--text-muted);
+  padding: 2px 0;
+}
+
+.month-day {
+  text-align: center;
+  font-size: 10px;
+  padding: 3px 2px;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.month-day:hover:not(.empty) {
+  background: rgba(255, 255, 255, 0.06);
+}
+
+.month-day.empty {
+  visibility: hidden;
+}
+
+.month-day.today {
+  background: var(--accent-400);
+  color: white;
+  font-weight: 600;
+}
+
+.btn-remove {
+  opacity: 0;
+  transition: opacity var(--transition-fast);
+}
+
+.event-item:hover .btn-remove {
+  opacity: 1;
 }
 
 .day-events {
