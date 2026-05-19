@@ -22,8 +22,6 @@ const MOCK_DATA = {
     { id: '6', title: '计算机视觉在自动驾驶中的突破', heat: 365000, url: 'https://www.zhihu.com' },
     { id: '7', title: '边缘计算技术的发展现状', heat: 312000, url: 'https://www.zhihu.com' },
     { id: '8', title: '量子计算在密码学中的应用', heat: 289000, url: 'https://www.zhihu.com' },
-    { id: '9', title: 'Web3.0技术的发展前景分析', heat: 276000, url: 'https://www.zhihu.com' },
-    { id: '10', title: '5G+AI的融合应用场景', heat: 245000, url: 'https://www.zhihu.com' },
   ],
   bilibili: [
     { id: '1', title: '【技术解析】最新的前端框架对比', heat: 1250000, url: 'https://www.bilibili.com' },
@@ -34,8 +32,6 @@ const MOCK_DATA = {
     { id: '6', title: 'Docker容器化部署指南', heat: 540000, url: 'https://www.bilibili.com' },
     { id: '7', title: 'React vs Vue深度对比', heat: 480000, url: 'https://www.bilibili.com' },
     { id: '8', title: '数据库设计最佳实践', heat: 420000, url: 'https://www.bilibili.com' },
-    { id: '9', title: '算法面试通关秘籍', heat: 390000, url: 'https://www.bilibili.com' },
-    { id: '10', title: 'DevOps工程化实践', heat: 350000, url: 'https://www.bilibili.com' },
   ],
   weibo: [
     { id: '1', title: '科技前沿：AI大模型新突破', heat: 2340000, url: 'https://weibo.com' },
@@ -46,8 +42,6 @@ const MOCK_DATA = {
     { id: '6', title: '人工智能伦理规范出台', heat: 980000, url: 'https://weibo.com' },
     { id: '7', title: '云计算市场竞争格局', heat: 870000, url: 'https://weibo.com' },
     { id: '8', title: '网络安全最新动态', heat: 760000, url: 'https://weibo.com' },
-    { id: '9', title: '5G应用场景加速落地', heat: 650000, url: 'https://weibo.com' },
-    { id: '10', title: '科技创新企业排名', heat: 540000, url: 'https://weibo.com' },
   ],
   douyin: [
     { id: '1', title: '短视频创作技巧分享', heat: 3560000, url: 'https://www.douyin.com' },
@@ -58,8 +52,6 @@ const MOCK_DATA = {
     { id: '6', title: '视频剪辑高效工具', heat: 1540000, url: 'https://www.douyin.com' },
     { id: '7', title: '抖音SEO优化指南', heat: 1320000, url: 'https://www.douyin.com' },
     { id: '8', title: '短视频数据分析方法', heat: 1180000, url: 'https://www.douyin.com' },
-    { id: '9', title: '直播带货技巧分享', heat: 1050000, url: 'https://www.douyin.com' },
-    { id: '10', title: '抖音小店经营心得', heat: 920000, url: 'https://www.douyin.com' },
   ],
   toutiao: [
     { id: '1', title: '科技快讯：最新行业动态', heat: 1670000, url: 'https://www.toutiao.com' },
@@ -70,8 +62,6 @@ const MOCK_DATA = {
     { id: '6', title: '用户增长实战经验', heat: 830000, url: 'https://www.toutiao.com' },
     { id: '7', title: '数据化运营技巧', heat: 720000, url: 'https://www.toutiao.com' },
     { id: '8', title: '内容运营心法', heat: 650000, url: 'https://www.toutiao.com' },
-    { id: '9', title: '流量变现新模式', heat: 580000, url: 'https://www.toutiao.com' },
-    { id: '10', title: '品牌营销新思路', heat: 510000, url: 'https://www.toutiao.com' },
   ],
 };
 
@@ -91,12 +81,10 @@ function formatTime(ts) {
 // 使用公共API获取真实数据
 async function fetchRealData(platform) {
   try {
-    // 尝试使用免费的公开API
     let url, data;
     
     switch(platform) {
       case 'zhihu':
-        // 尝试知乎热榜API
         try {
           const res = await fetch('https://api.oioweb.cn/api/zhihu/hot');
           if (res.ok) {
@@ -154,11 +142,10 @@ async function fetchRealData(platform) {
         break;
         
       default:
-        // 通用处理
         break;
     }
     
-    return null; // 返回null表示使用备用数据
+    return null;
   } catch (error) {
     console.log(`${platform} API获取失败:`, error);
     return null;
@@ -186,7 +173,6 @@ export default function HotNews() {
 
     const cacheKey = `${STORAGE_KEYS.HOTNEWS}_${plat.key}`;
     
-    // 读缓存
     try {
       const raw = localStorage.getItem(cacheKey);
       if (raw) {
@@ -205,12 +191,10 @@ export default function HotNews() {
       let list = null;
       let isMock = false;
 
-      // 先尝试获取真实数据
       if (!useMockData) {
         list = await fetchRealData(plat.key);
       }
 
-      // 如果没有真实数据，使用模拟数据
       if (!list) {
         list = MOCK_DATA[plat.key] || [];
         isMock = true;
@@ -234,7 +218,6 @@ export default function HotNews() {
         return;
       }
       console.error('热榜获取失败:', e);
-      // 出错时使用模拟数据
       try {
         const fallbackList = MOCK_DATA[plat.key] || [];
         setItems(fallbackList);
@@ -262,19 +245,15 @@ export default function HotNews() {
   return (
     <div className="widget hotnews-widget">
       <div className="widget-header">
-        <h3><Icon name="news" size={18} /> 热榜资讯</h3>
+        <h3><Icon name="news" size={16} /> 热榜</h3>
         <div className="hotnews-header-actions">
-          <span className="hotnews-update">
-            {lastUpdate ? `更新于 ${formatTime(lastUpdate)}` : ''}
-            {useMockData && <span className="hotnews-mock-tag">本地数据</span>}
-          </span>
           <button
             className="btn-icon"
             onClick={() => fetchNews(platform)}
             title="刷新"
             disabled={loading}
           >
-            <Icon name="refreshCw" size={16} />
+            <Icon name="refreshCw" size={14} />
           </button>
         </div>
       </div>
@@ -305,7 +284,7 @@ export default function HotNews() {
 
       {items.length > 0 && (
         <div className="hotnews-list">
-          {items.map((item, idx) => (
+          {items.slice(0, 8).map((item, idx) => (
             <a
               key={item.id}
               href={item.url}
@@ -318,14 +297,8 @@ export default function HotNews() {
                 {idx + 1}
               </span>
               <span className="hotnews-title">{item.title}</span>
-              {item.heat !== undefined && (
-                <span className="hotnews-heat">{formatCount(item.heat)}</span>
-              )}
             </a>
           ))}
-          <div className="hotnews-source">
-            数据来源：{platform.name}
-          </div>
         </div>
       )}
     </div>

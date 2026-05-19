@@ -293,24 +293,7 @@ export default function Calendar() {
         </div>
       )}
 
-      {events.length > 0 && (
-        <div className="event-list">
-          <h4><Icon name="target" size={14} /> 即将到来</h4>
-          {events
-            .filter(e => new Date(e.date) >= today)
-            .sort((a, b) => new Date(a.date) - new Date(b.date))
-            .slice(0, 3)
-            .map((evt, i) => (
-              <div key={i} className="event-item" style={{ borderLeftColor: evt.color }}>
-                <span className="event-date">{evt.date}</span>
-                <span className="event-title">{evt.title}</span>
-                <button className="btn-icon btn-remove" onClick={() => removeEvent(evt.id)}>
-                  <Icon name="x" size={14} />
-                </button>
-              </div>
-            ))}
-        </div>
-      )}
+
     </div>
   );
 }
