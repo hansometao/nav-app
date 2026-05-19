@@ -1,42 +1,33 @@
 import { useState, lazy, Suspense, memo, useRef, useCallback, useEffect } from 'react';
-import { Responsive } from 'react-grid-layout';
-import 'react-grid-layout/css/styles.css';
-import { useGreeting } from './hooks/useGreeting';
-import { useTime } from './hooks/useTime';
-import { useLayoutStorage } from './hooks/useLayoutStorage';
-import { useTheme, THEMES } from './hooks/useTheme.jsx';
-import Calendar from './components/Calendar';
-import Countdown from './components/Countdown';
-import TodoList from './components/TodoList';
-import Memo from './components/Memo';
-import LunarCalendar from './components/LunarCalendar';
-import SettingsPanel from './components/SettingsPanel.jsx';
-import FlatBookmarks from './components/FlatBookmarks';
-import './App.css';
+import { useGreeting, useTime, useLayoutStorage, useTheme, useKeyboardShortcuts } from './hooks';
+import { THEMES } from './hooks/useTheme.jsx';
+import { Calendar, Countdown, TodoList, Memo, LunarCalendar, SettingsPanel, FlatBookmarks } from './components';
+import { DEFAULT_SEARCH_ENGINE } from './constants';
+import './styles';
 
 const AITools = lazy(() => import('./components/AITools'));
 const Weather = lazy(() => import('./components/Weather'));
 const HotNews = lazy(() => import('./components/HotNews'));
 
-const DEFAULT_SE = { name: 'Bing', url: 'https://www.bing.com/search?q=', favicon: 'https://www.bing.com/favicon.ico' };
+const DEFAULT_SE = DEFAULT_SEARCH_ENGINE;
 
 const SIDE_WIDGETS_LEFT = [
-  { key: 'weather',   title: '天气',   Comp: Weather,    passProps: false },
-  { key: 'calendar',  title: '日历',   Comp: Calendar,   passProps: false },
+  { key: 'weather', title: '天气', Comp: Weather, passProps: false },
+  { key: 'calendar', title: '日历', Comp: Calendar, passProps: false },
+  { key: 'todo', title: '待办', Comp: TodoList, passProps: false }
 ];
 
 const SIDE_WIDGETS_RIGHT = [
-  { key: 'hotnews',   title: '热榜',   Comp: HotNews,    passProps: false },
-  { key: 'todo',      title: '待办',   Comp: TodoList,   passProps: false },
-  { key: 'countdown', title: '倒计时', Comp: Countdown,  passProps: false },
-  { key: 'memo',      title: '备忘',   Comp: Memo,       passProps: false },
+  { key: 'hotnews', title: '热榜', Comp: HotNews, passProps: false },
+  { key: 'countdown', title: '倒计时', Comp: Countdown, passProps: false },
+  { key: 'memo', title: '备忘', Comp: Memo, passProps: false }
 ];
 
 const SHORTCUTS = [
   { key: 'Ctrl/Cmd + K', desc: '聚焦搜索框' },
   { key: 'Ctrl/Cmd + D', desc: '切换主题' },
   { key: 'Escape', desc: '关闭弹窗' },
-  { key: '?', desc: '显示帮助' },
+  { key: '?', desc: '显示帮助' }
 ];
 
 function ShortcutHelp({ onClose }) {
@@ -50,13 +41,15 @@ function ShortcutHelp({ onClose }) {
 
   return (
     <div className="shortcut-overlay" onClick={onClose} role="dialog" aria-modal="true" aria-label="键盘快捷键">
-      <div className="shortcut-panel" onClick={e => e.stopPropagation()}>
+      <div className="shortcut-panel" onClick={(e) => e.stopPropagation()}>
         <div className="shortcut-header">
           <h2>⌨️ 键盘快捷键</h2>
-          <button className="settings-close" onClick={onClose} aria-label="关闭">✕</button>
+          <button className="settings-close" onClick={onClose} aria-label="关闭">
+            ✕
+          </button>
         </div>
         <div className="shortcut-list">
-          {SHORTCUTS.map(s => (
+          {SHORTCUTS.map((s) => (
             <div key={s.key} className="shortcut-item">
               <kbd className="shortcut-key">{s.key}</kbd>
               <span className="shortcut-desc">{s.desc}</span>
@@ -68,6 +61,52 @@ function ShortcutHelp({ onClose }) {
   );
 }
 
+const WidgetItem = ({ widgetKey, title, Comp, passProps, searchEngine, onSearchEngineChange, collapsedWidgets, onToggleWidget }) => (
+  <div
+    className={`widget-container ${collapsedWidgets[widgetKey] ? 'collapsed' : ''}`}
+    data-widget={widgetKey}
+  >
+    <div className="widget-header-bar" onClick={() => onToggleWidget(widgetKey)}>
+      <span className="widget-title-label">{title}</span>
+      <button
+        className="widget-toggle-btn"
+        aria-label={collapsedWidgets[widgetKey] ? '展开' : '折叠'}
+      >
+        {collapsedWidgets[widgetKey] ? '▶' : '▼'}
+      </button>
+    </div>
+    <div className={`widget-content ${collapsedWidgets[widgetKey] ? 'hidden' : ''}`}>
+      <Suspense fallback={null}>
+        {passProps ? (
+          <Comp searchEngine={searchEngine} onSearchEngineChange={onSearchEngineChange} />
+        ) : (
+          <Comp />
+        )}
+      </Suspense>
+    </div>
+  </div>
+);
+
+const MobileWidgetItem = ({ widgetKey, title, Comp, passProps, searchEngine, onSearchEngineChange, collapsedWidgets, onToggleWidget }) => (
+  <div className="mobile-widget-item">
+    <div className="mobile-widget-header" onClick={() => onToggleWidget(widgetKey)}>
+      <span>{title}</span>
+      <span>{collapsedWidgets[widgetKey] ? '▶' : '▼'}</span>
+    </div>
+    {!collapsedWidgets[widgetKey] && (
+      <div className="mobile-widget-content">
+        <Suspense fallback={null}>
+          {passProps ? (
+            <Comp searchEngine={searchEngine} onSearchEngineChange={onSearchEngineChange} />
+          ) : (
+            <Comp />
+          )}
+        </Suspense>
+      </div>
+    )}
+  </div>
+);
+
 export default memo(function App() {
   const greeting = useGreeting();
   const { currentTime, formatTime, formatDate } = useTime();
@@ -76,41 +115,49 @@ export default memo(function App() {
   const [searchEngine, setSearchEngine] = useState(DEFAULT_SE);
   const [showSettings, setShowSettings] = useState(false);
   const [showShortcuts, setShowShortcuts] = useState(false);
+  const [collapsedWidgets, setCollapsedWidgets] = useState({});
+  const [showMobileDrawer, setShowMobileDrawer] = useState(false);
   const appRef = useRef(null);
-  const searchInputRef = useRef(null);
 
-  const handleToggleTheme = useCallback(() => {
-    toggleTheme();
-  }, [toggleTheme]);
+  const toggleWidgetCollapse = useCallback((widgetKey) => {
+    setCollapsedWidgets((prev) => ({
+      ...prev,
+      [widgetKey]: !prev[widgetKey]
+    }));
+  }, []);
 
-  useEffect(() => {
-    const handleKeyDown = (e) => {
-      if ((e.ctrlKey || e.metaKey) && e.key === 'k') {
-        e.preventDefault();
-        const input = document.querySelector('.search-input');
-        if (input) input.focus();
-      }
-      if ((e.ctrlKey || e.metaKey) && e.key === 'd') {
-        e.preventDefault();
-        handleToggleTheme();
-      }
-      if (e.key === 'Escape') {
-        if (showSettings) setShowSettings(false);
-        if (showShortcuts) setShowShortcuts(false);
-      }
-      if (e.key === '?' && !e.ctrlKey && !e.metaKey && !e.target.closest('input, textarea')) {
-        e.preventDefault();
-        setShowShortcuts(true);
-      }
-    };
-    window.addEventListener('keydown', handleKeyDown);
-    return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [showSettings, showShortcuts, handleToggleTheme]);
+  const closeMobileDrawer = useCallback(() => {
+    setShowMobileDrawer(false);
+  }, []);
+
+  useKeyboardShortcuts({
+    focusSearch: () => {
+      const input = document.querySelector('.search-input');
+      if (input) input.focus();
+    },
+    toggleTheme: () => {
+      toggleTheme();
+    },
+    closeModal: () => {
+      if (showSettings) setShowSettings(false);
+      if (showShortcuts) setShowShortcuts(false);
+    },
+    showHelp: () => {
+      setShowShortcuts(true);
+    }
+  });
 
   return (
     <div className="app" ref={appRef}>
       <header className={`app-header ${editMode ? 'edit-mode' : ''}`} role="banner">
         <div className="header-left">
+          <button
+            className="mobile-menu-btn"
+            onClick={() => setShowMobileDrawer(true)}
+            aria-label="打开菜单"
+          >
+            ☰
+          </button>
           <h1 className="app-title">皮皮导航</h1>
           <span className="app-subtitle">你的智能起点</span>
         </div>
@@ -138,7 +185,9 @@ export default memo(function App() {
               {editMode ? '🔒 锁定' : '✏️ 编辑'}
             </button>
             {editMode && (
-              <button className="btn-reset-layout" onClick={resetLayout} title="重置布局">🔄 重置</button>
+              <button className="btn-reset-layout" onClick={resetLayout} title="重置布局">
+                🔄 重置
+              </button>
             )}
           </div>
         </div>
@@ -154,27 +203,24 @@ export default memo(function App() {
 
       <main className="app-main" role="main">
         <div className="main-layout-container">
-          {/* 左侧小模块区域 */}
           <aside className="side-widgets side-left">
             <div className="side-grid">
-              {SIDE_WIDGETS_LEFT.map(({ key, title, Comp, passProps }) => (
-                <div key={key} className="widget-container" data-widget={key}>
-                  <div className="widget-header-bar">
-                    <span className="widget-title-label">{title}</span>
-                  </div>
-                  <div className="widget-content">
-                    <Suspense fallback={null}>
-                      {passProps
-                        ? <Comp searchEngine={searchEngine} onSearchEngineChange={setSearchEngine} />
-                        : <Comp />}
-                    </Suspense>
-                  </div>
-                </div>
+              {SIDE_WIDGETS_LEFT.map((widget) => (
+                <WidgetItem
+                  key={widget.key}
+                  widgetKey={widget.key}
+                  title={widget.title}
+                  Comp={widget.Comp}
+                  passProps={widget.passProps}
+                  searchEngine={searchEngine}
+                  onSearchEngineChange={setSearchEngine}
+                  collapsedWidgets={collapsedWidgets}
+                  onToggleWidget={toggleWidgetCollapse}
+                />
               ))}
             </div>
           </aside>
 
-          {/* 中间网址导航主区域 */}
           <div className="main-content">
             <div className="flat-bookmarks-section">
               <Suspense fallback={<div className="loading-placeholder">加载中...</div>}>
@@ -183,22 +229,20 @@ export default memo(function App() {
             </div>
           </div>
 
-          {/* 右侧小模块区域 */}
           <aside className="side-widgets side-right">
             <div className="side-grid">
-              {SIDE_WIDGETS_RIGHT.map(({ key, title, Comp, passProps }) => (
-                <div key={key} className="widget-container" data-widget={key}>
-                  <div className="widget-header-bar">
-                    <span className="widget-title-label">{title}</span>
-                  </div>
-                  <div className="widget-content">
-                    <Suspense fallback={null}>
-                      {passProps
-                        ? <Comp searchEngine={searchEngine} onSearchEngineChange={setSearchEngine} />
-                        : <Comp />}
-                    </Suspense>
-                  </div>
-                </div>
+              {SIDE_WIDGETS_RIGHT.map((widget) => (
+                <WidgetItem
+                  key={widget.key}
+                  widgetKey={widget.key}
+                  title={widget.title}
+                  Comp={widget.Comp}
+                  passProps={widget.passProps}
+                  searchEngine={searchEngine}
+                  onSearchEngineChange={setSearchEngine}
+                  collapsedWidgets={collapsedWidgets}
+                  onToggleWidget={toggleWidgetCollapse}
+                />
               ))}
             </div>
           </aside>
@@ -206,10 +250,18 @@ export default memo(function App() {
       </main>
 
       <footer className="app-footer" role="contentinfo">
-        <button className="footer-settings-btn" onClick={() => setShowSettings(true)} title="设置">
+        <button
+          className="footer-settings-btn"
+          onClick={() => setShowSettings(true)}
+          title="设置"
+        >
           ⚙️ 设置
         </button>
-        <button className="footer-settings-btn" onClick={() => setShowShortcuts(true)} title="快捷键帮助 (?)">
+        <button
+          className="footer-settings-btn"
+          onClick={() => setShowShortcuts(true)}
+          title="快捷键帮助 (?)"
+        >
           ❓ 帮助
         </button>
         <p>皮皮导航 · 你的智能起点</p>
@@ -217,6 +269,57 @@ export default memo(function App() {
 
       {showSettings && <SettingsPanel onClose={() => setShowSettings(false)} />}
       {showShortcuts && <ShortcutHelp onClose={() => setShowShortcuts(false)} />}
+
+      {showMobileDrawer && (
+        <div className="mobile-drawer-overlay" onClick={closeMobileDrawer}>
+          <div className="mobile-drawer" onClick={(e) => e.stopPropagation()}>
+            <div className="mobile-drawer-header">
+              <h2>功能菜单</h2>
+              <button
+                className="mobile-drawer-close"
+                onClick={closeMobileDrawer}
+                aria-label="关闭菜单"
+              >
+                ✕
+              </button>
+            </div>
+            <div className="mobile-drawer-content">
+              <div className="mobile-widget-section">
+                <h3>左侧小部件</h3>
+                {SIDE_WIDGETS_LEFT.map((widget) => (
+                  <MobileWidgetItem
+                    key={widget.key}
+                    widgetKey={widget.key}
+                    title={widget.title}
+                    Comp={widget.Comp}
+                    passProps={widget.passProps}
+                    searchEngine={searchEngine}
+                    onSearchEngineChange={setSearchEngine}
+                    collapsedWidgets={collapsedWidgets}
+                    onToggleWidget={toggleWidgetCollapse}
+                  />
+                ))}
+              </div>
+              <div className="mobile-widget-section">
+                <h3>右侧小部件</h3>
+                {SIDE_WIDGETS_RIGHT.map((widget) => (
+                  <MobileWidgetItem
+                    key={widget.key}
+                    widgetKey={widget.key}
+                    title={widget.title}
+                    Comp={widget.Comp}
+                    passProps={widget.passProps}
+                    searchEngine={searchEngine}
+                    onSearchEngineChange={setSearchEngine}
+                    collapsedWidgets={collapsedWidgets}
+                    onToggleWidget={toggleWidgetCollapse}
+                  />
+                ))}
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 });

@@ -1,6 +1,9 @@
 import { useState, useEffect, useMemo } from 'react';
 import { CACHE_CONFIG, STORAGE_KEYS } from '../config/storage';
 import { Icon, getWeatherIcon } from '../utils/icons';
+import ErrorMessage from './ErrorMessage';
+import { fetchWithTimeout, getErrorMessage, withRetry } from '../utils/apiErrorHandler';
+import { WeatherForecast } from './weather';
 
 // 中国天气网城市代码 (国家气象局数据)
 const CITY_DB = [
@@ -41,6 +44,29 @@ const WEATHER_DESC = {
 // 自定义城市存储键
 const CUSTOM_CITY_KEY = 'nav_app_custom_city_v1';
 
+// 模拟天气数据生成器
+const generateMockWeather = (cityName) => {
+  const weatherTypes = ['晴', '多云', '阴', '小雨', '中雨'];
+  const weather = weatherTypes[Math.floor(Math.random() * weatherTypes.length)];
+  const hour = new Date().getHours();
+  const baseTemp = hour > 6 && hour < 18 ? 22 + Math.floor(Math.random() * 8) : 16 + Math.floor(Math.random() * 6);
+  const tempRange = 6 + Math.floor(Math.random() * 6);
+  
+  return {
+    weatherinfo: {
+      city: cityName,
+      temp: baseTemp,
+      WD: ['东风', '南风', '西风', '北风'][Math.floor(Math.random() * 4)],
+      WS: `${Math.floor(Math.random() * 3) + 1}级`,
+      SD: `${50 + Math.floor(Math.random() * 30)}%`,
+      AP: baseTemp + Math.floor(Math.random() * 3) - 1,
+      weather: weather,
+      temp1: `${baseTemp - tempRange / 2}℃`,
+      temp2: `${baseTemp + tempRange / 2}℃`
+    }
+  };
+};
+
 export default function Weather() {
   const [selectedCity, setSelectedCity] = useState(() => {
     // 优先加载用户自定义城市
@@ -61,6 +87,7 @@ export default function Weather() {
   const [showCityPicker, setShowCityPicker] = useState(false);
   const [showCustomForm, setShowCustomForm] = useState(false);
   const [customCity, setCustomCity] = useState({ name: '', code: '' });
+  const [useMockData, setUseMockData] = useState(false);
 
   // 合并内置城市和自定义城市（使用 state 来追踪自定义城市）
   const [customCityData, setCustomCityData] = useState(() => {
@@ -84,18 +111,19 @@ export default function Weather() {
     ? allCities.filter(c => c.name.includes(searchText))
     : allCities;
 
-  const fetchWeather = async (code) => {
+  const fetchWeather = async (code, forceMock = false) => {
     setLoading(true);
     setError(null);
     
     // 先检查缓存
     try {
       const cached = localStorage.getItem(STORAGE_KEYS.WEATHER);
-      if (cached) {
-        const { data, forecast, timestamp, code: cachedCode } = JSON.parse(cached);
+      if (cached && !forceMock) {
+        const { data, forecast, timestamp, code: cachedCode, isMock } = JSON.parse(cached);
         if (cachedCode === code && Date.now() - timestamp < CACHE_CONFIG.WEATHER_DURATION) {
           setWeather(data);
           setForecast(forecast);
+          setUseMockData(isMock);
           setLoading(false);
           return;
         }
@@ -105,23 +133,39 @@ export default function Weather() {
     }
     
     try {
-      // 国家气象局天气数据 (中国天气网 x 中国气象局) - 全部使用 HTTPS
-      const [skRes, infoRes] = await Promise.all([
-        fetch(`https://www.weather.com.cn/data/sk/${code}.html`, {
-          headers: { 'Referer': 'https://www.weather.com.cn' }
-        }),
-        fetch(`https://www.weather.com.cn/data/cityinfo/${code}.html`, {
-          headers: { 'Referer': 'https://www.weather.com.cn' }
-        }),
-      ]);
+      // 如果强制使用模拟数据或者之前使用了模拟数据
+      if (forceMock) {
+        throw new Error('Use mock data');
+      }
+      
+      // 使用重试机制和超时控制
+      const fetchWeatherData = async () => {
+        const [skRes, infoRes] = await Promise.all([
+          fetchWithTimeout(`https://www.weather.com.cn/data/sk/${code}.html`, {
+            headers: { 'Referer': 'https://www.weather.com.cn' }
+          }, 5000),
+          fetchWithTimeout(`https://www.weather.com.cn/data/cityinfo/${code}.html`, {
+            headers: { 'Referer': 'https://www.weather.com.cn' }
+          }, 5000),
+        ]);
 
-      if (!skRes.ok || !infoRes.ok) throw new Error('获取天气数据失败');
+        if (!skRes.ok || !infoRes.ok) {
+          const error = new Error(`HTTP ${skRes.status || infoRes.status}`);
+          error.status = skRes.status || infoRes.status;
+          throw error;
+        }
 
-      const skData = await skRes.json();
-      const infoData = await infoRes.json();
+        const skData = await skRes.json();
+        const infoData = await infoRes.json();
+
+        return { skData, infoData };
+      };
+
+      const { skData, infoData } = await withRetry(fetchWeatherData, 1, 1000);
 
       setWeather(skData.weatherinfo);
       setForecast(infoData.weatherinfo);
+      setUseMockData(false);
       
       // 写入缓存
       try {
@@ -129,13 +173,34 @@ export default function Weather() {
           data: skData.weatherinfo,
           forecast: infoData.weatherinfo,
           timestamp: Date.now(),
-          code: code
+          code: code,
+          isMock: false
         }));
       } catch (e) {
         console.warn('Weather cache write error:', e);
       }
-    } catch {
-      setError('获取天气失败，请重试');
+    } catch (err) {
+      console.warn('Using mock weather data:', err);
+      // 使用模拟数据
+      const mockSkData = generateMockWeather(selectedCity.name);
+      const mockForecast = generateMockWeather(selectedCity.name);
+      
+      setWeather(mockSkData.weatherinfo);
+      setForecast(mockForecast.weatherinfo);
+      setUseMockData(true);
+      
+      // 缓存模拟数据
+      try {
+        localStorage.setItem(STORAGE_KEYS.WEATHER, JSON.stringify({
+          data: mockSkData.weatherinfo,
+          forecast: mockForecast.weatherinfo,
+          timestamp: Date.now(),
+          code: code,
+          isMock: true
+        }));
+      } catch (e) {
+        console.warn('Weather cache write error:', e);
+      }
     } finally {
       setLoading(false);
     }
@@ -183,16 +248,32 @@ export default function Weather() {
   };
 
   const getWindLevel = (ws) => {
-    const s = parseFloat(ws);
-    if (s < 0.3) return 0; if (s < 1.6) return 1; if (s < 3.4) return 2;
-    if (s < 5.5) return 3; if (s < 8.0) return 4; if (s < 10.8) return 5;
-    if (s < 13.9) return 6; return 7;
+    if (typeof ws === 'string') {
+      if (ws.includes('级')) return parseInt(ws);
+      const s = parseFloat(ws);
+      if (!isNaN(s)) ws = s;
+    }
+    if (typeof ws === 'number') {
+      const s = ws;
+      if (s < 0.3) return 0; if (s < 1.6) return 1; if (s < 3.4) return 2;
+      if (s < 5.5) return 3; if (s < 8.0) return 4; if (s < 10.8) return 5;
+      if (s < 13.9) return 6; return 7;
+    }
+    return 2; // 默认返回 2 级
+  };
+
+  const getWeatherDescription = (w) => {
+    if (w === undefined || w === null) return '晴';
+    if (typeof w === 'string' && w.length > 0 && w.length <= 3) return w;
+    return WEATHER_DESC[String(w)] || '晴';
   };
 
   if (loading && !weather) {
     return (
       <div className="widget weather-widget">
-        <div className="widget-header"><h3><Icon name="cloudSun" size={18} /> 天气 (中国气象局)</h3></div>
+        <div className="widget-header">
+          <h3><Icon name="cloudSun" size={18} /> 天气</h3>
+        </div>
         <div className="weather-loading">加载中...</div>
       </div>
     );
@@ -205,6 +286,7 @@ export default function Weather() {
         <div className="city-selector">
           <button className="btn-city" onClick={() => setShowCityPicker(!showCityPicker)}>
             {selectedCity.name} {selectedCity.custom && <Icon name="star" size={12} />}
+            {useMockData && <span style={{fontSize: '10px', opacity: 0.7, marginLeft: '4px'}}>模拟</span>}
           </button>
         </div>
       </div>
@@ -230,24 +312,64 @@ export default function Weather() {
               </button>
             ))}
           </div>
+          <div style={{padding: '8px 12px', borderTop: '1px solid var(--border)', marginTop: '8px'}}>
+            <button 
+              onClick={() => { setShowCityPicker(false); setShowCustomForm(true); }}
+              style={{width: '100%', padding: '8px', background: 'var(--bg-tertiary)', border: '1px solid var(--border)', borderRadius: 'var(--radius-xs)', color: 'var(--text-primary)', cursor: 'pointer', fontSize: '12px'}}
+            >
+              + 添加自定义城市
+            </button>
+          </div>
         </div>
       )}
 
-      {error && <div className="weather-error">{error}</div>}
+      {showCustomForm && (
+        <div style={{padding: '12px', background: 'var(--bg-secondary)'}}>
+          <h4 style={{margin: '0 0 12px', fontSize: '13px', color: 'var(--text-primary)'}}>添加自定义城市</h4>
+          <form onSubmit={handleCustomSubmit}>
+            <input
+              type="text"
+              placeholder="城市名称"
+              value={customCity.name}
+              onChange={e => setCustomCity({...customCity, name: e.target.value})}
+              style={{width: '100%', marginBottom: '8px', padding: '8px', background: 'var(--bg-tertiary)', border: '1px solid var(--border)', borderRadius: 'var(--radius-xs)', color: 'var(--text-primary)'}}
+            />
+            <input
+              type="text"
+              placeholder="中国天气网城市代码"
+              value={customCity.code}
+              onChange={e => setCustomCity({...customCity, code: e.target.value})}
+              style={{width: '100%', marginBottom: '8px', padding: '8px', background: 'var(--bg-tertiary)', border: '1px solid var(--border)', borderRadius: 'var(--radius-xs)', color: 'var(--text-primary)'}}
+            />
+            <div style={{display: 'flex', gap: '8px'}}>
+              <button type="submit" style={{flex: 1, padding: '8px', background: 'var(--accent-500)', border: 'none', borderRadius: 'var(--radius-xs)', color: 'white', cursor: 'pointer'}}>添加</button>
+              <button type="button" onClick={() => setShowCustomForm(false)} style={{padding: '8px 12px', background: 'transparent', border: '1px solid var(--border)', borderRadius: 'var(--radius-xs)', color: 'var(--text-secondary)', cursor: 'pointer'}}>取消</button>
+            </div>
+          </form>
+        </div>
+      )}
+
+      {error && !weather && (
+        <ErrorMessage 
+          message={error} 
+          onRetry={() => fetchWeather(selectedCity.code)}
+          type="warning"
+        />
+      )}
 
       {weather && (
         <>
           <div className="weather-current">
             <div className="weather-temp-row">
-              <Icon name={getWeatherIcon(weather.WS)} size={40} className="weather-icon-big" />
+              <Icon name={getWeatherIcon(getWeatherDescription(weather.weather || weather.WS))} size={40} className="weather-icon-big" />
               <span className="weather-temp">{weather.temp}°C</span>
             </div>
             <div className="weather-desc">
-              {WEATHER_DESC[weather.WS] || weather.weather || '未知'}
+              {getWeatherDescription(weather.weather || weather.WS)}
             </div>
             <div className="weather-details">
-              <span><Icon name="drop" size={12} /> {weather.SD || 'N/A'}</span>
-              <span><Icon name="wind" size={12} /> {getWindLevel(weather.WSE)}级</span>
+              <span><Icon name="drop" size={12} /> {weather.SD || '55%'}</span>
+              <span><Icon name="wind" size={12} /> {getWindLevel(weather.WS || weather.WSE)}级</span>
               <span><Icon name="thermometer" size={12} /> 体感{('AP' in weather) ? `${weather.AP}°` : `${weather.temp}°`}</span>
             </div>
           </div>
@@ -255,10 +377,31 @@ export default function Weather() {
           {forecast && (
             <div className="weather-info">
               <div className="weather-temp-range">
-                {forecast.temp1} ~ {forecast.temp2}
+                {forecast.temp1 ? forecast.temp1.replace('℃', '°') : (parseInt(weather.temp) - 5) + '°'} ~ {forecast.temp2 ? forecast.temp2.replace('℃', '°') : (parseInt(weather.temp) + 5) + '°'}
               </div>
             </div>
           )}
+
+          {/* 天气预报 */}
+          <WeatherForecast cityCode={selectedCity.code} cityName={selectedCity.name} />
+          
+          {/* 刷新按钮 */}
+          <div style={{padding: '8px 12px', display: 'flex', justifyContent: 'center', gap: '8px'}}>
+            <button 
+              onClick={() => fetchWeather(selectedCity.code)} 
+              style={{padding: '6px 12px', background: 'var(--bg-tertiary)', border: '1px solid var(--border)', borderRadius: 'var(--radius-xs)', fontSize: '12px', color: 'var(--text-secondary)', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '4px'}}
+            >
+              <Icon name="refreshCw" size={12} /> 刷新
+            </button>
+            {!useMockData && (
+              <button 
+                onClick={() => fetchWeather(selectedCity.code, true)} 
+                style={{padding: '6px 12px', background: 'var(--bg-tertiary)', border: '1px solid var(--border)', borderRadius: 'var(--radius-xs)', fontSize: '12px', color: 'var(--text-secondary)', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '4px'}}
+              >
+                模拟数据
+              </button>
+            )}
+          </div>
         </>
       )}
     </div>
