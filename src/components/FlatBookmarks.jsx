@@ -39,6 +39,75 @@ const DEFAULT_BOOKMARKS = [
 
 const ICON_OPTIONS = ['📁', '🌐', '💼', '🤖', '🎮', '🛠', '📚', '🎵', '🛒', '✈️', '🏠', '📷', '🔧', '🎓', '❤️', '🔖', '⭐', '💻', '📱', '📺'];
 
+// 单个书签项组件
+function BookmarkItem({ bm, stats, onEdit, onDelete, onVisit, updateFavicon }) {
+  const [faviconUrl, setFaviconUrl] = useState(bm.favicon);
+  const visitCount = stats[bm.id]?.visits || 0;
+
+  useEffect(() => {
+    if (!bm.favicon) {
+      getFavicon(bm.url).then(favicon => {
+        setFaviconUrl(favicon);
+        updateFavicon(bm.id, favicon);
+      });
+    }
+  }, [bm.url, bm.id, bm.favicon, updateFavicon]);
+
+  return (
+    <a
+      key={bm.id}
+      href={bm.url}
+      target="_blank"
+      rel="noopener noreferrer"
+      className="flat-bookmark-item"
+      onClick={() => onVisit(bm.id)}
+      title={bm.name}
+    >
+      <div className="flat-bookmark-icon-wrapper">
+        {faviconUrl ? (
+          <img 
+            src={faviconUrl} 
+            alt="" 
+            className="flat-bookmark-favicon"
+            onError={(e) => {
+              getFavicon(bm.url).then(newFavicon => {
+                setFaviconUrl(newFavicon);
+                updateFavicon(bm.id, newFavicon);
+              });
+            }}
+          />
+        ) : null}
+      </div>
+      <div className="flat-bookmark-info">
+        <span className="flat-bookmark-name">{bm.name}</span>
+      </div>
+      {visitCount > 0 && (
+        <span className="flat-bookmark-visits">🔥 {visitCount}</span>
+      )}
+      <div className="flat-bookmark-actions">
+        <button 
+          className="flat-edit-btn"
+          onClick={(e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            onEdit(bm);
+          }}
+          title="编辑"
+        >✏️</button>
+        <button 
+          className="flat-delete-btn"
+          onClick={(e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            onDelete(bm.id);
+          }}
+          title="删除"
+        >🗑️</button>
+      </div>
+    </a>
+  );
+}
+
 export default function FlatBookmarks() {
   const [bookmarks, setBookmarks] = useState(() => {
     try {
@@ -107,6 +176,20 @@ export default function FlatBookmarks() {
   const saveBookmarks = useCallback((newList) => {
     setBookmarks(newList);
     localStorage.setItem(STORAGE_KEY, JSON.stringify(newList));
+  }, []);
+
+  const updateFavicon = useCallback((bookmarkId, favicon) => {
+    setBookmarks(prev => prev.map(b => b.id === bookmarkId ? { ...b, favicon } : b));
+    try {
+      const saved = localStorage.getItem(STORAGE_KEY);
+      if (saved) {
+        const bookmarks = JSON.parse(saved);
+        const updated = bookmarks.map(b => b.id === bookmarkId ? { ...b, favicon } : b);
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(updated));
+      }
+    } catch (e) {
+      console.error('Failed to update favicon:', e);
+    }
   }, []);
 
   const saveCategories = useCallback((newCats) => {
@@ -301,54 +384,17 @@ export default function FlatBookmarks() {
                 <span className="flat-category-count">({items.length})</span>
               </h3>
               <div className="flat-category-items">
-            {items.map(bm => {
-              const visitCount = stats[bm.id]?.visits || 0;
-              return (
-                <a
-                  key={bm.id}
-                  href={bm.url}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="flat-bookmark-item"
-                  onClick={() => recordVisit(bm.id)}
-                  title={bm.name}
-                >
-                  <div className="flat-bookmark-icon-wrapper">
-                    {bm.favicon ? (
-                      <img src={bm.favicon} alt="" className="flat-bookmark-favicon" />
-                    ) : (
-                      <span className="flat-bookmark-emoji">🌐</span>
-                    )}
-                  </div>
-                  <div className="flat-bookmark-info">
-                    <span className="flat-bookmark-name">{bm.name}</span>
-                  </div>
-                  {visitCount > 0 && (
-                    <span className="flat-bookmark-visits">🔥 {visitCount}</span>
-                  )}
-                  <div className="flat-bookmark-actions">
-                    <button 
-                      className="flat-edit-btn"
-                      onClick={(e) => {
-                        e.preventDefault();
-                        e.stopPropagation();
-                        startEdit(bm);
-                      }}
-                      title="编辑"
-                    >✏️</button>
-                    <button 
-                      className="flat-delete-btn"
-                      onClick={(e) => {
-                        e.preventDefault();
-                        e.stopPropagation();
-                        removeBookmark(bm.id);
-                      }}
-                      title="删除"
-                    >🗑️</button>
-                  </div>
-                </a>
-              );
-            })}
+            {items.map(bm => (
+              <BookmarkItem
+                key={bm.id}
+                bm={bm}
+                stats={stats}
+                onEdit={startEdit}
+                onDelete={removeBookmark}
+                onVisit={recordVisit}
+                updateFavicon={updateFavicon}
+              />
+            ))}
           </div>
             </div>
           );

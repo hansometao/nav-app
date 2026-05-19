@@ -105,19 +105,24 @@ function generateFallbackAvatar(url) {
   const gradient = GRADIENTS[gradientIndex];
   
   const svg = `data:image/svg+xml,${encodeURIComponent(`
-    <svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 64 64">
+    <svg xmlns="http://www.w3.org/2000/svg" width="128" height="128" viewBox="0 0 128 128">
       <defs>
         <linearGradient id="grad" x1="0%" y1="0%" x2="100%" y2="100%">
           <stop offset="0%" style="stop-color:${gradient.from};stop-opacity:1" />
           <stop offset="100%" style="stop-color:${gradient.to};stop-opacity:1" />
         </linearGradient>
-        <filter id="shadow" x="-20%" y="-20%" width="140%" height="140%">
-          <feDropShadow dx="0" dy="2" stdDeviation="3" flood-color="rgba(0,0,0,0.15)"/>
+        <radialGradient id="shine" cx="30%" cy="30%" r="60%">
+          <stop offset="0%" style="stop-color:rgba(255,255,255,0.4);stop-opacity:1" />
+          <stop offset="100%" style="stop-color:rgba(255,255,255,0);stop-opacity:1" />
+        </radialGradient>
+        <filter id="shadow" x="-10%" y="-10%" width="120%" height="120%">
+          <feDropShadow dx="0" dy="4" stdDeviation="8" flood-color="rgba(0,0,0,0.25)"/>
         </filter>
       </defs>
-      <circle cx="32" cy="32" r="30" fill="url(#grad)" filter="url(#shadow)"/>
-      <circle cx="32" cy="32" r="28" fill="url(#grad)" opacity="0.9"/>
-      <text x="32" y="40" font-family="system-ui, -apple-system, sans-serif" font-size="28" font-weight="700" fill="white" text-anchor="middle" style="text-shadow: 0 2px 4px rgba(0,0,0,0.1);">${firstChar}</text>
+      <circle cx="64" cy="64" r="60" fill="url(#grad)" filter="url(#shadow)"/>
+      <circle cx="64" cy="64" r="56" fill="url(#grad)"/>
+      <circle cx="64" cy="64" r="56" fill="url(#shine)"/>
+      <text x="64" y="82" font-family="system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="52" font-weight="800" fill="white" text-anchor="middle" style="text-shadow: 0 3px 8px rgba(0,0,0,0.25);">${firstChar}</text>
     </svg>
   `)}`;
   
