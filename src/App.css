@@ -409,6 +409,77 @@
   animation: fadeInUp 0.5s ease-out;
 }
 
+.main-layout-container {
+  display: grid;
+  grid-template-columns: minmax(0, 280px) 1fr minmax(0, 280px);
+  gap: 24px;
+  max-width: 1920px;
+  margin: 0 auto;
+}
+
+.side-widgets {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.side-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.side-widgets .widget-container {
+  min-width: 0;
+}
+
+.main-content {
+  min-width: 0;
+}
+
+/* 响应式布局 */
+@media (max-width: 1400px) {
+  .main-layout-container {
+    grid-template-columns: minmax(0, 240px) 1fr minmax(0, 240px);
+    gap: 20px;
+  }
+}
+
+@media (max-width: 1200px) {
+  .main-layout-container {
+    grid-template-columns: 1fr;
+    gap: 20px;
+  }
+  
+  .side-widgets {
+    order: 2;
+  }
+  
+  .main-content {
+    order: 1;
+  }
+  
+  .side-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 16px;
+  }
+  
+  .side-left {
+    order: 2;
+  }
+  
+  .side-right {
+    order: 3;
+  }
+}
+
+@media (max-width: 768px) {
+  .side-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
 /* ====== 小部件容器（卡片） ====== */
 .widget-container {
   background: var(--bg-card);

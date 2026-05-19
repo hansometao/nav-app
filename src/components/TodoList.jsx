@@ -1,4 +1,5 @@
 import { useState, useMemo } from 'react';
+import { Icon } from '../utils/icons';
 
 const STORAGE_KEY = 'nav_app_todos';
 
@@ -53,7 +54,7 @@ export default function TodoList() {
   return (
     <div className="widget todo-widget" role="region" aria-label="待办事项">
       <div className="widget-header">
-        <h3>✅ 待办事项</h3>
+        <h3><Icon name="checkCircle" size={18} /> 待办事项</h3>
         <span className="todo-count" aria-label={`已完成 ${doneCount} 项，共 ${totalCount} 项`}>
           {doneCount}/{totalCount}
         </span>
@@ -73,9 +74,9 @@ export default function TodoList() {
 
       <div className="todo-filters" role="tablist" aria-label="筛选">
         {[
-          { key: 'all', label: '全部', icon: '📋' },
-          { key: 'active', label: '未完成', icon: '🔄' },
-          { key: 'done', label: '已完成', icon: '✅' },
+          { key: 'all', label: '全部', icon: 'list' },
+          { key: 'active', label: '未完成', icon: 'circle' },
+          { key: 'done', label: '已完成', icon: 'checkCircle' },
         ].map(f => (
           <button
             key={f.key}
@@ -85,7 +86,7 @@ export default function TodoList() {
             aria-selected={filter === f.key}
             aria-controls="todo-list"
           >
-            {f.icon} {f.label}
+            <Icon name={f.icon} size={14} /> {f.label}
           </button>
         ))}
       </div>
@@ -93,7 +94,7 @@ export default function TodoList() {
       <div className="todo-list" id="todo-list" role="tabpanel" aria-label="待办列表">
         {filtered.length === 0 ? (
           <div className="empty-state" role="status">
-            <p>{filter === 'all' ? '还没有待办事项' : filter === 'active' ? '所有任务已完成 🎉' : '暂无已完成事项'}</p>
+            <p>{filter === 'all' ? '还没有待办事项' : filter === 'active' ? '所有任务已完成' : '暂无已完成事项'}</p>
           </div>
         ) : (
           filtered.map(todo => (
@@ -123,7 +124,7 @@ export default function TodoList() {
                 title="删除"
                 aria-label={`删除待办：${todo.text}`}
               >
-                ×
+                <Icon name="x" size={14} />
               </button>
             </div>
           ))

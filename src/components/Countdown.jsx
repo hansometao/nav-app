@@ -1,13 +1,14 @@
 import { useState, useEffect, useRef } from 'react';
 import { STORAGE_KEYS } from '../config/storage';
+import { Icon } from '../utils/icons';
 
 const STORAGE_KEY = STORAGE_KEYS.COUNTDOWN;
 
 const PRESET_QUICK = [
-  { label: '下班', hour: 18, minute: 0, icon: '🏃' },
-  { label: '午休', hour: 12, minute: 0, icon: '🍜' },
-  { label: '晚饭', hour: 19, minute: 0, icon: '🍽️' },
-  { label: '睡觉', hour: 23, minute: 0, icon: '😴' },
+  { label: '下班', hour: 18, minute: 0 },
+  { label: '午休', hour: 12, minute: 0 },
+  { label: '晚饭', hour: 19, minute: 0 },
+  { label: '睡觉', hour: 23, minute: 0 },
 ];
 
 const DEFAULTS = [
@@ -196,8 +197,8 @@ export default function Countdown() {
   return (
     <div className="widget countdown-widget">
       <div className="widget-header">
-        <h3>⏱ 倒计时</h3>
-        <button className="btn-icon" onClick={() => setShowAdd(!showAdd)} title="添加倒计时">+</button>
+        <h3><Icon name="clock" size={18} /> 倒计时</h3>
+        <button className="btn-icon" onClick={() => setShowAdd(!showAdd)} title="添加倒计时"><Icon name="plus" size={16} /></button>
       </div>
 
       {showAdd && (
@@ -248,7 +249,7 @@ export default function Countdown() {
                     className="preset-btn"
                     onClick={() => applyPreset(preset)}
                   >
-                    {preset.icon} {preset.label}
+                    {preset.label}
                   </button>
                 ))}
               </div>
@@ -299,12 +300,12 @@ export default function Countdown() {
           return (
             <div key={cd.id} className="countdown-item" style={{ borderLeftColor: cd.color }}>
               <div className="countdown-label">
-                {cd.type === 'daily' && <span className="daily-badge">🔄</span>}
+                {cd.type === 'daily' && <span className="daily-badge"><Icon name="refreshCw" size={12} /></span>}
                 {cd.label}
-                <button className="btn-icon btn-remove" onClick={() => removeCountdown(cd.id)}>×</button>
+                <button className="btn-icon btn-remove" onClick={() => removeCountdown(cd.id)}><Icon name="x" size={14} /></button>
               </div>
               {tl.expired ? (
-                <div className="countdown-expired">🎉 时间到！</div>
+                <div className="countdown-expired">时间到！</div>
               ) : (
                 renderTimeDisplay(tl, cd)
               )}
@@ -314,7 +315,7 @@ export default function Countdown() {
       </div>
 
       <div className="timer-section">
-        <h4>⏲ 计时器</h4>
+        <h4><Icon name="clock" size={16} /> 计时器</h4>
         <div className="timer-controls">
           <input
             type="number"

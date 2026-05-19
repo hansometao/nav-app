@@ -1,12 +1,13 @@
 import { useState, useEffect } from 'react';
 import { STORAGE_KEYS } from '../config/storage';
+import { Icon } from '../utils/icons';
 
 const CALENDAR_KEY = STORAGE_KEYS.CALENDAR;
 
 const DEFAULT_EVENTS = [
-  { date: '2026-06-01', title: '儿童节 🎉' },
-  { date: '2026-10-01', title: '国庆节 🇨🇳' },
-  { date: '2026-12-25', title: '圣诞节 🎄' },
+  { date: '2026-06-01', title: '儿童节' },
+  { date: '2026-10-01', title: '国庆节' },
+  { date: '2026-12-25', title: '圣诞节' },
 ];
 
 export default function Calendar() {
@@ -64,8 +65,8 @@ export default function Calendar() {
   return (
     <div className="widget calendar-widget">
       <div className="widget-header">
-        <h3>📅 日历</h3>
-        <button className="btn-icon" onClick={() => setShowAdd(!showAdd)} title="添加事件">+</button>
+        <h3><Icon name="calendar" size={18} /> 日历</h3>
+        <button className="btn-icon" onClick={() => setShowAdd(!showAdd)} title="添加事件"><Icon name="plus" size={16} /></button>
       </div>
 
       {showAdd && (
@@ -105,12 +106,12 @@ export default function Calendar() {
 
       {events.length > 0 && (
         <div className="event-list">
-          <h4>📌 事件</h4>
+          <h4><Icon name="target" size={14} /> 事件</h4>
           {events.map((evt, i) => (
             <div key={i} className="event-item">
               <span className="event-date">{evt.date}</span>
               <span className="event-title">{evt.title}</span>
-              <button className="btn-icon btn-remove" onClick={() => removeEvent(i)}>×</button>
+              <button className="btn-icon btn-remove" onClick={() => removeEvent(i)}><Icon name="x" size={14} /></button>
             </div>
           ))}
         </div>
