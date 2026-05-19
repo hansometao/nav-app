@@ -12,6 +12,7 @@ import LunarCalendar from './components/LunarCalendar';
 import SettingsPanel from './components/SettingsPanel.jsx';
 import FlatBookmarks from './components/FlatBookmarks';
 import './App.css';
+import './styles/unified-components.css';
 
 const AITools = lazy(() => import('./components/AITools'));
 const Weather = lazy(() => import('./components/Weather'));
