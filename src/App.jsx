@@ -18,7 +18,7 @@ const AITools = lazy(() => import('./components/AITools'));
 const Weather = lazy(() => import('./components/Weather'));
 const HotNews = lazy(() => import('./components/HotNews'));
 
-const DEFAULT_SE = { name: 'Google', url: 'https://www.google.com/search?q=', icon: '🔍' };
+const DEFAULT_SE = { name: 'Bing', url: 'https://www.bing.com/search?q=', favicon: 'https://www.bing.com/favicon.ico' };
 
 const SIDE_WIDGETS_LEFT = [
   { key: 'weather',   title: '天气',   Comp: Weather,    passProps: false },
