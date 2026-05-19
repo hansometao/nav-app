@@ -425,6 +425,26 @@
   position: relative;
 }
 
+/* 网址导航卡片特殊样式 - 更加突出 */
+.widget-container[data-widget="bookmarks"] {
+  background: linear-gradient(145deg, 
+    rgba(108, 99, 255, 0.08) 0%, 
+    var(--bg-card) 40%,
+    rgba(6, 182, 212, 0.04) 100%
+  );
+  border-color: rgba(108, 99, 255, 0.3);
+  box-shadow: 0 8px 32px rgba(108, 99, 255, 0.15), var(--shadow-card);
+}
+
+.widget-container[data-widget="bookmarks"]::before {
+  background: linear-gradient(135deg, rgba(108, 99, 255, 0.08) 0%, transparent 50%);
+}
+
+.widget-container[data-widget="bookmarks"]:hover {
+  border-color: rgba(108, 99, 255, 0.6);
+  box-shadow: 0 12px 48px rgba(108, 99, 255, 0.25), var(--shadow-lg), var(--shadow-glow);
+}
+
 .widget-container::before {
   content: '';
   position: absolute;

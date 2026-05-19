@@ -156,9 +156,9 @@ export default memo(function App() {
           layouts={layouts}
           breakpoints={{ lg: 1200, md: 996, sm: 768, xs: 480 }}
           cols={{ lg: 12, md: 12, sm: 12, xs: 12 }}
-          rowHeight={36}
-          containerPadding={[12, 12]}
-          margin={[10, 10]}
+          rowHeight={40}
+          containerPadding={[16, 16]}
+          margin={[12, 12]}
           isDraggable={editMode}
           isResizable={editMode}
           isBounded={true}
@@ -170,7 +170,7 @@ export default memo(function App() {
           preventCollision={false}
         >
           {MAIN_WIDGETS.map(({ key, title, Comp, passProps }) => (
-            <div key={key} className="widget-container">
+            <div key={key} className="widget-container" data-widget={key}>
               <div className="widget-header-bar">
                 <span className="widget-drag-handle" title="拖拽移动">⋮⋮</span>
                 <span className="widget-title-label">{title}</span>
