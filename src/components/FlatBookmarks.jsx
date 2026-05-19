@@ -301,56 +301,55 @@ export default function FlatBookmarks() {
                 <span className="flat-category-count">({items.length})</span>
               </h3>
               <div className="flat-category-items">
-                {items.map(bm => {
-                  const visitCount = stats[bm.id]?.visits || 0;
-                  return (
-                    <a
-                      key={bm.id}
-                      href={bm.url}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="flat-bookmark-item"
-                      onClick={() => recordVisit(bm.id)}
-                      title={bm.name}
-                    >
-                      <div className="flat-bookmark-icon-wrapper">
-                        {bm.favicon ? (
-                          <img src={bm.favicon} alt="" className="flat-bookmark-favicon" />
-                        ) : (
-                          <span className="flat-bookmark-emoji">🌐</span>
-                        )}
-                      </div>
-                      <div className="flat-bookmark-info">
-                        <span className="flat-bookmark-name">{bm.name}</span>
-                        <span className="flat-bookmark-url">{bm.url.replace(/^https?:\/\//, '').slice(0, 25)}</span>
-                      </div>
-                      {visitCount > 0 && (
-                        <span className="flat-bookmark-visits">🔥 {visitCount}</span>
-                      )}
-                      <div className="flat-bookmark-actions">
-                        <button 
-                          className="flat-edit-btn"
-                          onClick={(e) => {
-                            e.preventDefault();
-                            e.stopPropagation();
-                            startEdit(bm);
-                          }}
-                          title="编辑"
-                        >✏️</button>
-                        <button 
-                          className="flat-delete-btn"
-                          onClick={(e) => {
-                            e.preventDefault();
-                            e.stopPropagation();
-                            removeBookmark(bm.id);
-                          }}
-                          title="删除"
-                        >🗑️</button>
-                      </div>
-                    </a>
-                  );
-                })}
-              </div>
+            {items.map(bm => {
+              const visitCount = stats[bm.id]?.visits || 0;
+              return (
+                <a
+                  key={bm.id}
+                  href={bm.url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flat-bookmark-item"
+                  onClick={() => recordVisit(bm.id)}
+                  title={bm.name}
+                >
+                  <div className="flat-bookmark-icon-wrapper">
+                    {bm.favicon ? (
+                      <img src={bm.favicon} alt="" className="flat-bookmark-favicon" />
+                    ) : (
+                      <span className="flat-bookmark-emoji">🌐</span>
+                    )}
+                  </div>
+                  <div className="flat-bookmark-info">
+                    <span className="flat-bookmark-name">{bm.name}</span>
+                  </div>
+                  {visitCount > 0 && (
+                    <span className="flat-bookmark-visits">🔥 {visitCount}</span>
+                  )}
+                  <div className="flat-bookmark-actions">
+                    <button 
+                      className="flat-edit-btn"
+                      onClick={(e) => {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        startEdit(bm);
+                      }}
+                      title="编辑"
+                    >✏️</button>
+                    <button 
+                      className="flat-delete-btn"
+                      onClick={(e) => {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        removeBookmark(bm.id);
+                      }}
+                      title="删除"
+                    >🗑️</button>
+                  </div>
+                </a>
+              );
+            })}
+          </div>
             </div>
           );
         })}
