@@ -43,6 +43,7 @@ const ICON_OPTIONS = ['📁', '🌐', '💼', '🤖', '🎮', '🛠', '📚', '�
 // 单个书签项组件
 function BookmarkItem({ bm, stats, onEdit, onDelete, onVisit, updateFavicon }) {
   const [faviconUrl, setFaviconUrl] = useState(bm.favicon);
+  const [isHovered, setIsHovered] = useState(false);
   const visitCount = stats[bm.id]?.visits || 0;
 
   useEffect(() => {
@@ -63,6 +64,8 @@ function BookmarkItem({ bm, stats, onEdit, onDelete, onVisit, updateFavicon }) {
       className="flat-bookmark-item"
       onClick={() => onVisit(bm.id)}
       title={bm.name}
+      onMouseEnter={() => setIsHovered(true)}
+      onMouseLeave={() => setIsHovered(false)}
     >
       <div className="flat-bookmark-icon-wrapper">
         {faviconUrl ? (
@@ -77,7 +80,9 @@ function BookmarkItem({ bm, stats, onEdit, onDelete, onVisit, updateFavicon }) {
               });
             }}
           />
-        ) : null}
+        ) : (
+          <span className="flat-bookmark-placeholder-icon">🔗</span>
+        )}
       </div>
       <div className="flat-bookmark-info">
         <span className="flat-bookmark-name">{bm.name}</span>
@@ -85,7 +90,7 @@ function BookmarkItem({ bm, stats, onEdit, onDelete, onVisit, updateFavicon }) {
       {visitCount > 0 && (
         <span className="flat-bookmark-visits">🔥 {visitCount}</span>
       )}
-      <div className="flat-bookmark-actions">
+      <div className={`flat-bookmark-actions ${isHovered ? 'visible' : ''}`}>
         <button 
           className="flat-edit-btn"
           onClick={(e) => {
@@ -94,6 +99,7 @@ function BookmarkItem({ bm, stats, onEdit, onDelete, onVisit, updateFavicon }) {
             onEdit(bm);
           }}
           title="编辑"
+          aria-label="编辑书签"
         >✏️</button>
         <button 
           className="flat-delete-btn"
@@ -103,9 +109,113 @@ function BookmarkItem({ bm, stats, onEdit, onDelete, onVisit, updateFavicon }) {
             onDelete(bm.id);
           }}
           title="删除"
+          aria-label="删除书签"
         >🗑️</button>
       </div>
     </a>
+  );
+}
+
+// 空状态组件
+function EmptyState({ onAdd }) {
+  return (
+    <div className="flat-empty-state">
+      <div className="empty-icon">📭</div>
+      <h3>暂无书签</h3>
+      <p>点击下方按钮添加你的第一个网址书签</p>
+      <button className="flat-add-btn" onClick={onAdd}>＋ 添加网址</button>
+    </div>
+  );
+}
+
+// 分类管理组件
+function CategoryManager({ categories, onAdd, onDelete, onEdit }) {
+  const [showForm, setShowForm] = useState(false);
+  const [newCat, setNewCat] = useState({ name: '', icon: '📁' });
+  const [editingCat, setEditingCat] = useState(null);
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    if (!newCat.name.trim()) return;
+    
+    if (editingCat) {
+      onEdit(editingCat, newCat);
+    } else {
+      onAdd(newCat);
+    }
+    setShowForm(false);
+    setNewCat({ name: '', icon: '📁' });
+    setEditingCat(null);
+  };
+
+  const startEdit = (cat) => {
+    setNewCat(cat);
+    setEditingCat(cat.name);
+    setShowForm(true);
+  };
+
+  return (
+    <div className="flat-category-manager">
+      <button className="flat-manage-cats-btn" onClick={() => setShowForm(!showForm)}>
+        📁 {showForm ? '收起' : '管理分类'}
+      </button>
+      
+      {showForm && (
+        <div className="flat-category-form">
+          <form onSubmit={handleSubmit}>
+            <input
+              type="text"
+              placeholder="分类名称"
+              value={newCat.name}
+              onChange={(e) => setNewCat({ ...newCat, name: e.target.value })}
+              required
+            />
+            <div className="flat-icon-picker">
+              {ICON_OPTIONS.map(icon => (
+                <button
+                  key={icon}
+                  type="button"
+                  className={`icon-option ${newCat.icon === icon ? 'active' : ''}`}
+                  onClick={() => setNewCat({ ...newCat, icon })}
+                >
+                  {icon}
+                </button>
+              ))}
+            </div>
+            <div className="flat-form-buttons">
+              <button type="submit" className="flat-save-btn">
+                {editingCat ? '保存' : '添加'}
+              </button>
+              <button type="button" className="flat-cancel-btn" onClick={() => {
+                setShowForm(false);
+                setEditingCat(null);
+                setNewCat({ name: '', icon: '📁' });
+              }}>取消</button>
+            </div>
+          </form>
+        </div>
+      )}
+
+      {categories.length > 0 && (
+        <div className="flat-category-list">
+          {categories.map(cat => (
+            <div key={cat.name} className="flat-category-item">
+              <span className="cat-icon">{cat.icon}</span>
+              <span className="cat-name">{cat.name}</span>
+              <div className="cat-actions">
+                <button className="cat-edit" onClick={() => startEdit(cat)} title="编辑">✏️</button>
+                <button 
+                  className="cat-delete" 
+                  onClick={() => onDelete(cat.name)} 
+                  title="删除"
+                  disabled={categories.length <= 1}
+                >🗑️</button>
+              </div>
+            </div>
+          ))}
+        </div>
+      )}
+    </div>
   );
 }
 
@@ -160,6 +270,7 @@ export default function FlatBookmarks() {
   const [previewFavicon, setPreviewFavicon] = useState(null);
   const [faviconLoading, setFaviconLoading] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
+  const [sortBy, setSortBy] = useState('default'); // default, visits, name
   const debouncedSearchQuery = useDebounce(searchQuery, 300);
 
   const recordVisit = useCallback((bookmarkId) => {
@@ -198,6 +309,34 @@ export default function FlatBookmarks() {
     setCategories(newCats);
     localStorage.setItem(CATEGORIES_KEY, JSON.stringify(newCats));
   }, []);
+
+  const addCategory = useCallback((cat) => {
+    const newCat = { name: sanitizeHtml(cat.name), icon: cat.icon };
+    if (!categories.find(c => c.name === newCat.name)) {
+      saveCategories([...categories, newCat]);
+    }
+  }, [categories, saveCategories]);
+
+  const deleteCategory = useCallback((catName) => {
+    if (categories.length <= 1) return;
+    saveCategories(categories.filter(c => c.name !== catName));
+    // 将该分类下的书签移到第一个分类
+    const newDefaultCat = categories[0].name === catName ? categories[1].name : categories[0].name;
+    saveBookmarks(bookmarks.map(b => 
+      b.category === catName ? { ...b, category: newDefaultCat } : b
+    ));
+  }, [categories, bookmarks, saveCategories, saveBookmarks]);
+
+  const editCategory = useCallback((oldName, newCat) => {
+    const updatedCats = categories.map(c => 
+      c.name === oldName ? { name: sanitizeHtml(newCat.name), icon: newCat.icon } : c
+    );
+    saveCategories(updatedCats);
+    // 更新书签中的分类名称
+    saveBookmarks(bookmarks.map(b => 
+      b.category === oldName ? { ...b, category: sanitizeHtml(newCat.name) } : b
+    ));
+  }, [categories, bookmarks, saveCategories, saveBookmarks]);
 
   const resetForm = () => {
     setForm({ name: '', url: '', favicon: '', category: categories[0]?.name || '常用网站' });
@@ -277,7 +416,6 @@ export default function FlatBookmarks() {
       }
       if (Object.keys(newFavicons).length > 0) {
         setFavicons(newFavicons);
-        // 更新本地存储
         const updatedBookmarks = bookmarks.map(bm => {
           if (newFavicons[bm.id] && !bm.favicon) {
             return { ...bm, favicon: newFavicons[bm.id] };
@@ -291,14 +429,26 @@ export default function FlatBookmarks() {
   }, []);
 
   const filteredBookmarks = useMemo(() => {
-    if (!debouncedSearchQuery.trim()) return bookmarks;
-    const query = debouncedSearchQuery.toLowerCase();
-    return bookmarks.filter(bm => 
-      bm.name.toLowerCase().includes(query) || 
-      bm.url.toLowerCase().includes(query) ||
-      bm.category.toLowerCase().includes(query)
-    );
-  }, [bookmarks, searchQuery]);
+    let result = bookmarks;
+    
+    if (debouncedSearchQuery.trim()) {
+      const query = debouncedSearchQuery.toLowerCase();
+      result = result.filter(bm => 
+        bm.name.toLowerCase().includes(query) || 
+        bm.url.toLowerCase().includes(query) ||
+        bm.category.toLowerCase().includes(query)
+      );
+    }
+
+    // 排序
+    if (sortBy === 'visits') {
+      result = [...result].sort((a, b) => (stats[b.id]?.visits || 0) - (stats[a.id]?.visits || 0));
+    } else if (sortBy === 'name') {
+      result = [...result].sort((a, b) => a.name.localeCompare(b.name, 'zh-CN'));
+    }
+
+    return result;
+  }, [bookmarks, searchQuery, sortBy, stats]);
 
   const groupedBookmarks = useMemo(() => {
     const cats = {};
@@ -309,6 +459,13 @@ export default function FlatBookmarks() {
     });
     return cats;
   }, [filteredBookmarks]);
+
+  // 获取热门书签（访问次数最多的5个）
+  const hotBookmarks = useMemo(() => {
+    return [...bookmarks]
+      .sort((a, b) => (stats[b.id]?.visits || 0) - (stats[a.id]?.visits || 0))
+      .slice(0, 5);
+  }, [bookmarks, stats]);
 
   return (
     <div className="flat-bookmarks">
@@ -325,6 +482,11 @@ export default function FlatBookmarks() {
               className="flat-search-input"
             />
           </div>
+          <select className="flat-sort-select" value={sortBy} onChange={(e) => setSortBy(e.target.value)}>
+            <option value="default">默认排序</option>
+            <option value="visits">热门优先</option>
+            <option value="name">名称排序</option>
+          </select>
           <button className="flat-add-btn" onClick={() => setShowAdd(!showAdd)}>
             {showAdd ? '✕ 取消' : '＋ 添加网址'}
           </button>
@@ -373,20 +535,12 @@ export default function FlatBookmarks() {
         </div>
       )}
 
-      <div className="flat-bookmarks-grid">
-        {categories.map(cat => {
-          const items = groupedBookmarks[cat.name] || [];
-          if (items.length === 0) return null;
-          
-          return (
-            <div key={cat.name} className="flat-category-section">
-              <h3 className="flat-category-title">
-                <span className="flat-category-icon">{cat.icon}</span>
-                {cat.name}
-                <span className="flat-category-count">({items.length})</span>
-              </h3>
-              <div className="flat-category-items">
-            {items.map(bm => (
+      {/* 热门书签快捷入口 */}
+      {hotBookmarks.length > 0 && !searchQuery && (
+        <div className="flat-hot-section">
+          <h3 className="flat-hot-title">🔥 热门访问</h3>
+          <div className="flat-hot-list">
+            {hotBookmarks.map((bm, index) => (
               <BookmarkItem
                 key={bm.id}
                 bm={bm}
@@ -398,10 +552,51 @@ export default function FlatBookmarks() {
               />
             ))}
           </div>
-            </div>
-          );
-        })}
-      </div>
+        </div>
+      )}
+
+      {filteredBookmarks.length === 0 ? (
+        <EmptyState onAdd={() => setShowAdd(true)} />
+      ) : (
+        <>
+          <div className="flat-bookmarks-grid">
+            {categories.map(cat => {
+              const items = groupedBookmarks[cat.name] || [];
+              if (items.length === 0) return null;
+              
+              return (
+                <div key={cat.name} className="flat-category-section">
+                  <h3 className="flat-category-title">
+                    <span className="flat-category-icon">{cat.icon}</span>
+                    {cat.name}
+                    <span className="flat-category-count">({items.length})</span>
+                  </h3>
+                  <div className="flat-category-items">
+                    {items.map(bm => (
+                      <BookmarkItem
+                        key={bm.id}
+                        bm={bm}
+                        stats={stats}
+                        onEdit={startEdit}
+                        onDelete={removeBookmark}
+                        onVisit={recordVisit}
+                        updateFavicon={updateFavicon}
+                      />
+                    ))}
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        </>
+      )}
+
+      <CategoryManager
+        categories={categories}
+        onAdd={addCategory}
+        onDelete={deleteCategory}
+        onEdit={editCategory}
+      />
     </div>
   );
 }
