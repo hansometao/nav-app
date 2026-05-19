@@ -1,4 +1,3 @@
-
 /* ====== 错误消息组件 ====== */
 .error-message {
   display: flex;
@@ -113,18 +112,6 @@
   width: 100%;
 }
 
-.top-search-section {
-  background: var(--bg-secondary);
-  border-bottom: 1px solid var(--border);
-  padding: 20px 0;
-}
-
-.search-container {
-  max-width: 900px;
-  margin: 0 auto;
-  padding: 0 20px;
-}
-
 .main-layout-container {
   display: grid;
   grid-template-columns: 280px 1fr 280px;
@@ -136,19 +123,6 @@
   display: flex;
   flex-direction: column;
   gap: 16px;
-}
-
-.side-left {
-  grid-column: 1;
-}
-
-.side-right {
-  grid-column: 3;
-}
-
-.main-content {
-  grid-column: 2;
-  min-width: 0;
 }
 
 .side-grid {
@@ -249,286 +223,6 @@
   background: rgba(108, 99, 255, 0.1);
   border-color: var(--accent-400);
   color: var(--accent-300);
-}
-
-/* ====== 移动端抽屉菜单 ====== */
-.mobile-drawer-overlay {
-  display: none;
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background: rgba(0, 0, 0, 0.6);
-  backdrop-filter: blur(4px);
-  z-index: 2000;
-  animation: fadeIn 0.2s ease-out;
-}
-
-.mobile-drawer {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 85%;
-  max-width: 320px;
-  height: 100%;
-  background: var(--bg-secondary);
-  border-right: 1px solid var(--border);
-  display: flex;
-  flex-direction: column;
-  animation: slideInLeft 0.3s ease-out;
-}
-
-.mobile-drawer-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 16px 20px;
-  border-bottom: 1px solid var(--border);
-  background: var(--bg-tertiary);
-}
-
-.mobile-drawer-header h2 {
-  font-size: 16px;
-  font-weight: 600;
-  color: var(--text-primary);
-}
-
-.mobile-drawer-close {
-  background: transparent;
-  border: 1px solid var(--border);
-  color: var(--text-secondary);
-  width: 28px;
-  height: 28px;
-  border-radius: var(--radius-xs);
-  font-size: 14px;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  transition: all var(--transition-fast);
-}
-
-.mobile-drawer-close:hover {
-  background: rgba(248, 113, 113, 0.1);
-  border-color: var(--danger);
-  color: var(--danger);
-}
-
-.mobile-drawer-content {
-  flex: 1;
-  overflow-y: auto;
-  padding: 16px;
-}
-
-.mobile-widget-section {
-  margin-bottom: 20px;
-}
-
-.mobile-widget-section h3 {
-  font-size: 12px;
-  color: var(--text-muted);
-  text-transform: uppercase;
-  letter-spacing: 1px;
-  margin-bottom: 10px;
-  padding-left: 8px;
-}
-
-.mobile-widget-item {
-  background: var(--bg-card);
-  border: 1px solid var(--border);
-  border-radius: var(--radius);
-  margin-bottom: 8px;
-  overflow: hidden;
-}
-
-.mobile-widget-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 12px 14px;
-  background: rgba(0, 0, 0, 0.1);
-  cursor: pointer;
-  transition: background var(--transition-fast);
-}
-
-.mobile-widget-header:hover {
-  background: rgba(108, 99, 255, 0.08);
-}
-
-.mobile-widget-header span:first-child {
-  font-size: 13px;
-  font-weight: 500;
-  color: var(--text-primary);
-}
-
-.mobile-widget-header span:last-child {
-  font-size: 10px;
-  color: var(--text-muted);
-}
-
-.mobile-widget-content {
-  padding: 12px 14px;
-  border-top: 1px solid var(--border);
-}
-
-/* ====== 响应式三栏布局 ====== */
-@media (max-width: 1200px) {
-  .main-layout-container {
-    grid-template-columns: 250px 1fr 250px;
-    gap: 16px;
-  }
-}
-
-@media (max-width: 1024px) {
-  .main-layout-container {
-    grid-template-columns: 1fr;
-    gap: 16px;
-  }
-  
-  .side-left,
-  .side-right {
-    grid-column: 1;
-  }
-  
-  .side-widgets {
-    flex-direction: row;
-    flex-wrap: wrap;
-    justify-content: center;
-  }
-  
-  .widget-container {
-    width: calc(50% - 8px);
-    min-width: 240px;
-  }
-}
-
-@media (max-width: 640px) {
-  .mobile-menu-btn {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-  }
-  
-  .side-widgets {
-    flex-direction: column;
-    display: none;
-  }
-  
-  .widget-container {
-    width: 100%;
-    min-width: auto;
-  }
-  
-  .mobile-drawer-overlay {
-    display: flex;
-  }
-}
-
-
-/* ====== 错误消息组件 ====== */
-.error-message {
-  display: flex;
-  align-items: flex-start;
-  gap: 12px;
-  padding: 16px;
-  border-radius: var(--radius-sm);
-  margin: 12px 0;
-  animation: slideDown 0.3s ease-out;
-}
-
-.error-message.error-error {
-  background: var(--danger-soft);
-  border: 1px solid rgba(239, 68, 68, 0.3);
-}
-
-.error-message.error-warning {
-  background: var(--warning-soft);
-  border: 1px solid rgba(245, 158, 11, 0.3);
-}
-
-.error-message.error-info {
-  background: var(--info-soft);
-  border: 1px solid rgba(59, 130, 246, 0.3);
-}
-
-.error-icon {
-  flex-shrink: 0;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.error-message.error-error .error-icon {
-  color: var(--danger);
-}
-
-.error-message.error-warning .error-icon {
-  color: var(--warning);
-}
-
-.error-message.error-info .error-icon {
-  color: var(--info);
-}
-
-.error-content {
-  flex: 1;
-  min-width: 0;
-}
-
-.error-title {
-  font-size: 14px;
-  font-weight: 600;
-  margin-bottom: 4px;
-  color: var(--text-primary);
-}
-
-.error-text {
-  font-size: 13px;
-  color: var(--text-secondary);
-  line-height: 1.5;
-  margin-bottom: 12px;
-}
-
-.error-retry-btn {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  padding: 8px 16px;
-  background: rgba(255, 255, 255, 0.1);
-  border: 1px solid var(--border);
-  border-radius: var(--radius-xs);
-  color: var(--text-primary);
-  font-size: 13px;
-  cursor: pointer;
-  transition: all var(--transition-fast);
-}
-
-.error-retry-btn:hover {
-  background: var(--accent-soft);
-  border-color: var(--accent-400);
-  color: var(--accent-300);
-}
-
-/* 亮色主题下的错误消息 */
-[data-theme="light"] .error-message.error-error {
-  background: rgba(239, 68, 68, 0.08);
-}
-
-[data-theme="light"] .error-message.error-warning {
-  background: rgba(245, 158, 11, 0.08);
-}
-
-[data-theme="light"] .error-message.error-info {
-  background: rgba(59, 130, 246, 0.08);
-}
-
-[data-theme="light"] .error-retry-btn {
-  background: rgba(0, 0, 0, 0.05);
-}
-
-[data-theme="light"] .error-retry-btn:hover {
-  background: var(--accent-soft);
 }
 
 /* ====== 天气预报组件 ====== */
@@ -1265,8 +959,42 @@
   cursor: not-allowed;
 }
 
-/* 响应式设计 */
+/* ====== 响应式设计 ====== */
+@media (max-width: 1200px) {
+  .main-layout-container {
+    grid-template-columns: 250px 1fr 250px;
+    gap: 16px;
+  }
+}
+
+@media (max-width: 1024px) {
+  .main-layout-container {
+    grid-template-columns: 1fr;
+    gap: 16px;
+  }
+  
+  .side-left,
+  .side-right {
+    grid-column: 1;
+  }
+  
+  .side-widgets {
+    flex-direction: row;
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+  
+  .widget-container {
+    width: calc(50% - 8px);
+    min-width: 240px;
+  }
+}
+
 @media (max-width: 768px) {
+  .app-main {
+    padding: 16px;
+  }
+  
   .flat-bookmarks-header {
     flex-direction: column;
     align-items: stretch;

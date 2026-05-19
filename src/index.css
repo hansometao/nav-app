@@ -61,10 +61,17 @@
   --border-accent: rgba(108, 99, 255, 0.4);
   --border-glow: rgba(108, 99, 255, 0.2);
 
+  /* Surface colors */
+  --surface-0: rgba(15, 15, 36, 0.4);
+  --surface-1: rgba(22, 22, 50, 0.6);
+  --surface-2: rgba(26, 28, 56, 0.4);
+  --surface-3: rgba(30, 32, 69, 0.5);
+
   /* 圆角 */
   --radius: 16px;
   --radius-sm: 12px;
   --radius-xs: 8px;
+  --radius-lg: 20px;
   --radius-pill: 50px;
   --radius-full: 9999px;
 
@@ -124,6 +131,12 @@
   --border-light: rgba(210, 210, 230, 0.8);
   --border-accent: rgba(108, 99, 255, 0.5);
   --border-glow: rgba(108, 99, 255, 0.3);
+
+  /* Surface colors */
+  --surface-0: rgba(245, 247, 250, 0.8);
+  --surface-1: rgba(255, 255, 255, 0.9);
+  --surface-2: rgba(238, 241, 245, 0.7);
+  --surface-3: rgba(220, 220, 240, 0.6);
 
   --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.08);
   --shadow-md: 0 4px 16px rgba(0, 0, 0, 0.1);
@@ -499,3 +512,69 @@ body::after {
 @custom-media --screen-md (max-width: 768px);
 @custom-media --screen-lg (max-width: 1024px);
 @custom-media --screen-xl (max-width: 1280px);
+
+/* ---- 页脚样式 ---- */
+.app-footer {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 20px;
+  padding: 20px;
+  background: linear-gradient(180deg, transparent, var(--bg-secondary));
+  border-top: 1px solid var(--border);
+  margin-top: 20px;
+}
+
+.footer-settings-btn {
+  background: var(--bg-secondary);
+  border: 1px solid var(--border);
+  color: var(--text-secondary);
+  padding: 10px 16px;
+  border-radius: var(--radius);
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all var(--transition-base);
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.footer-settings-btn:hover {
+  background: var(--bg-tertiary);
+  border-color: var(--accent-400);
+  color: var(--accent-300);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(108, 99, 255, 0.2);
+}
+
+.app-footer p {
+  font-size: 13px;
+  color: var(--text-muted);
+  margin: 0;
+}
+
+/* ---- 加载占位符 ---- */
+.loading-placeholder,
+.search-loading {
+  padding: 40px 20px;
+  text-align: center;
+  color: var(--text-muted);
+  font-size: 14px;
+}
+
+/* ---- 主应用布局 ---- */
+.app {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.app-main {
+  flex: 1;
+}
+
+/* ---- 书签区域 ---- */
+.flat-bookmarks-section {
+  width: 100%;
+}
