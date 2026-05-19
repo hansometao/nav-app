@@ -164,9 +164,8 @@ export default function Calendar() {
   for (let i = 1; i <= daysInMonth; i++) days.push(i);
 
   return (
-    <div className="widget calendar-widget">
-      <div className="widget-header">
-        <h3>📅 日历</h3>
+    <>
+      <div style={{ display: 'flex', justifyContent: 'flex-end', marginBottom: '12px' }}>
         <button className="btn-icon" onClick={() => setShowAdd(!showAdd)} title="添加事件">+</button>
       </div>
 
@@ -248,6 +247,6 @@ export default function Calendar() {
           )}
         </div>
       )}
-    </div>
+    </>
   );
 }
