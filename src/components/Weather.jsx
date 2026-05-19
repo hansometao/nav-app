@@ -1,5 +1,6 @@
 import { useState, useEffect, useMemo } from 'react';
 import { CACHE_CONFIG, STORAGE_KEYS } from '../config/storage';
+import { Icon, getWeatherIcon } from '../utils/icons';
 
 // 中国天气网城市代码 (国家气象局数据)
 const CITY_DB = [
@@ -24,15 +25,6 @@ const CITY_DB = [
   { name: '兰州', code: '101160101' }, { name: '中山', code: '101281701' },
   { name: '海口', code: '101310101' }, { name: '乌鲁木齐', code: '101130101' },
 ];
-
-const WEATHER_ICONS = {
-  '0': '☀️', '1': '🌤', '2': '⛅', '3': '☁️', '4': '☁️', '5': '🌧',
-  '6': '🌦', '7': '🌧', '8': '⛈', '9': '❄️', '10': '🌨', '11': '🌧',
-  '12': '🌧', '13': '🌦', '14': '🌦', '15': '🌧', '16': '⛈', '17': '🌧',
-  '18': '🌧', '19': '🌫', '20': '🌫', '21': '🌤', '22': '🌤', '23': '☀️',
-  '24': '☀️', '25': '🌨', '26': '🌨', '27': '🌧', '28': '🌧', '29': '🌧',
-  '30': '☀️', '31': '🌙', '32': '💨', '33': '🌫', '53': '⛈',
-};
 
 const WEATHER_DESC = {
   '0': '晴', '1': '多云', '2': '阴', '3': '阵雨', '4': '雷阵雨',
@@ -200,7 +192,7 @@ export default function Weather() {
   if (loading && !weather) {
     return (
       <div className="widget weather-widget">
-        <div className="widget-header"><h3>🌤 天气 (中国气象局)</h3></div>
+        <div className="widget-header"><h3><Icon name="cloudSun" size={18} /> 天气 (中国气象局)</h3></div>
         <div className="weather-loading">加载中...</div>
       </div>
     );
@@ -209,10 +201,10 @@ export default function Weather() {
   return (
     <div className="widget weather-widget">
       <div className="widget-header">
-        <h3>🌤 天气 (中国气象局)</h3>
+        <h3><Icon name="cloudSun" size={16} /> 天气</h3>
         <div className="city-selector">
           <button className="btn-city" onClick={() => setShowCityPicker(!showCityPicker)}>
-            {selectedCity.name} {selectedCity.custom && '⭐'} ▾
+            {selectedCity.name} {selectedCity.custom && <Icon name="star" size={12} />}
           </button>
         </div>
       </div>
@@ -234,63 +226,10 @@ export default function Weather() {
                 className={`city-option ${city.code === selectedCity.code ? 'active' : ''}`}
                 onClick={() => handleCitySelect(city)}
               >
-                {city.name} {city.custom && '⭐'}
+                {city.name}
               </button>
             ))}
           </div>
-          
-          {/* 自定义城市入口 */}
-          <div style={{ borderTop: '1px solid var(--border)', marginTop: '8px', paddingTop: '8px' }}>
-            <button
-              className="btn-city"
-              onClick={() => setShowCustomForm(!showCustomForm)}
-              style={{ width: '100%', fontSize: '11px', padding: '4px' }}
-            >
-              {showCustomForm ? '❌ 取消' : '➕ 添加自定义城市'}
-            </button>
-            
-            {showCustomForm && (
-              <form onSubmit={handleCustomSubmit} style={{ marginTop: '8px', display: 'flex', flexDirection: 'column', gap: '6px' }}>
-                <input
-                  type="text"
-                  placeholder="城市名称"
-                  value={customCity.name}
-                  onChange={e => setCustomCity({ ...customCity, name: e.target.value })}
-                  className="city-search-input"
-                  style={{ marginBottom: 0 }}
-                />
-                <input
-                  type="text"
-                  placeholder="城市代码 (如 101010100)"
-                  value={customCity.code}
-                  onChange={e => setCustomCity({ ...customCity, code: e.target.value })}
-                  className="city-search-input"
-                  style={{ marginBottom: 0 }}
-                />
-                <button type="submit" className="btn-sm" style={{ padding: '4px' }}>
-                  保存
-                </button>
-                <a
-                  href="http://www.weather.com.cn"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  style={{ fontSize: '10px', color: 'var(--text-secondary)', textAlign: 'center' }}
-                >
-                  查询城市代码 →
-                </a>
-              </form>
-            )}
-          </div>
-          
-          {selectedCity.custom && (
-            <button
-              className="btn-text"
-              onClick={clearCustomCity}
-              style={{ marginTop: '8px', width: '100%', fontSize: '11px' }}
-            >
-              🗑️ 清除自定义城市
-            </button>
-          )}
         </div>
       )}
 
@@ -300,33 +239,26 @@ export default function Weather() {
         <>
           <div className="weather-current">
             <div className="weather-temp-row">
-              <span className="weather-icon-big">{WEATHER_ICONS[weather.WS] || '🌤'}</span>
+              <Icon name={getWeatherIcon(weather.WS)} size={40} className="weather-icon-big" />
               <span className="weather-temp">{weather.temp}°C</span>
             </div>
             <div className="weather-desc">
               {WEATHER_DESC[weather.WS] || weather.weather || '未知'}
             </div>
             <div className="weather-details">
-              <span>💧 {weather.SD || 'N/A'}</span>
-              <span>💨 {getWindLevel(weather.WSE)}级/{weather.WD || 'N/A'}</span>
-              <span>🌡 体感 {('AP' in weather) ? `${weather.AP}°C` : `${weather.temp}°C`}</span>
+              <span><Icon name="drop" size={12} /> {weather.SD || 'N/A'}</span>
+              <span><Icon name="wind" size={12} /> {getWindLevel(weather.WSE)}级</span>
+              <span><Icon name="thermometer" size={12} /> 体感{('AP' in weather) ? `${weather.AP}°` : `${weather.temp}°`}</span>
             </div>
           </div>
 
           {forecast && (
             <div className="weather-info">
               <div className="weather-temp-range">
-                🌡 温度范围：{forecast.temp1} ~ {forecast.temp2}
-              </div>
-              <div className="weather-update">
-                更新时间：{weather.time || '未知'}
+                {forecast.temp1} ~ {forecast.temp2}
               </div>
             </div>
           )}
-
-          <div className="weather-data-source">
-            数据来源：中国气象局 · 国家气象中心
-          </div>
         </>
       )}
     </div>

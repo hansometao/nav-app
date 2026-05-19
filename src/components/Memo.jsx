@@ -1,4 +1,5 @@
 import { useState, useRef } from 'react';
+import { Icon } from '../utils/icons';
 
 const STORAGE_KEY = 'nav_app_memos';
 const COLORS = ['#ffd700', '#ff6b6b', '#69db7c', '#74c0fc', '#da77f2', '#ff922b', '#20c997', '#748ffc'];
@@ -76,10 +77,10 @@ export default function Memo() {
   return (
     <div className="widget memo-widget">
       <div className="widget-header">
-        <h3>📝 备忘录</h3>
+        <h3><Icon name="fileText" size={18} /> 备忘录</h3>
         <span className="memo-count">{memos.length} 条</span>
         <button className="btn-icon" onClick={() => { resetForm(); setShowAdd(!showAdd); }} title="新建便签">
-          {showAdd ? '✕' : '+'}
+          {showAdd ? <Icon name="x" size={16} /> : <Icon name="plus" size={16} />}
         </button>
       </div>
 
@@ -141,8 +142,8 @@ export default function Memo() {
                   <div className="memo-card-content">{memo.content}</div>
                 )}
                 <div className="memo-card-actions">
-                  <button className="bm-action-btn" onClick={() => startEdit(memo)} title="编辑">✏️</button>
-                  <button className="bm-action-btn" onClick={() => removeMemo(memo.id)} title="删除">🗑</button>
+                  <button className="bm-action-btn" onClick={() => startEdit(memo)} title="编辑"><Icon name="edit" size={14} /></button>
+                  <button className="bm-action-btn" onClick={() => removeMemo(memo.id)} title="删除"><Icon name="trash" size={14} /></button>
                 </div>
               </div>
             ))}

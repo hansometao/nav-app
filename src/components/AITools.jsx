@@ -1,9 +1,10 @@
-import { useState, useRef, useEffect } from 'react';
+import { useState, useRef, useEffect, useCallback } from 'react';
 
 const SEARCH_ENGINES = [
-  { name: 'Google', url: 'https://www.google.com/search?q=', icon: '🔍' },
-  { name: '百度', url: 'https://www.baidu.com/s?wd=', icon: '🐻' },
-  { name: 'Bing', url: 'https://www.bing.com/search?q=', icon: '🟦' },
+  { name: '百度', url: 'https://www.baidu.com/s?wd=', favicon: 'https://www.baidu.com/favicon.ico' },
+  { name: 'Bing', url: 'https://www.bing.com/search?q=', favicon: 'https://www.bing.com/favicon.ico' },
+  { name: 'GitHub', url: 'https://github.com/search?q=', favicon: 'https://github.com/favicon.ico' },
+  { name: '知乎', url: 'https://www.zhihu.com/search?type=content&q=', favicon: 'https://static.zhihu.com/heifetz/favicon.ico' },
 ];
 
 const AI_TOOLS = [
@@ -19,6 +20,8 @@ const AI_TOOLS = [
   { name: 'Grok',       url: 'https://grok.com',               icon: '⚡', desc: 'xAI 助手' },
   { name: 'Midjourney', url: 'https://www.midjourney.com',     icon: '🎨', desc: 'AI 图像生成' },
   { name: 'StableDiff.',url: 'https://stability.ai',           icon: '🖼', desc: '开源 AI 绘图' },
+  { name: 'Suno',       url: 'https://suno.com',               icon: '🎵', desc: 'AI 音乐生成' },
+  { name: 'Runway',     url: 'https://runwayml.com',           icon: '🎬', desc: 'AI 视频创作' },
 ];
 
 const QUICK_LINKS = [
@@ -36,6 +39,23 @@ const QUICK_LINKS = [
   { name: 'Wikipedia', url: 'https://en.wikipedia.org',     icon: '🌐' },
 ];
 
+// 从 localStorage 获取搜索历史
+const getSearchHistory = () => {
+  try {
+    const history = localStorage.getItem('navAppSearchHistory');
+    return history ? JSON.parse(history) : [];
+  } catch {
+    return [];
+  }
+};
+
+// 保存搜索历史到 localStorage
+const saveSearchHistory = (history) => {
+  try {
+    localStorage.setItem('navAppSearchHistory', JSON.stringify(history.slice(0, 10)));
+  } catch {}
+};
+
 /**
  * AITools 组件
  * @param {Object} props
@@ -45,92 +65,128 @@ const QUICK_LINKS = [
  */
 export default function AITools({ searchEngine, onSearchEngineChange, compact = false }) {
   const [searchQuery, setSearchQuery] = useState('');
-  const [showEngineMenu, setShowEngineMenu] = useState(false);
+  const [showHistory, setShowHistory] = useState(false);
+  const [searchHistory, setSearchHistory] = useState(getSearchHistory);
   const inputRef = useRef(null);
 
-  const handleSearch = (e) => {
+  const handleSearch = useCallback((e) => {
     e.preventDefault();
-    if (searchQuery.trim()) {
-      window.open(searchEngine.url + encodeURIComponent(searchQuery.trim()), '_blank');
+    const query = searchQuery.trim();
+    if (query) {
+      window.open(searchEngine.url + encodeURIComponent(query), '_blank');
+      
+      const newHistory = [query, ...searchHistory.filter(h => h !== query)];
+      setSearchHistory(newHistory);
+      saveSearchHistory(newHistory);
+      
       setSearchQuery('');
+      setShowHistory(false);
     }
-  };
+  }, [searchQuery, searchEngine, searchHistory]);
+
+  const handleHistorySearch = useCallback((query) => {
+    window.open(searchEngine.url + encodeURIComponent(query), '_blank');
+    setSearchQuery('');
+    setShowHistory(false);
+  }, [searchEngine]);
+
+  const clearHistory = useCallback(() => {
+    setSearchHistory([]);
+    saveSearchHistory([]);
+    setShowHistory(false);
+  }, []);
   
-  // 键盘快捷键：Ctrl/Cmd + K 聚焦搜索框
   useEffect(() => {
     const handleKeyDown = (e) => {
       if ((e.ctrlKey || e.metaKey) && e.key === 'k') {
         e.preventDefault();
         inputRef.current?.focus();
+        setShowHistory(searchHistory.length > 0);
       }
     };
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
-  }, []);
+  }, [searchHistory]);
   
-  // 点击外部关闭下拉菜单
   useEffect(() => {
     const handleClickOutside = (e) => {
-      if (showEngineMenu && !e.target.closest('.search-engine-select')) {
-        setShowEngineMenu(false);
+      if (showHistory && !e.target.closest('.search-history-wrapper')) {
+        setShowHistory(false);
       }
     };
     document.addEventListener('mousedown', handleClickOutside);
     return () => document.removeEventListener('mousedown', handleClickOutside);
-  }, [showEngineMenu]);
+  }, [showHistory]);
 
-  // 紧凑模式：只显示搜索栏
   if (compact) {
     return (
       <div className="search-section search-section-compact">
-        <form className="search-bar search-bar-large" onSubmit={handleSearch}>
-          <div className="search-engine-select">
-            <button
-              type="button"
-              className="search-engine-btn"
-              onClick={() => setShowEngineMenu(!showEngineMenu)}
-              title={`切换搜索引擎 (当前：${searchEngine.name})`}
-            >
-              {searchEngine.icon}
+        <div className="search-history-wrapper">
+          <form className="search-bar search-bar-large" onSubmit={handleSearch}>
+            <div className="search-engine-indicator">
+              <img className="se-favicon" src={searchEngine.favicon} alt={searchEngine.name} />
               <span className="se-name">{searchEngine.name}</span>
-              <span className="se-arrow">▾</span>
-            </button>
-            {showEngineMenu && (
-              <div className="search-engine-dropdown">
-                {SEARCH_ENGINES.map(se => (
+            </div>
+            <input
+              ref={inputRef}
+              type="text"
+              value={searchQuery}
+              onChange={e => {
+                setSearchQuery(e.target.value);
+                setShowHistory(searchHistory.length > 0 && e.target.value === '');
+              }}
+              onFocus={() => searchHistory.length > 0 && setShowHistory(true)}
+              placeholder={`搜索... (Ctrl+K)`}
+              className="search-input"
+            />
+            {searchQuery && (
+              <button
+                type="button"
+                className="btn-clear"
+                onClick={() => setSearchQuery('')}
+                aria-label="清空搜索"
+              >
+                ✕
+              </button>
+            )}
+            <button type="submit" className="btn-search">搜索</button>
+          </form>
+          
+          {showHistory && searchHistory.length > 0 && (
+            <div className="search-history-dropdown">
+              <div className="history-header">
+                <span className="history-title">📋 搜索历史</span>
+                <button type="button" className="btn-clear-history" onClick={clearHistory}>
+                  清空
+                </button>
+              </div>
+              <div className="history-list">
+                {searchHistory.map((query, index) => (
                   <button
-                    key={se.name}
+                    key={index}
                     type="button"
-                    className={`se-dropdown-item ${se.name === searchEngine.name ? 'active' : ''}`}
-                    onClick={() => {
-                      onSearchEngineChange(se);
-                      setShowEngineMenu(false);
-                    }}
+                    className="history-item"
+                    onClick={() => handleHistorySearch(query)}
                   >
-                    {se.icon} {se.name}
+                    <span className="history-icon">🕐</span>
+                    <span className="history-text">{query}</span>
                   </button>
                 ))}
               </div>
-            )}
-          </div>
-          <input
-            ref={inputRef}
-            type="text"
-            value={searchQuery}
-            onChange={e => setSearchQuery(e.target.value)}
-            placeholder={`搜索... (Ctrl+K)`}
-            className="search-input"
-          />
-          <button type="submit" className="btn-search">搜索</button>
-        </form>
+            </div>
+          )}
+        </div>
+
         <div className="search-engines-bar">
           {SEARCH_ENGINES.map(se => (
             <button
               key={se.name}
               className={`se-tab ${se.name === searchEngine.name ? 'active' : ''}`}
               onClick={() => onSearchEngineChange(se)}
+              title={se.name}
             >
-              {se.icon} {se.name}
+              <img className="se-tab-favicon" src={se.favicon} alt={se.name} />
+              <span className="se-tab-name">{se.name}</span>
             </button>
           ))}
         </div>
@@ -143,54 +199,72 @@ export default function AITools({ searchEngine, onSearchEngineChange, compact = 
     <>
       {/* Search Bar */}
       <div className="search-section">
-        <form className="search-bar" onSubmit={handleSearch}>
-          <div className="search-engine-select">
-            <button
-              type="button"
-              className="search-engine-btn"
-              onClick={() => setShowEngineMenu(!showEngineMenu)}
-              title={`切换搜索引擎 (当前：${searchEngine.name})`}
-            >
-              {searchEngine.icon}
+        <div className="search-history-wrapper">
+          <form className="search-bar" onSubmit={handleSearch}>
+            <div className="search-engine-indicator">
+              <img className="se-favicon" src={searchEngine.favicon} alt={searchEngine.name} />
               <span className="se-name">{searchEngine.name}</span>
-              <span className="se-arrow">▾</span>
-            </button>
-            {showEngineMenu && (
-              <div className="search-engine-dropdown">
-                {SEARCH_ENGINES.map(se => (
+            </div>
+            <input
+              ref={inputRef}
+              type="text"
+              value={searchQuery}
+              onChange={e => {
+                setSearchQuery(e.target.value);
+                setShowHistory(searchHistory.length > 0 && e.target.value === '');
+              }}
+              onFocus={() => searchHistory.length > 0 && setShowHistory(true)}
+              placeholder={`搜索... (Ctrl+K)`}
+              className="search-input"
+            />
+            {searchQuery && (
+              <button
+                type="button"
+                className="btn-clear"
+                onClick={() => setSearchQuery('')}
+                aria-label="清空搜索"
+              >
+                ✕
+              </button>
+            )}
+            <button type="submit" className="btn-search">搜索</button>
+          </form>
+          
+          {showHistory && searchHistory.length > 0 && (
+            <div className="search-history-dropdown">
+              <div className="history-header">
+                <span className="history-title">📋 搜索历史</span>
+                <button type="button" className="btn-clear-history" onClick={clearHistory}>
+                  清空
+                </button>
+              </div>
+              <div className="history-list">
+                {searchHistory.map((query, index) => (
                   <button
-                    key={se.name}
+                    key={index}
                     type="button"
-                    className={`se-dropdown-item ${se.name === searchEngine.name ? 'active' : ''}`}
-                    onClick={() => {
-                      onSearchEngineChange(se);
-                      setShowEngineMenu(false);
-                    }}
+                    className="history-item"
+                    onClick={() => handleHistorySearch(query)}
                   >
-                    {se.icon} {se.name}
+                    <span className="history-icon">🕐</span>
+                    <span className="history-text">{query}</span>
                   </button>
                 ))}
               </div>
-            )}
-          </div>
-          <input
-            ref={inputRef}
-            type="text"
-            value={searchQuery}
-            onChange={e => setSearchQuery(e.target.value)}
-            placeholder={`搜索... (Ctrl+K)`}
-            className="search-input"
-          />
-          <button type="submit" className="btn-search">搜索</button>
-        </form>
+            </div>
+          )}
+        </div>
+
         <div className="search-engines-bar">
           {SEARCH_ENGINES.map(se => (
             <button
               key={se.name}
               className={`se-tab ${se.name === searchEngine.name ? 'active' : ''}`}
               onClick={() => onSearchEngineChange(se)}
+              title={se.name}
             >
-              {se.icon} {se.name}
+              <img className="se-tab-favicon" src={se.favicon} alt={se.name} />
+              <span className="se-tab-name">{se.name}</span>
             </button>
           ))}
         </div>
