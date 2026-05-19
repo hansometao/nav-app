@@ -1,13 +1,14 @@
 import { useState, useEffect, useCallback, useRef } from 'react';
 import { STORAGE_KEYS, CACHE_CONFIG } from '../config/storage';
+import { Icon } from '../utils/icons';
 
 // 平台配置
 const PLATFORMS = [
-  { key: 'zhihu', name: '知乎', icon: '📖', color: '#0084ff' },
-  { key: 'bilibili', name: 'B站', icon: '📺', color: '#00a1d6' },
-  { key: 'weibo', name: '微博', icon: '🔴', color: '#e6162d' },
-  { key: 'douyin', name: '抖音', icon: '🎵', color: '#000000' },
-  { key: 'toutiao', name: '头条', icon: '📰', color: '#d81e06' },
+  { key: 'zhihu', name: '知乎', color: '#0084ff' },
+  { key: 'bilibili', name: 'B站', color: '#00a1d6' },
+  { key: 'weibo', name: '微博', color: '#e6162d' },
+  { key: 'douyin', name: '抖音', color: '#000000' },
+  { key: 'toutiao', name: '头条', color: '#d81e06' },
 ];
 
 // 热榜数据（模拟数据，可替换为真实API）
@@ -261,7 +262,7 @@ export default function HotNews() {
   return (
     <div className="widget hotnews-widget">
       <div className="widget-header">
-        <h3>🔥 热榜资讯</h3>
+        <h3><Icon name="news" size={18} /> 热榜资讯</h3>
         <div className="hotnews-header-actions">
           <span className="hotnews-update">
             {lastUpdate ? `更新于 ${formatTime(lastUpdate)}` : ''}
@@ -273,7 +274,7 @@ export default function HotNews() {
             title="刷新"
             disabled={loading}
           >
-            🔄
+            <Icon name="refreshCw" size={16} />
           </button>
         </div>
       </div>
@@ -286,7 +287,7 @@ export default function HotNews() {
             onClick={() => setPlatform(p)}
             style={{ '--platform-color': p.color }}
           >
-            {p.icon} {p.name}
+            {p.name}
           </button>
         ))}
       </div>
