@@ -61,22 +61,21 @@ function ShortcutHelp({ onClose }) {
   );
 }
 
-const WidgetItem = ({ key, title, Comp, passProps, searchEngine, onSearchEngineChange, collapsedWidgets, onToggleWidget }) => (
+const WidgetItem = ({ widgetKey, title, Comp, passProps, searchEngine, onSearchEngineChange, collapsedWidgets, onToggleWidget }) => (
   <div
-    key={key}
-    className={`widget-container ${collapsedWidgets[key] ? 'collapsed' : ''}`}
-    data-widget={key}
+    className={`widget-container ${collapsedWidgets[widgetKey] ? 'collapsed' : ''}`}
+    data-widget={widgetKey}
   >
-    <div className="widget-header-bar" onClick={() => onToggleWidget(key)}>
+    <div className="widget-header-bar" onClick={() => onToggleWidget(widgetKey)}>
       <span className="widget-title-label">{title}</span>
       <button
         className="widget-toggle-btn"
-        aria-label={collapsedWidgets[key] ? '展开' : '折叠'}
+        aria-label={collapsedWidgets[widgetKey] ? '展开' : '折叠'}
       >
-        {collapsedWidgets[key] ? '▶' : '▼'}
+        {collapsedWidgets[widgetKey] ? '▶' : '▼'}
       </button>
     </div>
-    <div className={`widget-content ${collapsedWidgets[key] ? 'hidden' : ''}`}>
+    <div className={`widget-content ${collapsedWidgets[widgetKey] ? 'hidden' : ''}`}>
       <Suspense fallback={null}>
         {passProps ? (
           <Comp searchEngine={searchEngine} onSearchEngineChange={onSearchEngineChange} />
@@ -88,13 +87,13 @@ const WidgetItem = ({ key, title, Comp, passProps, searchEngine, onSearchEngineC
   </div>
 );
 
-const MobileWidgetItem = ({ key, title, Comp, passProps, searchEngine, onSearchEngineChange, collapsedWidgets, onToggleWidget }) => (
-  <div key={key} className="mobile-widget-item">
-    <div className="mobile-widget-header" onClick={() => onToggleWidget(key)}>
+const MobileWidgetItem = ({ widgetKey, title, Comp, passProps, searchEngine, onSearchEngineChange, collapsedWidgets, onToggleWidget }) => (
+  <div className="mobile-widget-item">
+    <div className="mobile-widget-header" onClick={() => onToggleWidget(widgetKey)}>
       <span>{title}</span>
-      <span>{collapsedWidgets[key] ? '▶' : '▼'}</span>
+      <span>{collapsedWidgets[widgetKey] ? '▶' : '▼'}</span>
     </div>
-    {!collapsedWidgets[key] && (
+    {!collapsedWidgets[widgetKey] && (
       <div className="mobile-widget-content">
         <Suspense fallback={null}>
           {passProps ? (
@@ -173,9 +172,7 @@ export default memo(function App() {
             <button
               className="btn-theme-toggle"
               onClick={toggleTheme}
-              title={
-                theme === THEMES.DARK ? '切换到亮色模式 (Ctrl+D)' : '切换到深色模式 (Ctrl+D)'
-              }
+              title={theme === THEMES.DARK ? '切换到亮色模式 (Ctrl+D)' : '切换到深色模式 (Ctrl+D)'}
               aria-label={theme === THEMES.DARK ? '切换到亮色模式' : '切换到深色模式'}
             >
               {theme === THEMES.DARK ? '☀️' : '🌙'}
@@ -211,7 +208,10 @@ export default memo(function App() {
               {SIDE_WIDGETS_LEFT.map((widget) => (
                 <WidgetItem
                   key={widget.key}
-                  {...widget}
+                  widgetKey={widget.key}
+                  title={widget.title}
+                  Comp={widget.Comp}
+                  passProps={widget.passProps}
                   searchEngine={searchEngine}
                   onSearchEngineChange={setSearchEngine}
                   collapsedWidgets={collapsedWidgets}
@@ -234,7 +234,10 @@ export default memo(function App() {
               {SIDE_WIDGETS_RIGHT.map((widget) => (
                 <WidgetItem
                   key={widget.key}
-                  {...widget}
+                  widgetKey={widget.key}
+                  title={widget.title}
+                  Comp={widget.Comp}
+                  passProps={widget.passProps}
                   searchEngine={searchEngine}
                   onSearchEngineChange={setSearchEngine}
                   collapsedWidgets={collapsedWidgets}
@@ -286,7 +289,10 @@ export default memo(function App() {
                 {SIDE_WIDGETS_LEFT.map((widget) => (
                   <MobileWidgetItem
                     key={widget.key}
-                    {...widget}
+                    widgetKey={widget.key}
+                    title={widget.title}
+                    Comp={widget.Comp}
+                    passProps={widget.passProps}
                     searchEngine={searchEngine}
                     onSearchEngineChange={setSearchEngine}
                     collapsedWidgets={collapsedWidgets}
@@ -299,7 +305,10 @@ export default memo(function App() {
                 {SIDE_WIDGETS_RIGHT.map((widget) => (
                   <MobileWidgetItem
                     key={widget.key}
-                    {...widget}
+                    widgetKey={widget.key}
+                    title={widget.title}
+                    Comp={widget.Comp}
+                    passProps={widget.passProps}
                     searchEngine={searchEngine}
                     onSearchEngineChange={setSearchEngine}
                     collapsedWidgets={collapsedWidgets}
