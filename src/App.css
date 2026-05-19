@@ -964,13 +964,27 @@
 }
 
 .bm-icon {
-  font-size: 28px;
-  margin-bottom: 4px;
-  transition: transform var(--transition-bounce);
+  font-size: 32px;
+  margin-bottom: 8px;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.15));
 }
 
 .bookmark-item:hover .bm-icon {
-  transform: scale(1.3);
+  transform: scale(1.25);
+  filter: drop-shadow(0 4px 8px rgba(108, 99, 255, 0.3));
+}
+
+/* 快速访问栏emoji图标 */
+.quick-icon {
+  font-size: 20px;
+  transition: all 0.2s ease;
+  filter: drop-shadow(0 1px 3px rgba(0, 0, 0, 0.1));
+}
+
+.quick-access-item:hover .quick-icon {
+  transform: scale(1.15);
+  filter: drop-shadow(0 2px 6px rgba(108, 99, 255, 0.25));
 }
 
 .bm-name {
@@ -2029,15 +2043,46 @@
 }
 
 .bm-favicon {
-  width: 28px;
-  height: 28px;
+  width: 40px;
+  height: 40px;
   object-fit: contain;
-  border-radius: 6px;
-  margin-bottom: 4px;
+  border-radius: 12px;
+  margin-bottom: 8px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .bm-favicon:not([src]) {
   display: none;
+}
+
+.bookmark-item:hover .bm-favicon {
+  transform: scale(1.15);
+  box-shadow: 0 6px 20px rgba(108, 99, 255, 0.3);
+}
+
+/* 快速访问栏图标样式 */
+.quick-favicon {
+  width: 24px;
+  height: 24px;
+  object-fit: contain;
+  border-radius: 6px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+  transition: all 0.2s ease;
+}
+
+.quick-access-item:hover .quick-favicon {
+  transform: scale(1.1);
+  box-shadow: 0 4px 12px rgba(108, 99, 255, 0.25);
+}
+
+/* 图标预览样式优化 */
+.favicon-preview-img {
+  width: 32px;
+  height: 32px;
+  object-fit: contain;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
 }
 
 /* ====== 备忘录组件 ====== */
