@@ -2275,9 +2275,12 @@ body {
   border-radius: var(--radius-sm);
   padding: 16px;
   margin-bottom: 16px;
-  animation: slideDown 0.3s ease-out;
+  animation: fadeIn 0.3s ease-out;
   position: relative;
   z-index: 100;
+  transform: none !important;
+  opacity: 1 !important;
+  pointer-events: auto !important;
 }
 
 .todo-add-form .form-row {
@@ -2313,6 +2316,10 @@ body {
   font-weight: 500;
   cursor: pointer;
   transition: all var(--transition-fast);
+  position: relative;
+  z-index: 101;
+  transform: none !important;
+  pointer-events: auto !important;
 }
 
 .priority-btn:hover {
@@ -2350,6 +2357,7 @@ body {
   align-items: center;
   justify-content: center;
   gap: 6px;
+  pointer-events: auto !important;
 }
 
 .todo-controls {
