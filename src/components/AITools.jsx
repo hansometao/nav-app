@@ -1,12 +1,12 @@
 import { useState, useRef, useEffect, useCallback } from 'react';
 
 const SEARCH_ENGINES = [
-  { name: 'Google', url: 'https://www.google.com/search?q=', icon: '🔍' },
-  { name: '百度', url: 'https://www.baidu.com/s?wd=', icon: '🐻' },
-  { name: 'Bing', url: 'https://www.bing.com/search?q=', icon: '🟦' },
-  { name: 'GitHub', url: 'https://github.com/search?q=', icon: '🐙' },
-  { name: 'B站', url: 'https://search.bilibili.com/all?keyword=', icon: '📺' },
-  { name: '知乎', url: 'https://www.zhihu.com/search?type=content&q=', icon: '💡' },
+  { name: 'Google', url: 'https://www.google.com/search?q=', favicon: 'https://www.google.com/favicon.ico' },
+  { name: '百度', url: 'https://www.baidu.com/s?wd=', favicon: 'https://www.baidu.com/favicon.ico' },
+  { name: 'Bing', url: 'https://www.bing.com/search?q=', favicon: 'https://www.bing.com/favicon.ico' },
+  { name: 'GitHub', url: 'https://github.com/search?q=', favicon: 'https://github.com/favicon.ico' },
+  { name: 'B站', url: 'https://search.bilibili.com/all?keyword=', favicon: 'https://static.hdslb.com/mobile/img/favicon.ico' },
+  { name: '知乎', url: 'https://www.zhihu.com/search?type=content&q=', favicon: 'https://static.zhihu.com/heifetz/favicon.ico' },
 ];
 
 const AI_TOOLS = [
@@ -126,7 +126,7 @@ export default function AITools({ searchEngine, onSearchEngineChange, compact = 
         <div className="search-history-wrapper">
           <form className="search-bar search-bar-large" onSubmit={handleSearch}>
             <div className="search-engine-indicator">
-              <span className="se-icon">{searchEngine.icon}</span>
+              <img className="se-favicon" src={searchEngine.favicon} alt={searchEngine.name} />
               <span className="se-name">{searchEngine.name}</span>
             </div>
             <input
@@ -187,7 +187,7 @@ export default function AITools({ searchEngine, onSearchEngineChange, compact = 
               onClick={() => onSearchEngineChange(se)}
               title={se.name}
             >
-              <span className="se-tab-icon">{se.icon}</span>
+              <img className="se-tab-favicon" src={se.favicon} alt={se.name} />
               <span className="se-tab-name">{se.name}</span>
             </button>
           ))}
@@ -204,7 +204,7 @@ export default function AITools({ searchEngine, onSearchEngineChange, compact = 
         <div className="search-history-wrapper">
           <form className="search-bar" onSubmit={handleSearch}>
             <div className="search-engine-indicator">
-              <span className="se-icon">{searchEngine.icon}</span>
+              <img className="se-favicon" src={searchEngine.favicon} alt={searchEngine.name} />
               <span className="se-name">{searchEngine.name}</span>
             </div>
             <input
@@ -265,7 +265,7 @@ export default function AITools({ searchEngine, onSearchEngineChange, compact = 
               onClick={() => onSearchEngineChange(se)}
               title={se.name}
             >
-              <span className="se-tab-icon">{se.icon}</span>
+              <img className="se-tab-favicon" src={se.favicon} alt={se.name} />
               <span className="se-tab-name">{se.name}</span>
             </button>
           ))}

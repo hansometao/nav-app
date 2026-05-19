@@ -339,7 +339,7 @@ body {
   display: flex;
   align-items: center;
   gap: 8px;
-  padding: 12px 16px;
+  padding: 10px 14px;
   background: rgba(255, 255, 255, 0.04);
   border-radius: var(--radius-pill);
   color: var(--text-secondary);
@@ -348,10 +348,16 @@ body {
   white-space: nowrap;
   flex-shrink: 0;
   border: 1px solid transparent;
+  min-width: 100px;
+  justify-content: center;
 }
 
-.search-engine-indicator .se-icon {
-  font-size: 18px;
+.search-engine-indicator .se-favicon {
+  width: 20px;
+  height: 20px;
+  border-radius: 4px;
+  object-fit: contain;
+  flex-shrink: 0;
 }
 
 .search-engine-indicator .se-name {
@@ -529,7 +535,7 @@ body {
   display: flex;
   align-items: center;
   gap: 6px;
-  padding: 8px 14px;
+  padding: 8px 12px;
   background: rgba(255, 255, 255, 0.04);
   border: 1px solid var(--border);
   border-radius: var(--radius-pill);
@@ -538,6 +544,8 @@ body {
   cursor: pointer;
   transition: all var(--transition-fast);
   white-space: nowrap;
+  min-width: 80px;
+  justify-content: center;
 }
 
 .se-tab:hover {
@@ -553,8 +561,12 @@ body {
   box-shadow: 0 0 12px var(--accent-glow);
 }
 
-.se-tab-icon {
-  font-size: 16px;
+.se-tab-favicon {
+  width: 16px;
+  height: 16px;
+  border-radius: 3px;
+  object-fit: contain;
+  flex-shrink: 0;
 }
 
 .se-tab-name {
