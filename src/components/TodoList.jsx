@@ -1,7 +1,21 @@
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect } from 'react';
 import { Icon } from '../utils/icons';
 
 const STORAGE_KEY = 'nav_app_todos';
+
+const CATEGORIES = [
+  { id: 'all', label: '全部', color: '#6c63ff' },
+  { id: 'work', label: '工作', color: '#f87171' },
+  { id: 'life', label: '生活', color: '#34d399' },
+  { id: 'study', label: '学习', color: '#60a5fa' },
+  { id: 'other', label: '其他', color: '#a78bfa' },
+];
+
+const PRIORITIES = [
+  { id: 'high', label: '高', color: '#ef4444', icon: 'alertCircle' },
+  { id: 'medium', label: '中', color: '#f59e0b', icon: 'minus' },
+  { id: 'low', label: '低', color: '#6b7280', icon: 'arrowDown' },
+];
 
 export default function TodoList() {
   const [todos, setTodos] = useState(() => {
@@ -15,7 +29,16 @@ export default function TodoList() {
   });
   
   const [input, setInput] = useState('');
+  const [category, setCategory] = useState('all');
+  const [priority, setPriority] = useState('medium');
+  const [dueDate, setDueDate] = useState('');
   const [filter, setFilter] = useState('all');
+  const [sortBy, setSortBy] = useState('created');
+  const [showAddForm, setShowAddForm] = useState(false);
+
+  useEffect(() => {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(todos));
+  }, [todos]);
 
   const save = (list) => {
     setTodos(list);
@@ -26,8 +49,21 @@ export default function TodoList() {
     e.preventDefault();
     const text = input.trim();
     if (!text) return;
-    save([...todos, { id: Date.now(), text, done: false, createdAt: Date.now() }]);
+    
+    const newTodo = {
+      id: Date.now(),
+      text,
+      done: false,
+      createdAt: Date.now(),
+      category: category,
+      priority: priority,
+      dueDate: dueDate || null,
+    };
+    
+    save([...todos, newTodo]);
     setInput('');
+    setDueDate('');
+    setShowAddForm(false);
   };
 
   const toggle = (id) => {
@@ -38,91 +74,265 @@ export default function TodoList() {
     save(todos.filter(t => t.id !== id));
   };
 
+  const editTodo = (id, newText) => {
+    save(todos.map(t => t.id === id ? { ...t, text: newText } : t));
+  };
+
   const clearDone = () => {
     save(todos.filter(t => !t.done));
   };
 
-  const filtered = useMemo(() => todos.filter(t => {
-    if (filter === 'active') return !t.done;
-    if (filter === 'done') return t.done;
-    return true;
-  }), [todos, filter]);
+  const selectAll = () => {
+    const allDone = todos.every(t => t.done);
+    save(todos.map(t => ({ ...t, done: !allDone })));
+  };
 
-  const doneCount = useMemo(() => todos.filter(t => t.done).length, [todos]);
-  const totalCount = todos.length;
+  const filtered = useMemo(() => {
+    let result = todos;
+    
+    // 分类筛选
+    if (category !== 'all') {
+      result = result.filter(t => t.category === category);
+    }
+    
+    // 状态筛选
+    if (filter === 'active') {
+      result = result.filter(t => !t.done);
+    } else if (filter === 'done') {
+      result = result.filter(t => t.done);
+    } else if (filter === 'today') {
+      const today = new Date().toISOString().split('T')[0];
+      result = result.filter(t => t.dueDate === today);
+    } else if (filter === 'overdue') {
+      const today = new Date().toISOString().split('T')[0];
+      result = result.filter(t => !t.done && t.dueDate && t.dueDate < today);
+    }
+    
+    // 排序
+    result = [...result].sort((a, b) => {
+      if (sortBy === 'priority') {
+        const priorityOrder = { high: 0, medium: 1, low: 2 };
+        return priorityOrder[a.priority] - priorityOrder[b.priority];
+      } else if (sortBy === 'dueDate') {
+        if (!a.dueDate && !b.dueDate) return 0;
+        if (!a.dueDate) return 1;
+        if (!b.dueDate) return -1;
+        return new Date(a.dueDate) - new Date(b.dueDate);
+      } else {
+        return b.createdAt - a.createdAt;
+      }
+    });
+    
+    return result;
+  }, [todos, category, filter, sortBy]);
+
+  const stats = useMemo(() => {
+    const today = new Date().toISOString().split('T')[0];
+    return {
+      total: todos.length,
+      done: todos.filter(t => t.done).length,
+      active: todos.filter(t => !t.done).length,
+      today: todos.filter(t => t.dueDate === today).length,
+      overdue: todos.filter(t => !t.done && t.dueDate && t.dueDate < today).length,
+    };
+  }, [todos]);
+
+  const getPriorityIcon = (priorityId) => {
+    const p = PRIORITIES.find(p => p.id === priorityId);
+    return p ? p.icon : 'minus';
+  };
+
+  const getPriorityColor = (priorityId) => {
+    const p = PRIORITIES.find(p => p.id === priorityId);
+    return p ? p.color : '#6b7280';
+  };
+
+  const formatDueDate = (dateStr) => {
+    if (!dateStr) return '';
+    const date = new Date(dateStr);
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    const tomorrow = new Date(today);
+    tomorrow.setDate(tomorrow.getDate() + 1);
+    
+    const targetDate = new Date(dateStr);
+    targetDate.setHours(0, 0, 0, 0);
+    
+    if (targetDate.getTime() === today.getTime()) {
+      return '今天';
+    } else if (targetDate.getTime() === tomorrow.getTime()) {
+      return '明天';
+    } else {
+      return `${date.getMonth() + 1}/${date.getDate()}`;
+    }
+  };
+
+  const isOverdue = (dateStr) => {
+    if (!dateStr) return false;
+    const today = new Date().toISOString().split('T')[0];
+    return dateStr < today;
+  };
 
   return (
     <div className="widget todo-widget" role="region" aria-label="待办事项">
       <div className="widget-header">
         <h3><Icon name="checkCircle" size={18} /> 待办事项</h3>
-        <span className="todo-count" aria-label={`已完成 ${doneCount} 项，共 ${totalCount} 项`}>
-          {doneCount}/{totalCount}
-        </span>
+        <div className="todo-stats">
+          <span className="stat-badge">{stats.active} 待办</span>
+          {stats.overdue > 0 && (
+            <span className="stat-badge stat-overdue">{stats.overdue} 过期</span>
+          )}
+        </div>
       </div>
 
-      <form className="todo-form" onSubmit={addTodo} role="form" aria-label="添加待办">
-        <input
-          type="text"
-          value={input}
-          onChange={e => setInput(e.target.value)}
-          placeholder="添加新的待办事项..."
-          className="todo-input"
-          aria-label="待办事项内容"
-        />
-        <button type="submit" className="btn-sm" aria-label="添加待办">添加</button>
-      </form>
-
-      <div className="todo-filters" role="tablist" aria-label="筛选">
-        {[
-          { key: 'all', label: '全部', icon: 'list' },
-          { key: 'active', label: '未完成', icon: 'circle' },
-          { key: 'done', label: '已完成', icon: 'checkCircle' },
-        ].map(f => (
+      <div className="todo-categories">
+        {CATEGORIES.map(cat => (
           <button
-            key={f.key}
-            className={`todo-filter-btn ${filter === f.key ? 'active' : ''}`}
-            onClick={() => setFilter(f.key)}
-            role="tab"
-            aria-selected={filter === f.key}
-            aria-controls="todo-list"
+            key={cat.id}
+            className={`category-btn ${category === cat.id ? 'active' : ''}`}
+            onClick={() => setCategory(cat.id)}
+            style={{ '--cat-color': cat.color }}
           >
-            <Icon name={f.icon} size={14} /> {f.label}
+            {cat.label}
           </button>
         ))}
       </div>
 
-      <div className="todo-list" id="todo-list" role="tabpanel" aria-label="待办列表">
+      <form className="todo-form" onSubmit={addTodo}>
+        <input
+          type="text"
+          value={input}
+          onChange={e => setInput(e.target.value)}
+          placeholder="添加新任务... (回车添加)"
+          className="todo-input"
+        />
+        <button 
+          type="button" 
+          className="btn-sm btn-expand" 
+          onClick={() => setShowAddForm(!showAddForm)}
+        >
+          <Icon name="plus" size={16} />
+        </button>
+      </form>
+
+      {showAddForm && (
+        <div className="todo-add-form">
+          <div className="form-row">
+            <label>优先级：</label>
+            <div className="priority-selector">
+              {PRIORITIES.map(p => (
+                <button
+                  key={p.id}
+                  type="button"
+                  className={`priority-btn ${priority === p.id ? 'active' : ''}`}
+                  onClick={() => setPriority(p.id)}
+                  style={{ '--priority-color': p.color }}
+                >
+                  <Icon name={p.icon} size={14} />
+                  {p.label}
+                </button>
+              ))}
+            </div>
+          </div>
+          <div className="form-row">
+            <label>截止日期：</label>
+            <input
+              type="date"
+              value={dueDate}
+              onChange={e => setDueDate(e.target.value)}
+              className="date-input"
+            />
+          </div>
+          <button type="submit" className="btn-sm btn-full" onClick={addTodo}>
+            添加任务
+          </button>
+        </div>
+      )}
+
+      <div className="todo-controls">
+        <div className="todo-filters" role="tablist">
+          {[
+            { key: 'all', label: '全部' },
+            { key: 'active', label: '未完成' },
+            { key: 'done', label: '已完成' },
+            { key: 'today', label: '今日' },
+            { key: 'overdue', label: '过期' },
+          ].map(f => (
+            <button
+              key={f.key}
+              className={`todo-filter-btn ${filter === f.key ? 'active' : ''}`}
+              onClick={() => setFilter(f.key)}
+            >
+              {f.label}
+            </button>
+          ))}
+        </div>
+        
+        <select 
+          value={sortBy} 
+          onChange={(e) => setSortBy(e.target.value)}
+          className="sort-select"
+        >
+          <option value="created">按创建时间</option>
+          <option value="priority">按优先级</option>
+          <option value="dueDate">按截止日期</option>
+        </select>
+      </div>
+
+      {stats.total > 0 && (
+        <div className="todo-actions-bar">
+          <button className="btn-text btn-sm" onClick={selectAll}>
+            {todos.every(t => t.done) ? '取消全选' : '全选'}
+          </button>
+          {stats.done > 0 && (
+            <button className="btn-text btn-sm btn-danger" onClick={clearDone}>
+              <Icon name="trash" size={14} /> 清除已完成
+            </button>
+          )}
+        </div>
+      )}
+
+      <div className="todo-list">
         {filtered.length === 0 ? (
-          <div className="empty-state" role="status">
-            <p>{filter === 'all' ? '还没有待办事项' : filter === 'active' ? '所有任务已完成' : '暂无已完成事项'}</p>
+          <div className="empty-state">
+            <p>{stats.total === 0 ? '还没有任务，添加一个吧' : '没有符合条件任务'}</p>
           </div>
         ) : (
           filtered.map(todo => (
-            <div key={todo.id} className={`todo-item ${todo.done ? 'done' : ''}`} role="listitem">
+            <div 
+              key={todo.id} 
+              className={`todo-item ${todo.done ? 'done' : ''} ${isOverdue(todo.dueDate) ? 'overdue' : ''}`}
+            >
               <label className="todo-check-label">
                 <input
                   type="checkbox"
                   checked={todo.done}
                   onChange={() => toggle(todo.id)}
-                  className="todo-checkbox"
-                  aria-label={`${todo.done ? '标记为未完成' : '标记为已完成'}：${todo.text}`}
                 />
-                <span className="todo-checkmark" aria-hidden="true"></span>
+                <span className="todo-checkmark"></span>
               </label>
-              <span 
-                className="todo-text" 
-                onClick={() => toggle(todo.id)}
-                role="button"
-                tabIndex={0}
-                onKeyDown={(e) => e.key === 'Enter' && toggle(todo.id)}
-              >
-                {todo.text}
-              </span>
+              
+              <div className="todo-content">
+                <span className="todo-text">{todo.text}</span>
+                <div className="todo-meta">
+                  <span 
+                    className="priority-tag"
+                    style={{ color: getPriorityColor(todo.priority) }}
+                  >
+                    <Icon name={getPriorityIcon(todo.priority)} size={12} />
+                  </span>
+                  {todo.dueDate && (
+                    <span className={`due-date ${isOverdue(todo.dueDate) && !todo.done ? 'overdue' : ''}`}>
+                      <Icon name="calendar" size={12} />
+                      {formatDueDate(todo.dueDate)}
+                    </span>
+                  )}
+                </div>
+              </div>
+              
               <button 
                 className="btn-icon btn-remove" 
-                onClick={() => remove(todo.id)} 
-                title="删除"
-                aria-label={`删除待办：${todo.text}`}
+                onClick={() => remove(todo.id)}
               >
                 <Icon name="x" size={14} />
               </button>
@@ -130,14 +340,6 @@ export default function TodoList() {
           ))
         )}
       </div>
-
-      {doneCount > 0 && (
-        <div className="todo-footer">
-          <button className="btn-text" onClick={clearDone} aria-label="清除所有已完成的待办事项">
-            清除已完成
-          </button>
-        </div>
-      )}
     </div>
   );
 }
