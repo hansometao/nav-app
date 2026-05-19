@@ -11,17 +11,16 @@ import TodoList from './components/TodoList';
 import Memo from './components/Memo';
 import LunarCalendar from './components/LunarCalendar';
 import SettingsPanel from './components/SettingsPanel.jsx';
+import FlatBookmarks from './components/FlatBookmarks';
 import './App.css';
 
 const AITools = lazy(() => import('./components/AITools'));
 const Weather = lazy(() => import('./components/Weather'));
-const Bookmarks = lazy(() => import('./components/Bookmarks'));
 const HotNews = lazy(() => import('./components/HotNews'));
 
 const DEFAULT_SE = { name: 'Google', url: 'https://www.google.com/search?q=', icon: '🔍' };
 
 const MAIN_WIDGETS = [
-  { key: 'bookmarks', title: '🔖 网址导航',   Comp: Bookmarks,  passProps: false },
   { key: 'hotnews',   title: '🔥 热榜资讯',   Comp: HotNews,    passProps: false },
   { key: 'weather',   title: '🌤 天气预报',   Comp: Weather,    passProps: false },
   { key: 'calendar',  title: '📅 日历',      Comp: Calendar,   passProps: false },
@@ -151,44 +150,54 @@ export default memo(function App() {
       </div>
 
       <main className="app-main" role="main">
-        <Responsive
-          className="draggable-grid"
-          layouts={layouts}
-          breakpoints={{ lg: 1200, md: 996, sm: 768, xs: 480 }}
-          cols={{ lg: 12, md: 12, sm: 12, xs: 12 }}
-          rowHeight={40}
-          containerPadding={[16, 16]}
-          margin={[12, 12]}
-          isDraggable={editMode}
-          isResizable={editMode}
-          isBounded={true}
-          onLayoutChange={onLayoutChange}
-          resizeHandles={['se', 'sw', 'nw', 'ne', 'n', 'e', 's', 'w']}
-          draggableHandle=".widget-drag-handle"
-          useCSSTransforms={true}
-          compactType="vertical"
-          preventCollision={false}
-        >
-          {MAIN_WIDGETS.map(({ key, title, Comp, passProps }) => (
-            <div key={key} className="widget-container" data-widget={key}>
-              <div className="widget-header-bar">
-                <span className="widget-drag-handle" title="拖拽移动">⋮⋮</span>
-                <span className="widget-title-label">{title}</span>
-                <div className="widget-header-spacer" />
-                {editMode && (
-                  <span className="widget-resize-hint" title="拖拽边缘调整大小">⇲</span>
-                )}
+        {/* 平铺式网址导航 - 主要区域 */}
+        <div className="flat-bookmarks-section">
+          <Suspense fallback={<div className="loading-placeholder">加载中...</div>}>
+            <FlatBookmarks />
+          </Suspense>
+        </div>
+
+        {/* 其他组件 */}
+        <div className="other-widgets-section">
+          <Responsive
+            className="draggable-grid"
+            layouts={layouts}
+            breakpoints={{ lg: 1200, md: 996, sm: 768, xs: 480 }}
+            cols={{ lg: 12, md: 12, sm: 12, xs: 12 }}
+            rowHeight={40}
+            containerPadding={[16, 16]}
+            margin={[12, 12]}
+            isDraggable={editMode}
+            isResizable={editMode}
+            isBounded={true}
+            onLayoutChange={onLayoutChange}
+            resizeHandles={['se', 'sw', 'nw', 'ne', 'n', 'e', 's', 'w']}
+            draggableHandle=".widget-drag-handle"
+            useCSSTransforms={true}
+            compactType="vertical"
+            preventCollision={false}
+          >
+            {MAIN_WIDGETS.map(({ key, title, Comp, passProps }) => (
+              <div key={key} className="widget-container" data-widget={key}>
+                <div className="widget-header-bar">
+                  <span className="widget-drag-handle" title="拖拽移动">⋮⋮</span>
+                  <span className="widget-title-label">{title}</span>
+                  <div className="widget-header-spacer" />
+                  {editMode && (
+                    <span className="widget-resize-hint" title="拖拽边缘调整大小">⇲</span>
+                  )}
+                </div>
+                <div className="widget-content">
+                  <Suspense fallback={null}>
+                    {passProps
+                      ? <Comp searchEngine={searchEngine} onSearchEngineChange={setSearchEngine} />
+                      : <Comp />}
+                  </Suspense>
+                </div>
               </div>
-              <div className="widget-content">
-                <Suspense fallback={null}>
-                  {passProps
-                    ? <Comp searchEngine={searchEngine} onSearchEngineChange={setSearchEngine} />
-                    : <Comp />}
-                </Suspense>
-              </div>
-            </div>
-          ))}
-        </Responsive>
+            ))}
+          </Responsive>
+        </div>
       </main>
 
       <footer className="app-footer" role="contentinfo">
