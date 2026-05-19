@@ -2589,12 +2589,14 @@ body {
 }
 
 .todo-item .btn-remove {
-  opacity: 0;
+  opacity: 0.3;
   transition: all var(--transition-fast);
+  pointer-events: none;
 }
 
 .todo-item:hover .btn-remove {
   opacity: 1;
+  pointer-events: auto;
 }
 
 .todo-item .btn-remove:hover {
