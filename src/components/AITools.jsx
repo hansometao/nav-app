@@ -1,9 +1,13 @@
-import { useState, useRef, useEffect } from 'react';
+import { useState, useRef, useEffect, useCallback } from 'react';
 
 const SEARCH_ENGINES = [
   { name: 'Google', url: 'https://www.google.com/search?q=', icon: '🔍' },
   { name: '百度', url: 'https://www.baidu.com/s?wd=', icon: '🐻' },
   { name: 'Bing', url: 'https://www.bing.com/search?q=', icon: '🟦' },
+  { name: 'DuckDuckGo', url: 'https://duckduckgo.com/?q=', icon: '🦆' },
+  { name: 'GitHub', url: 'https://github.com/search?q=', icon: '🐙' },
+  { name: 'B站', url: 'https://search.bilibili.com/all?keyword=', icon: '📺' },
+  { name: '知乎', url: 'https://www.zhihu.com/search?type=content&q=', icon: '💡' },
 ];
 
 const AI_TOOLS = [
@@ -19,6 +23,8 @@ const AI_TOOLS = [
   { name: 'Grok',       url: 'https://grok.com',               icon: '⚡', desc: 'xAI 助手' },
   { name: 'Midjourney', url: 'https://www.midjourney.com',     icon: '🎨', desc: 'AI 图像生成' },
   { name: 'StableDiff.',url: 'https://stability.ai',           icon: '🖼', desc: '开源 AI 绘图' },
+  { name: 'Suno',       url: 'https://suno.com',               icon: '🎵', desc: 'AI 音乐生成' },
+  { name: 'Runway',     url: 'https://runwayml.com',           icon: '🎬', desc: 'AI 视频创作' },
 ];
 
 const QUICK_LINKS = [
@@ -36,6 +42,23 @@ const QUICK_LINKS = [
   { name: 'Wikipedia', url: 'https://en.wikipedia.org',     icon: '🌐' },
 ];
 
+// 从 localStorage 获取搜索历史
+const getSearchHistory = () => {
+  try {
+    const history = localStorage.getItem('navAppSearchHistory');
+    return history ? JSON.parse(history) : [];
+  } catch {
+    return [];
+  }
+};
+
+// 保存搜索历史到 localStorage
+const saveSearchHistory = (history) => {
+  try {
+    localStorage.setItem('navAppSearchHistory', JSON.stringify(history.slice(0, 10)));
+  } catch {}
+};
+
 /**
  * AITools 组件
  * @param {Object} props
@@ -46,15 +69,37 @@ const QUICK_LINKS = [
 export default function AITools({ searchEngine, onSearchEngineChange, compact = false }) {
   const [searchQuery, setSearchQuery] = useState('');
   const [showEngineMenu, setShowEngineMenu] = useState(false);
+  const [showHistory, setShowHistory] = useState(false);
+  const [searchHistory, setSearchHistory] = useState(getSearchHistory);
   const inputRef = useRef(null);
 
-  const handleSearch = (e) => {
+  const handleSearch = useCallback((e) => {
     e.preventDefault();
-    if (searchQuery.trim()) {
-      window.open(searchEngine.url + encodeURIComponent(searchQuery.trim()), '_blank');
+    const query = searchQuery.trim();
+    if (query) {
+      window.open(searchEngine.url + encodeURIComponent(query), '_blank');
+      
+      // 更新搜索历史
+      const newHistory = [query, ...searchHistory.filter(h => h !== query)];
+      setSearchHistory(newHistory);
+      saveSearchHistory(newHistory);
+      
       setSearchQuery('');
+      setShowHistory(false);
     }
-  };
+  }, [searchQuery, searchEngine, searchHistory]);
+
+  const handleHistorySearch = useCallback((query) => {
+    window.open(searchEngine.url + encodeURIComponent(query), '_blank');
+    setSearchQuery('');
+    setShowHistory(false);
+  }, [searchEngine]);
+
+  const clearHistory = useCallback(() => {
+    setSearchHistory([]);
+    saveSearchHistory([]);
+    setShowHistory(false);
+  }, []);
   
   // 键盘快捷键：Ctrl/Cmd + K 聚焦搜索框
   useEffect(() => {
