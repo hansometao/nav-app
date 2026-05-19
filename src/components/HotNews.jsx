@@ -3,40 +3,76 @@ import { STORAGE_KEYS, CACHE_CONFIG } from '../config/storage';
 
 // 平台配置
 const PLATFORMS = [
-  { key: 'bilibili', name: 'B 站', icon: '📺', color: '#00a1d6' },
-  { key: 'weibo',    name: '微博', icon: '🔴', color: '#e6162d' },
-  { key: 'xiaohongshu', name: '小红书', icon: '📕', color: '#ff2442' },
+  { key: 'zhihu', name: '知乎', icon: '📖', color: '#0084ff' },
+  { key: 'bilibili', name: 'B站', icon: '📺', color: '#00a1d6' },
+  { key: 'weibo', name: '微博', icon: '🔴', color: '#e6162d' },
+  { key: 'douyin', name: '抖音', icon: '🎵', color: '#000000' },
+  { key: 'toutiao', name: '头条', icon: '📰', color: '#d81e06' },
 ];
 
-// 各平台分类
-const PLATFORM_CATEGORIES = {
+// 热榜数据（模拟数据，可替换为真实API）
+const MOCK_DATA = {
+  zhihu: [
+    { id: '1', title: '如何看待人工智能的未来发展趋势', heat: 852000, url: 'https://www.zhihu.com' },
+    { id: '2', title: '2024年最值得关注的技术领域有哪些', heat: 689000, url: 'https://www.zhihu.com' },
+    { id: '3', title: '深度学习在医疗影像中的应用进展', heat: 542000, url: 'https://www.zhihu.com' },
+    { id: '4', title: '推荐系统算法的最新研究成果', heat: 421000, url: 'https://www.zhihu.com' },
+    { id: '5', title: '大语言模型在教育领域的应用场景', heat: 398000, url: 'https://www.zhihu.com' },
+    { id: '6', title: '计算机视觉在自动驾驶中的突破', heat: 365000, url: 'https://www.zhihu.com' },
+    { id: '7', title: '边缘计算技术的发展现状', heat: 312000, url: 'https://www.zhihu.com' },
+    { id: '8', title: '量子计算在密码学中的应用', heat: 289000, url: 'https://www.zhihu.com' },
+    { id: '9', title: 'Web3.0技术的发展前景分析', heat: 276000, url: 'https://www.zhihu.com' },
+    { id: '10', title: '5G+AI的融合应用场景', heat: 245000, url: 'https://www.zhihu.com' },
+  ],
   bilibili: [
-    { key: 'all',   name: '全站', icon: '🔥', rid: 0 },
-    { key: 'anime', name: '番剧', icon: '🎬', rid: 1 },
-    { key: 'game',  name: '游戏', icon: '🎮', rid: 4 },
-    { key: 'tech',  name: '科技', icon: '💻', rid: 36 },
-    { key: 'music', name: '音乐', icon: '🎵', rid: 3 },
-    { key: 'movie', name: '影视', icon: '🎥', rid: 181 },
+    { id: '1', title: '【技术解析】最新的前端框架对比', heat: 1250000, url: 'https://www.bilibili.com' },
+    { id: '2', title: '从零开始学编程：Python入门教程', heat: 980000, url: 'https://www.bilibili.com' },
+    { id: '3', title: '2024年程序员必备技能清单', heat: 870000, url: 'https://www.bilibili.com' },
+    { id: '4', title: 'Git版本控制完整教程', heat: 760000, url: 'https://www.bilibili.com' },
+    { id: '5', title: '微服务架构实战演练', heat: 650000, url: 'https://www.bilibili.com' },
+    { id: '6', title: 'Docker容器化部署指南', heat: 540000, url: 'https://www.bilibili.com' },
+    { id: '7', title: 'React vs Vue深度对比', heat: 480000, url: 'https://www.bilibili.com' },
+    { id: '8', title: '数据库设计最佳实践', heat: 420000, url: 'https://www.bilibili.com' },
+    { id: '9', title: '算法面试通关秘籍', heat: 390000, url: 'https://www.bilibili.com' },
+    { id: '10', title: 'DevOps工程化实践', heat: 350000, url: 'https://www.bilibili.com' },
   ],
   weibo: [
-    { key: 'search', name: '热搜', icon: '🔥', type: 'search' },
-    { key: 'realtime', name: '实时', icon: '⚡', type: 'realtime' },
-    { key: 'entertainment', name: '娱乐', icon: '🎭', type: 'ent' },
-    { key: 'social', name: '社会', icon: '📰', type: 'social' },
+    { id: '1', title: '科技前沿：AI大模型新突破', heat: 2340000, url: 'https://weibo.com' },
+    { id: '2', title: '2024全球科技峰会即将召开', heat: 1890000, url: 'https://weibo.com' },
+    { id: '3', title: '国产芯片技术取得新进展', heat: 1560000, url: 'https://weibo.com' },
+    { id: '4', title: '新能源汽车销量创新高', heat: 1450000, url: 'https://weibo.com' },
+    { id: '5', title: '数字经济发展报告发布', heat: 1230000, url: 'https://weibo.com' },
+    { id: '6', title: '人工智能伦理规范出台', heat: 980000, url: 'https://weibo.com' },
+    { id: '7', title: '云计算市场竞争格局', heat: 870000, url: 'https://weibo.com' },
+    { id: '8', title: '网络安全最新动态', heat: 760000, url: 'https://weibo.com' },
+    { id: '9', title: '5G应用场景加速落地', heat: 650000, url: 'https://weibo.com' },
+    { id: '10', title: '科技创新企业排名', heat: 540000, url: 'https://weibo.com' },
   ],
-  xiaohongshu: [
-    { key: 'hot', name: '热榜', icon: '🔥', type: 'hot' },
-    { key: 'fashion', name: '时尚', icon: '👗', type: 'fashion' },
-    { key: 'food', name: '美食', icon: '🍜', type: 'food' },
-    { key: 'travel', name: '旅行', icon: '✈️', type: 'travel' },
+  douyin: [
+    { id: '1', title: '短视频创作技巧分享', heat: 3560000, url: 'https://www.douyin.com' },
+    { id: '2', title: 'AI绘画制作教程', heat: 2890000, url: 'https://www.douyin.com' },
+    { id: '3', title: '直播电商运营干货', heat: 2450000, url: 'https://www.douyin.com' },
+    { id: '4', title: '内容创作爆款秘籍', heat: 2120000, url: 'https://www.douyin.com' },
+    { id: '5', title: '数字人虚拟主播技术', heat: 1870000, url: 'https://www.douyin.com' },
+    { id: '6', title: '视频剪辑高效工具', heat: 1540000, url: 'https://www.douyin.com' },
+    { id: '7', title: '抖音SEO优化指南', heat: 1320000, url: 'https://www.douyin.com' },
+    { id: '8', title: '短视频数据分析方法', heat: 1180000, url: 'https://www.douyin.com' },
+    { id: '9', title: '直播带货技巧分享', heat: 1050000, url: 'https://www.douyin.com' },
+    { id: '10', title: '抖音小店经营心得', heat: 920000, url: 'https://www.douyin.com' },
+  ],
+  toutiao: [
+    { id: '1', title: '科技快讯：最新行业动态', heat: 1670000, url: 'https://www.toutiao.com' },
+    { id: '2', title: '人工智能应用案例精选', heat: 1450000, url: 'https://www.toutiao.com' },
+    { id: '3', title: '创业投资风向解读', heat: 1230000, url: 'https://www.toutiao.com' },
+    { id: '4', title: '科技政策分析报告', heat: 1080000, url: 'https://www.toutiao.com' },
+    { id: '5', title: '产品设计方法论分享', heat: 950000, url: 'https://www.toutiao.com' },
+    { id: '6', title: '用户增长实战经验', heat: 830000, url: 'https://www.toutiao.com' },
+    { id: '7', title: '数据化运营技巧', heat: 720000, url: 'https://www.toutiao.com' },
+    { id: '8', title: '内容运营心法', heat: 650000, url: 'https://www.toutiao.com' },
+    { id: '9', title: '流量变现新模式', heat: 580000, url: 'https://www.toutiao.com' },
+    { id: '10', title: '品牌营销新思路', heat: 510000, url: 'https://www.toutiao.com' },
   ],
 };
-
-// 小红书 API 备用方案（当官方 API 失败时使用）
-const XHS_FALLBACK_SOURCES = [
-  'https://www.xiaohongshu.com/api/sns/v1/note/hot/search',
-  'https://www.xiaohongshu.com/api/sns/v1/note/hot/list',
-];
 
 function formatCount(n) {
   if (!n && n !== 0) return '';
@@ -51,53 +87,94 @@ function formatTime(ts) {
   return `${String(d.getHours()).padStart(2, '0')}:${String(d.getMinutes()).padStart(2, '0')}`;
 }
 
-/**
- * 带重试机制的 fetch
- * @param {string} url - 请求 URL
- * @param {Object} options - fetch 选项
- * @param {number} retries - 重试次数
- */
-async function fetchWithRetry(url, options = {}, retries = 2) {
-  for (let i = 0; i <= retries; i++) {
-    try {
-      const res = await fetch(url, options);
-      if (res.ok) return res;
-      if (i === retries) throw new Error(`HTTP ${res.status}`);
-    } catch (e) {
-      if (i === retries) throw e;
-      await new Promise(resolve => setTimeout(resolve, 500 * (i + 1)));
+// 使用公共API获取真实数据
+async function fetchRealData(platform) {
+  try {
+    // 尝试使用免费的公开API
+    let url, data;
+    
+    switch(platform) {
+      case 'zhihu':
+        // 尝试知乎热榜API
+        try {
+          const res = await fetch('https://api.oioweb.cn/api/zhihu/hot');
+          if (res.ok) {
+            const json = await res.json();
+            if (json.result && json.result.length > 0) {
+              return json.result.map((item, idx) => ({
+                id: item.id || idx,
+                title: item.title,
+                heat: item.hot || item.heat || Math.floor(Math.random() * 500000) + 100000,
+                url: item.url || 'https://www.zhihu.com',
+              }));
+            }
+          }
+        } catch (e) {
+          console.log('知乎API获取失败，使用备用数据');
+        }
+        break;
+        
+      case 'bilibili':
+        try {
+          const res = await fetch('https://api.bilibili.com/x/web-interface/ranking/v2?rid=0&type=all');
+          if (res.ok) {
+            const json = await res.json();
+            if (json.code === 0 && json.data && json.data.list) {
+              return json.data.list.slice(0, 20).map(item => ({
+                id: item.aid,
+                title: item.title,
+                url: `https://www.bilibili.com/video/${item.bvid || `av${item.aid}`}`,
+                heat: item.play || item.stat?.view || Math.floor(Math.random() * 500000) + 100000,
+              }));
+            }
+          }
+        } catch (e) {
+          console.log('B站API获取失败，使用备用数据');
+        }
+        break;
+        
+      case 'weibo':
+        try {
+          const res = await fetch('https://api.oioweb.cn/api/weibo/hot');
+          if (res.ok) {
+            const json = await res.json();
+            if (json.result && json.result.length > 0) {
+              return json.result.map((item, idx) => ({
+                id: item.id || idx,
+                title: item.title || item.word,
+                heat: item.hot || item.num || Math.floor(Math.random() * 500000) + 100000,
+                url: item.url || 'https://s.weibo.com/top/summary',
+              }));
+            }
+          }
+        } catch (e) {
+          console.log('微博API获取失败，使用备用数据');
+        }
+        break;
+        
+      default:
+        // 通用处理
+        break;
     }
+    
+    return null; // 返回null表示使用备用数据
+  } catch (error) {
+    console.log(`${platform} API获取失败:`, error);
+    return null;
   }
 }
 
 export default function HotNews() {
   const [platform, setPlatform] = useState(PLATFORMS[0]);
-  const [category, setCategory] = useState(PLATFORM_CATEGORIES.bilibili[0]);
   const [items, setItems] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const [lastUpdate, setLastUpdate] = useState(null);
-  const [xhsUnavailable, setXhsUnavailable] = useState(false);
+  const [useMockData, setUseMockData] = useState(false);
   
-  // 防止重复请求
   const abortControllerRef = useRef(null);
 
-  // 切换平台时重置分类
-  const handlePlatformChange = useCallback((p) => {
-    setPlatform(p);
-    setCategory(PLATFORM_CATEGORIES[p.key][0]);
-    // 如果是小红书且已知不可用，自动切换到 B 站
-    if (p.key === 'xiaohongshu' && xhsUnavailable) {
-      setError('小红书热榜暂时不可用，已切换到 B 站');
-      setTimeout(() => {
-        setPlatform(PLATFORMS[0]);
-        setCategory(PLATFORM_CATEGORIES.bilibili[0]);
-      }, 1000);
-    }
-  }, [xhsUnavailable]);
-
-  const fetchNews = useCallback(async (plat, cat) => {
-    // 取消之前的请求
+  const fetchNews = useCallback(async (plat) => {
     if (abortControllerRef.current) {
       abortControllerRef.current.abort();
     }
@@ -106,16 +183,17 @@ export default function HotNews() {
     setLoading(true);
     setError(null);
 
-    const cacheKey = `${STORAGE_KEYS.HOTNEWS}_${plat.key}_${cat.key}`;
+    const cacheKey = `${STORAGE_KEYS.HOTNEWS}_${plat.key}`;
     
     // 读缓存
     try {
       const raw = localStorage.getItem(cacheKey);
       if (raw) {
-        const { data, timestamp } = JSON.parse(raw);
+        const { data, timestamp, isMock } = JSON.parse(raw);
         if (Date.now() - timestamp < CACHE_CONFIG.NEWS_DURATION) {
           setItems(data);
           setLastUpdate(timestamp);
+          setUseMockData(isMock || false);
           setLoading(false);
           return;
         }
@@ -123,128 +201,29 @@ export default function HotNews() {
     } catch { /* ignore */ }
 
     try {
-      let list = [];
+      let list = null;
+      let isMock = false;
 
-      if (plat.key === 'bilibili') {
-        const res = await fetchWithRetry(
-          `https://api.bilibili.com/x/web-interface/ranking/v2?rid=${cat.rid}&type=all`,
-          { 
-            headers: { Referer: 'https://www.bilibili.com' },
-            signal: abortControllerRef.current.signal
-          }
-        );
-        if (!res.ok) throw new Error(`HTTP ${res.status}`);
-        const json = await res.json();
-        if (json.code !== 0) throw new Error(json.message || '未知错误');
-        list = json.data.list.slice(0, 20).map((item) => ({
-          id: item.aid,
-          title: item.title,
-          url: `https://www.bilibili.com/video/${item.bvid || `av${item.aid}`}`,
-          heat: item.play || 0,
-          author: item.owner?.name || '',
-        }));
+      // 先尝试获取真实数据
+      if (!useMockData) {
+        list = await fetchRealData(plat.key);
+      }
 
-      } else if (plat.key === 'weibo') {
-        const res = await fetchWithRetry(
-          'https://weibo.com/ajax/side/hotSearch',
-          { signal: abortControllerRef.current.signal }
-        );
-        if (!res.ok) throw new Error(`HTTP ${res.status}`);
-        const json = await res.json();
-        if (!json.ok) throw new Error('微博 API 错误');
-        
-        const data = json.data;
-        let rawData = [];
-        
-        if (cat.type === 'search') {
-          rawData = data.hotSearch || [];
-        } else if (cat.type === 'realtime') {
-          rawData = data.realtime || [];
-        } else if (cat.type === 'ent') {
-          rawData = data.list_entertainment || [];
-        } else if (cat.type === 'social') {
-          rawData = data.list_society || [];
-        }
-        
-        list = rawData.slice(0, 20).map((item) => ({
-          id: item.word || item.word_scheme,
-          title: item.word_scheme || item.word,
-          url: `https://s.weibo.com/weibo?q=${encodeURIComponent(item.word_scheme || item.word)}`,
-          heat: item.num || item.hot_value || 0,
-          author: item.flag_desc || '',
-        }));
-
-      } else if (plat.key === 'xiaohongshu') {
-        // 小红书：尝试多个 API 端点
-        let success = false;
-        
-        // 先尝试主 API
-        try {
-          const res = await fetchWithRetry(
-            'https://www.xiaohongshu.com/api/sns/v1/note/hot/search',
-            { signal: abortControllerRef.current.signal }
-          );
-          if (res.ok) {
-            const json = await res.json();
-            if (json.data?.items?.length > 0) {
-              list = json.data.items.slice(0, 20).map((item) => ({
-                id: item.id,
-                title: item.title || item.display_title,
-                url: `https://www.xiaohongshu.com/explore/${item.id}`,
-                heat: item.heat_score || item.interact_count || 0,
-                author: item.user?.nickname || '',
-              }));
-              success = true;
-              setXhsUnavailable(false);
-            }
-          }
-        } catch (e) {
-          console.warn('小红书主 API 失败:', e.message);
-        }
-        
-        // 主 API 失败，尝试备用 API
-        if (!success) {
-          for (const fallbackUrl of XHS_FALLBACK_SOURCES) {
-            try {
-              const res = await fetchWithRetry(fallbackUrl, {
-                signal: abortControllerRef.current.signal
-              });
-              if (res.ok) {
-                const json = await res.json();
-                const items = json.data?.items || json.data || [];
-                if (items.length > 0) {
-                  list = items.slice(0, 20).map((item) => ({
-                    id: item.id || item.note_id,
-                    title: item.title || item.display_title,
-                    url: `https://www.xiaohongshu.com/explore/${item.id || item.note_id}`,
-                    heat: item.heat_score || item.interact_count || 0,
-                    author: item.user?.nickname || '',
-                  }));
-                  success = true;
-                  setXhsUnavailable(false);
-                  break;
-                }
-              }
-            } catch (e) {
-              console.warn(`小红书备用 API 失败 (${fallbackUrl}):`, e.message);
-            }
-          }
-        }
-        
-        // 所有 API 都失败
-        if (!success) {
-          setXhsUnavailable(true);
-          throw new Error('小红书热榜暂时不可用');
-        }
+      // 如果没有真实数据，使用模拟数据
+      if (!list) {
+        list = MOCK_DATA[plat.key] || [];
+        isMock = true;
       }
 
       setItems(list);
+      setUseMockData(isMock);
       setLastUpdate(Date.now());
 
       try {
         localStorage.setItem(cacheKey, JSON.stringify({
           data: list,
           timestamp: Date.now(),
+          isMock: isMock,
         }));
       } catch { /* quota exceeded */ }
 
@@ -254,67 +233,60 @@ export default function HotNews() {
         return;
       }
       console.error('热榜获取失败:', e);
-      setError(e.message || '获取热榜失败，请稍后重试');
+      // 出错时使用模拟数据
+      try {
+        const fallbackList = MOCK_DATA[plat.key] || [];
+        setItems(fallbackList);
+        setUseMockData(true);
+        setLastUpdate(Date.now());
+        setError(`获取热榜失败，已加载本地数据`);
+      } catch (fallbackErr) {
+        setError('获取热榜失败，请稍后重试');
+      }
     } finally {
       setLoading(false);
     }
-  }, []);
+  }, [useMockData]);
 
   useEffect(() => {
-    fetchNews(platform, category);
+    fetchNews(platform);
     
-    // 组件卸载时取消请求
     return () => {
       if (abortControllerRef.current) {
         abortControllerRef.current.abort();
       }
     };
-  }, [platform, category, fetchNews]);
-
-  const categories = PLATFORM_CATEGORIES[platform.key];
+  }, [platform, fetchNews]);
 
   return (
     <div className="widget hotnews-widget">
       <div className="widget-header">
         <h3>🔥 热榜资讯</h3>
-        <span className="hotnews-update">
-          {lastUpdate ? `更新于 ${formatTime(lastUpdate)}` : ''}
-        </span>
-        <button
-          className="btn-icon"
-          onClick={() => fetchNews(platform, category)}
-          title="刷新"
-          disabled={loading}
-        >
-          🔄
-        </button>
+        <div className="hotnews-header-actions">
+          <span className="hotnews-update">
+            {lastUpdate ? `更新于 ${formatTime(lastUpdate)}` : ''}
+            {useMockData && <span className="hotnews-mock-tag">本地数据</span>}
+          </span>
+          <button
+            className="btn-icon"
+            onClick={() => fetchNews(platform)}
+            title="刷新"
+            disabled={loading}
+          >
+            🔄
+          </button>
+        </div>
       </div>
 
-      {/* 平台标签 */}
       <div className="hotnews-platforms">
         {PLATFORMS.map((p) => (
           <button
             key={p.key}
             className={`hotnews-platform ${p.key === platform.key ? 'active' : ''}`}
-            onClick={() => handlePlatformChange(p)}
+            onClick={() => setPlatform(p)}
             style={{ '--platform-color': p.color }}
-            disabled={p.key === 'xiaohongshu' && xhsUnavailable}
           >
             {p.icon} {p.name}
-            {p.key === 'xiaohongshu' && xhsUnavailable && ' ⚠️'}
-          </button>
-        ))}
-      </div>
-
-      {/* 分类标签 */}
-      <div className="hotnews-tabs">
-        {categories.map((c) => (
-          <button
-            key={c.key}
-            className={`hotnews-tab ${c.key === category.key ? 'active' : ''}`}
-            onClick={() => setCategory(c)}
-          >
-            {c.icon} {c.name}
           </button>
         ))}
       </div>
@@ -326,18 +298,7 @@ export default function HotNews() {
       {error && (
         <div className="hotnews-error">
           <span>{error}</span>
-          <button className="btn-text" onClick={() => fetchNews(platform, category)}>重试</button>
-          {xhsUnavailable && (
-            <button 
-              className="btn-text" 
-              onClick={() => {
-                setPlatform(PLATFORMS[0]);
-                setCategory(PLATFORM_CATEGORIES.bilibili[0]);
-              }}
-            >
-              切换到 B 站
-            </button>
-          )}
+          <button className="btn-text" onClick={() => fetchNews(platform)}>重试</button>
         </div>
       )}
 
@@ -350,7 +311,7 @@ export default function HotNews() {
               target="_blank"
               rel="noopener noreferrer"
               className="hotnews-item"
-              title={`${item.title}${item.author ? ` — ${item.author}` : ''}`}
+              title={item.title}
             >
               <span className={`hotnews-rank ${idx < 3 ? `rank-${idx + 1}` : ''}`}>
                 {idx + 1}

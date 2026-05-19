@@ -2548,6 +2548,24 @@
   margin-top: 8px;
 }
 
+/* 热榜头部操作区域 */
+.hotnews-header-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.hotnews-mock-tag {
+  font-size: 10px;
+  padding: 2px 8px;
+  background: rgba(251, 191, 36, 0.1);
+  border: 1px solid rgba(251, 191, 36, 0.3);
+  color: var(--warning);
+  border-radius: var(--radius-pill);
+  margin-left: 8px;
+  white-space: nowrap;
+}
+
 /* ====== AI工具组件 ====== */
 .ai-tools-grid {
   display: grid;
