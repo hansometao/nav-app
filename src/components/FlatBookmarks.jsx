@@ -1,6 +1,7 @@
 import { useState, useMemo, useCallback, useEffect, useRef } from 'react';
 import { validateBookmark, sanitizeHtml } from '../utils/security';
 import { getFavicon } from '../utils/favicon';
+import { useDebounce } from '../hooks/useDebounce';
 
 const STORAGE_KEY = 'nav_app_bookmarks_v1';
 const CATEGORIES_KEY = 'nav_app_categories_v1';
@@ -159,6 +160,7 @@ export default function FlatBookmarks() {
   const [previewFavicon, setPreviewFavicon] = useState(null);
   const [faviconLoading, setFaviconLoading] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
+  const debouncedSearchQuery = useDebounce(searchQuery, 300);
 
   const recordVisit = useCallback((bookmarkId) => {
     setStats(prev => {
@@ -289,8 +291,8 @@ export default function FlatBookmarks() {
   }, []);
 
   const filteredBookmarks = useMemo(() => {
-    if (!searchQuery.trim()) return bookmarks;
-    const query = searchQuery.toLowerCase();
+    if (!debouncedSearchQuery.trim()) return bookmarks;
+    const query = debouncedSearchQuery.toLowerCase();
     return bookmarks.filter(bm => 
       bm.name.toLowerCase().includes(query) || 
       bm.url.toLowerCase().includes(query) ||

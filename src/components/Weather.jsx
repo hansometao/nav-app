@@ -1,6 +1,9 @@
 import { useState, useEffect, useMemo } from 'react';
 import { CACHE_CONFIG, STORAGE_KEYS } from '../config/storage';
 import { Icon, getWeatherIcon } from '../utils/icons';
+import ErrorMessage from './ErrorMessage';
+import { fetchWithTimeout, getErrorMessage, withRetry } from '../utils/apiErrorHandler';
+import { WeatherForecast } from './weather';
 
 // 中国天气网城市代码 (国家气象局数据)
 const CITY_DB = [
@@ -105,20 +108,30 @@ export default function Weather() {
     }
     
     try {
-      // 国家气象局天气数据 (中国天气网 x 中国气象局) - 全部使用 HTTPS
-      const [skRes, infoRes] = await Promise.all([
-        fetch(`https://www.weather.com.cn/data/sk/${code}.html`, {
-          headers: { 'Referer': 'https://www.weather.com.cn' }
-        }),
-        fetch(`https://www.weather.com.cn/data/cityinfo/${code}.html`, {
-          headers: { 'Referer': 'https://www.weather.com.cn' }
-        }),
-      ]);
+      // 使用重试机制和超时控制
+      const fetchWeatherData = async () => {
+        const [skRes, infoRes] = await Promise.all([
+          fetchWithTimeout(`https://www.weather.com.cn/data/sk/${code}.html`, {
+            headers: { 'Referer': 'https://www.weather.com.cn' }
+          }, 8000),
+          fetchWithTimeout(`https://www.weather.com.cn/data/cityinfo/${code}.html`, {
+            headers: { 'Referer': 'https://www.weather.com.cn' }
+          }, 8000),
+        ]);
 
-      if (!skRes.ok || !infoRes.ok) throw new Error('获取天气数据失败');
+        if (!skRes.ok || !infoRes.ok) {
+          const error = new Error(`HTTP ${skRes.status || infoRes.status}`);
+          error.status = skRes.status || infoRes.status;
+          throw error;
+        }
 
-      const skData = await skRes.json();
-      const infoData = await infoRes.json();
+        const skData = await skRes.json();
+        const infoData = await infoRes.json();
+
+        return { skData, infoData };
+      };
+
+      const { skData, infoData } = await withRetry(fetchWeatherData, 2, 1500);
 
       setWeather(skData.weatherinfo);
       setForecast(infoData.weatherinfo);
@@ -134,8 +147,9 @@ export default function Weather() {
       } catch (e) {
         console.warn('Weather cache write error:', e);
       }
-    } catch {
-      setError('获取天气失败，请重试');
+    } catch (err) {
+      console.error('Weather fetch error:', err);
+      setError(getErrorMessage(err, '获取天气数据失败，请稍后重试'));
     } finally {
       setLoading(false);
     }
@@ -233,7 +247,13 @@ export default function Weather() {
         </div>
       )}
 
-      {error && <div className="weather-error">{error}</div>}
+      {error && (
+        <ErrorMessage 
+          message={error} 
+          onRetry={() => fetchWeather(selectedCity.code)}
+          type="warning"
+        />
+      )}
 
       {weather && (
         <>
@@ -259,6 +279,9 @@ export default function Weather() {
               </div>
             </div>
           )}
+
+          {/* 天气预报 */}
+          <WeatherForecast cityCode={selectedCity.code} cityName={selectedCity.name} />
         </>
       )}
     </div>

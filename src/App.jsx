@@ -1,10 +1,9 @@
-import { useState, lazy, Suspense, memo, useRef, useCallback, useEffect } from 'react';
-import { Responsive } from 'react-grid-layout';
-import 'react-grid-layout/css/styles.css';
+import { useState, lazy, Suspense, memo, useRef, useCallback } from 'react';
 import { useGreeting } from './hooks/useGreeting';
 import { useTime } from './hooks/useTime';
 import { useLayoutStorage } from './hooks/useLayoutStorage';
 import { useTheme, THEMES } from './hooks/useTheme.jsx';
+import { useKeyboardShortcuts } from './hooks/useKeyboardShortcuts';
 import Calendar from './components/Calendar';
 import Countdown from './components/Countdown';
 import TodoList from './components/TodoList';
@@ -79,33 +78,23 @@ export default memo(function App() {
   const appRef = useRef(null);
   const searchInputRef = useRef(null);
 
-  const handleToggleTheme = useCallback(() => {
-    toggleTheme();
-  }, [toggleTheme]);
-
-  useEffect(() => {
-    const handleKeyDown = (e) => {
-      if ((e.ctrlKey || e.metaKey) && e.key === 'k') {
-        e.preventDefault();
-        const input = document.querySelector('.search-input');
-        if (input) input.focus();
-      }
-      if ((e.ctrlKey || e.metaKey) && e.key === 'd') {
-        e.preventDefault();
-        handleToggleTheme();
-      }
-      if (e.key === 'Escape') {
-        if (showSettings) setShowSettings(false);
-        if (showShortcuts) setShowShortcuts(false);
-      }
-      if (e.key === '?' && !e.ctrlKey && !e.metaKey && !e.target.closest('input, textarea')) {
-        e.preventDefault();
-        setShowShortcuts(true);
-      }
-    };
-    window.addEventListener('keydown', handleKeyDown);
-    return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [showSettings, showShortcuts, handleToggleTheme]);
+  // 使用统一的键盘快捷键处理
+  useKeyboardShortcuts({
+    focusSearch: () => {
+      const input = document.querySelector('.search-input');
+      if (input) input.focus();
+    },
+    toggleTheme: () => {
+      toggleTheme();
+    },
+    closeModal: () => {
+      if (showSettings) setShowSettings(false);
+      if (showShortcuts) setShowShortcuts(false);
+    },
+    showHelp: () => {
+      setShowShortcuts(true);
+    }
+  });
 
   return (
     <div className="app" ref={appRef}>

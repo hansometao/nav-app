@@ -1,6 +1,8 @@
 import { useState, useEffect, useCallback, useRef } from 'react';
 import { STORAGE_KEYS, CACHE_CONFIG } from '../config/storage';
 import { Icon } from '../utils/icons';
+import ErrorMessage from './ErrorMessage';
+import { fetchWithTimeout, getErrorMessage, withRetry } from '../utils/apiErrorHandler';
 
 // 平台配置
 const PLATFORMS = [
@@ -276,10 +278,11 @@ export default function HotNews() {
       )}
 
       {error && (
-        <div className="hotnews-error">
-          <span>{error}</span>
-          <button className="btn-text" onClick={() => fetchNews(platform)}>重试</button>
-        </div>
+        <ErrorMessage 
+          message={error}
+          onRetry={() => fetchNews(platform)}
+          type="info"
+        />
       )}
 
       {items.length > 0 && (
