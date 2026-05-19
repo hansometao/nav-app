@@ -1,11 +1,9 @@
 import { useState, useRef, useEffect, useCallback } from 'react';
 
 const SEARCH_ENGINES = [
-  { name: 'Google', url: 'https://www.google.com/search?q=', favicon: 'https://www.google.com/favicon.ico' },
   { name: '百度', url: 'https://www.baidu.com/s?wd=', favicon: 'https://www.baidu.com/favicon.ico' },
   { name: 'Bing', url: 'https://www.bing.com/search?q=', favicon: 'https://www.bing.com/favicon.ico' },
   { name: 'GitHub', url: 'https://github.com/search?q=', favicon: 'https://github.com/favicon.ico' },
-  { name: 'B站', url: 'https://search.bilibili.com/all?keyword=', favicon: 'https://static.hdslb.com/mobile/img/favicon.ico' },
   { name: '知乎', url: 'https://www.zhihu.com/search?type=content&q=', favicon: 'https://static.zhihu.com/heifetz/favicon.ico' },
 ];
 
