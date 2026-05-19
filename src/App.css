@@ -665,10 +665,10 @@
   margin: 0 0 20px 0;
 }
 
-/* 书签网格样式 */
-.flat-bookmarks-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+/* 书签竖排布局样式 */
+.flat-bookmarks-vertical {
+  display: flex;
+  flex-direction: column;
   gap: 20px;
 }
 
@@ -685,7 +685,7 @@
   box-shadow: var(--shadow-md);
 }
 
-.flat-category-title {
+.flat-category-header {
   display: flex;
   align-items: center;
   gap: 8px;
@@ -701,8 +701,14 @@
   font-size: 16px;
 }
 
+.flat-category-name {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
 .flat-category-count {
-  margin-left: auto;
   font-size: 12px;
   font-weight: 400;
   color: var(--text-muted);
@@ -713,7 +719,7 @@
 
 .flat-category-items {
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
+  grid-template-columns: repeat(auto-fill, minmax(90px, 1fr));
   gap: 0;
 }
 
@@ -730,14 +736,51 @@
   position: relative;
   border-bottom: 1px solid var(--border);
   border-right: 1px solid var(--border);
+  min-height: 80px;
 }
 
-.flat-bookmark-item:nth-child(3n) {
+.flat-bookmark-item:nth-child(6n) {
   border-right: none;
 }
 
-.flat-bookmark-item:nth-last-child(-n+3) {
+.flat-bookmark-item:nth-last-child(-n+6) {
   border-bottom: none;
+}
+
+@media (max-width: 768px) {
+  .flat-category-items {
+    grid-template-columns: repeat(4, 1fr);
+  }
+  
+  .flat-bookmark-item:nth-child(6n) {
+    border-right: 1px solid var(--border);
+  }
+  
+  .flat-bookmark-item:nth-child(4n) {
+    border-right: none;
+  }
+  
+  .flat-bookmark-item:nth-last-child(-n+4) {
+    border-bottom: none;
+  }
+}
+
+@media (max-width: 480px) {
+  .flat-category-items {
+    grid-template-columns: repeat(3, 1fr);
+  }
+  
+  .flat-bookmark-item:nth-child(4n) {
+    border-right: 1px solid var(--border);
+  }
+  
+  .flat-bookmark-item:nth-child(3n) {
+    border-right: none;
+  }
+  
+  .flat-bookmark-item:nth-last-child(-n+3) {
+    border-bottom: none;
+  }
 }
 
 .flat-bookmark-item:hover {
@@ -1057,79 +1100,7 @@
   }
 }
 
-/* ====== 分类展开/收起功能 ====== */
-.flat-bookmarks-title-row {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  flex-wrap: wrap;
-}
-
-.flat-bookmarks-count {
-  font-size: 13px;
-  color: var(--text-muted);
-  background: var(--accent-soft);
-  padding: 4px 10px;
-  border-radius: 12px;
-}
-
-.flat-category-header {
-  padding: 0;
-}
-
-.flat-category-expand-btn {
-  width: 100%;
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  padding: 12px 14px;
-  background: rgba(0, 0, 0, 0.15);
-  border: none;
-  cursor: pointer;
-  font-size: 14px;
-  font-weight: 600;
-  color: var(--text-primary);
-  transition: all var(--transition-fast);
-  text-align: left;
-}
-
-.flat-category-expand-btn:hover {
-  background: rgba(108, 99, 255, 0.15);
-}
-
-.flat-category-name {
-  flex: 1;
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
-
-.flat-category-arrow {
-  font-size: 10px;
-  color: var(--text-muted);
-  transition: transform var(--transition-fast);
-}
-
-.flat-category-arrow.expanded {
-  transform: rotate(180deg);
-}
-
-.flat-category-items {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 0;
-  transition: all var(--transition-base);
-  overflow: hidden;
-  max-height: 1000px;
-  opacity: 1;
-}
-
-.flat-category-items:not(.expanded) {
-  max-height: 0;
-  opacity: 0;
-}
-
-/* ====== 分类管理器优化 ====== */
+/* ====== 分类管理器样式 ====== */
 .flat-category-manager-header {
   display: flex;
   align-items: center;
@@ -1148,24 +1119,13 @@
   margin-right: 8px;
 }
 
-.cat-expand-btn {
+.cat-item-content {
   flex: 1;
   display: flex;
   align-items: center;
   gap: 8px;
-  padding: 10px 12px;
-  background: transparent;
-  border: none;
-  cursor: pointer;
   font-size: 13px;
   color: var(--text-primary);
-  text-align: left;
-  transition: all var(--transition-fast);
-  border-radius: var(--radius-xs);
-}
-
-.cat-expand-btn:hover {
-  background: var(--accent-soft);
 }
 
 .cat-bookmark-count {
@@ -1174,15 +1134,5 @@
   background: var(--bg-tertiary);
   padding: 2px 6px;
   border-radius: 8px;
-  margin-left: auto;
 }
 
-.cat-expand-icon {
-  font-size: 8px;
-  color: var(--text-muted);
-  transition: transform var(--transition-fast);
-}
-
-.cat-expand-icon.expanded {
-  transform: rotate(90deg);
-}

@@ -100,7 +100,6 @@ const CategoryManager = ({ categories, onAdd, onDelete, onEdit, bookmarksCount }
   const [showForm, setShowForm] = useState(false);
   const [newCat, setNewCat] = useState({ name: '', icon: '📁' });
   const [editingCat, setEditingCat] = useState(null);
-  const [expandedCategory, setExpandedCategory] = useState(null);
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -120,10 +119,6 @@ const CategoryManager = ({ categories, onAdd, onDelete, onEdit, bookmarksCount }
     setNewCat(cat);
     setEditingCat(cat.name);
     setShowForm(true);
-  };
-
-  const toggleCategoryExpand = (catName) => {
-    setExpandedCategory(expandedCategory === catName ? null : catName);
   };
 
   return (
@@ -188,18 +183,11 @@ const CategoryManager = ({ categories, onAdd, onDelete, onEdit, bookmarksCount }
             const catBookmarks = bookmarksCount[cat.name] || 0;
             return (
               <div key={cat.name} className="flat-category-item">
-                <button
-                  className="cat-expand-btn"
-                  onClick={() => toggleCategoryExpand(cat.name)}
-                  title={expandedCategory === cat.name ? '收起' : '展开'}
-                >
+                <div className="cat-item-content">
                   <span className="cat-icon">{cat.icon}</span>
                   <span className="cat-name">{cat.name}</span>
                   <span className="cat-bookmark-count">({catBookmarks})</span>
-                  <span className={`cat-expand-icon ${expandedCategory === cat.name ? 'expanded' : ''}`}>
-                    ▶
-                  </span>
-                </button>
+                </div>
                 <div className="cat-actions">
                   <button
                     className="cat-edit"
@@ -278,7 +266,6 @@ export default function FlatBookmarks() {
   const [faviconLoading, setFaviconLoading] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
   const [sortBy, setSortBy] = useState('default');
-  const [expandedCategories, setExpandedCategories] = useState({});
   const debouncedSearchQuery = useDebounce(searchQuery, 300);
 
   const recordVisit = useCallback((bookmarkId) => {
@@ -341,13 +328,6 @@ export default function FlatBookmarks() {
       b.category === oldName ? { ...b, category: sanitizeHtml(newCat.name) } : b
     ));
   }, [categories, bookmarks, saveCategories, saveBookmarks]);
-
-  const toggleCategoryExpand = useCallback((catName) => {
-    setExpandedCategories((prev) => ({
-      ...prev,
-      [catName]: !prev[catName]
-    }));
-  }, []);
 
   const resetForm = () => {
     setForm({ name: '', url: '', favicon: '', category: categories[0]?.name || '常用网站' });
@@ -561,7 +541,7 @@ export default function FlatBookmarks() {
       {filteredBookmarks.length === 0 ? (
         <EmptyState onAdd={() => setShowAdd(true)} />
       ) : (
-        <div className="flat-bookmarks-grid">
+        <div className="flat-bookmarks-vertical">
           {categories.map((cat) => {
             const items = groupedBookmarks[cat.name] || [];
             if (items.length === 0 && searchQuery) return null;
@@ -569,20 +549,11 @@ export default function FlatBookmarks() {
             return (
               <div key={cat.name} className="flat-category-section">
                 <div className="flat-category-header">
-                  <button
-                    className="flat-category-expand-btn"
-                    onClick={() => toggleCategoryExpand(cat.name)}
-                    title={expandedCategories[cat.name] ? '收起' : '展开'}
-                  >
-                    <span className="flat-category-icon">{cat.icon}</span>
-                    <span className="flat-category-name">{cat.name}</span>
-                    <span className="flat-category-count">({items.length})</span>
-                    <span className={`flat-category-arrow ${expandedCategories[cat.name] ? 'expanded' : ''}`}>
-                      ▼
-                    </span>
-                  </button>
+                  <span className="flat-category-icon">{cat.icon}</span>
+                  <span className="flat-category-name">{cat.name}</span>
+                  <span className="flat-category-count">({items.length})</span>
                 </div>
-                <div className={`flat-category-items ${expandedCategories[cat.name] ? 'expanded' : ''}`}>
+                <div className="flat-category-items">
                   {items.map((bm) => (
                     <BookmarkItem
                       key={bm.id}
