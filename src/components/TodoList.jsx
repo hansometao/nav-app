@@ -208,10 +208,11 @@ export default function TodoList() {
         />
         <button 
           type="button" 
-          className="btn-sm btn-expand" 
+          className="btn-icon btn-expand" 
           onClick={() => setShowAddForm(!showAddForm)}
+          title="展开高级选项"
         >
-          <Icon name="plus" size={16} />
+          <Icon name={showAddForm ? "chevronUp" : "plus"} size={16} />
         </button>
       </form>
 
@@ -244,7 +245,7 @@ export default function TodoList() {
             />
           </div>
           <button type="submit" className="btn-sm btn-full" onClick={addTodo}>
-            添加任务
+            <Icon name="check" size={14} /> 添加任务
           </button>
         </div>
       )}
@@ -268,20 +269,24 @@ export default function TodoList() {
           ))}
         </div>
         
-        <select 
-          value={sortBy} 
-          onChange={(e) => setSortBy(e.target.value)}
-          className="sort-select"
-        >
-          <option value="created">按创建时间</option>
-          <option value="priority">按优先级</option>
-          <option value="dueDate">按截止日期</option>
-        </select>
+        <div className="sort-select-wrapper">
+          <Icon name="sort" size={14} />
+          <select 
+            value={sortBy} 
+            onChange={(e) => setSortBy(e.target.value)}
+            className="sort-select"
+          >
+            <option value="created">按创建时间</option>
+            <option value="priority">按优先级</option>
+            <option value="dueDate">按截止日期</option>
+          </select>
+        </div>
       </div>
 
       {stats.total > 0 && (
         <div className="todo-actions-bar">
           <button className="btn-text btn-sm" onClick={selectAll}>
+            <Icon name="checkSquare" size={14} />
             {todos.every(t => t.done) ? '取消全选' : '全选'}
           </button>
           {stats.done > 0 && (
@@ -295,6 +300,7 @@ export default function TodoList() {
       <div className="todo-list">
         {filtered.length === 0 ? (
           <div className="empty-state">
+            <Icon name="inbox" size={48} />
             <p>{stats.total === 0 ? '还没有任务，添加一个吧' : '没有符合条件任务'}</p>
           </div>
         ) : (
@@ -333,6 +339,7 @@ export default function TodoList() {
               <button 
                 className="btn-icon btn-remove" 
                 onClick={() => remove(todo.id)}
+                title="删除任务"
               >
                 <Icon name="x" size={14} />
               </button>
