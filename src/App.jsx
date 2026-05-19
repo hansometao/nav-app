@@ -4,21 +4,29 @@ import 'react-grid-layout/css/styles.css';
 import { useGreeting } from './hooks/useGreeting';
 import { useTime } from './hooks/useTime';
 import { useLayoutStorage } from './hooks/useLayoutStorage';
-import Calendar from './components/Calendar';
-import Countdown from './components/Countdown';
-import TodoList from './components/TodoList';
-import Memo from './components/Memo';
-import LunarCalendar from './components/LunarCalendar';
+import { STORAGE_KEYS } from './config/storage';
 import './App.css';
 
-// 懒加载较重的组件
+// 懒加载所有组件以保持一致性
 const AITools = lazy(() => import('./components/AITools'));
 const Weather = lazy(() => import('./components/Weather'));
 const Bookmarks = lazy(() => import('./components/Bookmarks'));
 const HotNews = lazy(() => import('./components/HotNews'));
+const Calendar = lazy(() => import('./components/Calendar'));
+const Countdown = lazy(() => import('./components/Countdown'));
+const TodoList = lazy(() => import('./components/TodoList'));
+const Memo = lazy(() => import('./components/Memo'));
+const LunarCalendar = lazy(() => import('./components/LunarCalendar'));
 
-// 默认搜索引擎
-const DEFAULT_SE = { name: 'Google', url: 'https://www.google.com/search?q=', icon: '🔍' };
+// 统一的搜索引擎配置（与 AITools 组件保持一致）
+const SEARCH_ENGINES = [
+  { name: 'Google', url: 'https://www.google.com/search?q=', icon: '🔍' },
+  { name: '百度', url: 'https://www.baidu.com/s?wd=', icon: '🐻' },
+  { name: 'Bing', url: 'https://www.bing.com/search?q=', icon: '🟦' },
+];
+
+// 默认使用 Bing 作为搜索引擎
+const DEFAULT_SE = SEARCH_ENGINES[2];
 
 // 主体区域组件映射（不包含搜索，搜索独立在顶部）
 const MAIN_WIDGETS = [
@@ -35,7 +43,33 @@ export default memo(function App() {
   const greeting = useGreeting();
   const { currentTime, formatTime, formatDate } = useTime();
   const { layouts, editMode, setEditMode, onLayoutChange, resetLayout } = useLayoutStorage();
-  const [searchEngine, setSearchEngine] = useState(DEFAULT_SE);
+  
+  // 从 localStorage 读取保存的搜索引擎配置
+  const [searchEngine, setSearchEngine] = useState(() => {
+    try {
+      const saved = localStorage.getItem(STORAGE_KEYS.SEARCH_ENGINE);
+      if (saved) {
+        const parsed = JSON.parse(saved);
+        // 验证保存的配置是否有效
+        const found = SEARCH_ENGINES.find(se => se.name === parsed.name);
+        if (found) return found;
+      }
+    } catch {
+      // 如果读取失败，使用默认值
+    }
+    return DEFAULT_SE;
+  });
+  
+  // 保存搜索引擎配置到 localStorage
+  const handleSearchEngineChange = (engine) => {
+    setSearchEngine(engine);
+    try {
+      localStorage.setItem(STORAGE_KEYS.SEARCH_ENGINE, JSON.stringify(engine));
+    } catch {
+      // 忽略保存错误
+    }
+  };
+  
   const appRef = useRef(null);
 
   return (
@@ -50,7 +84,9 @@ export default memo(function App() {
           <div className="header-time">
             <span className="time-display">{formatTime(currentTime)}</span>
             <span className="date-display">{formatDate(currentTime)}</span>
-            <LunarCalendar date={currentTime} />
+            <Suspense fallback={null}>
+              <LunarCalendar date={currentTime} />
+            </Suspense>
           </div>
           <div className="header-greeting">{greeting}</div>
           <div className="header-controls">
@@ -72,7 +108,7 @@ export default memo(function App() {
       <div className="top-search-section">
         <div className="search-container">
           <Suspense fallback={<div className="search-loading">加载中...</div>}>
-            <AITools searchEngine={searchEngine} onSearchEngineChange={setSearchEngine} compact />
+            <AITools searchEngine={searchEngine} onSearchEngineChange={handleSearchEngineChange} compact />
           </Suspense>
         </div>
       </div>
