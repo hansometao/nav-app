@@ -86,7 +86,7 @@ const BookmarkItem = ({ bm, stats, onEdit, onDelete, onVisit, updateFavicon }) =
           title="删除"
           aria-label="删除书签"
         >
-          <Icon iconName="folder" size={14} />
+          <Icon iconName="trash" size={14} />
         </button>
       </div>
     </a>
@@ -95,11 +95,11 @@ const BookmarkItem = ({ bm, stats, onEdit, onDelete, onVisit, updateFavicon }) =
 
 const EmptyState = ({ onAdd }) => (
   <div className="flat-empty-state">
-    <div className="empty-icon"><Icon iconName="folder" size={48} /></div>
+    <div className="empty-icon"><Icon iconName="bookmark" size={48} /></div>
     <h3>暂无书签</h3>
     <p>点击下方按钮添加你的第一个网址书签</p>
     <button className="flat-add-btn" onClick={onAdd}>
-      <Icon iconName="folder" size={16} /> 添加网址
+      <Icon iconName="plus" size={16} /> 添加网址
     </button>
   </div>
 );
@@ -151,7 +151,7 @@ const CategoryManager = ({ categories, onAdd, onDelete, onEdit, bookmarksCount }
           className={`flat-manage-cats-btn ${showForm ? 'active' : ''}`} 
           onClick={() => setShowForm(!showForm)}
         >
-          {showForm ? <Icon iconName="bookmark" size={14} /> : <Icon iconName="folder" size={14} />}
+          {showForm ? <Icon iconName="x" size={14} /> : <Icon iconName="plus" size={14} />}
           {showForm ? '收起' : '添加分类'}
         </button>
       </div>
@@ -205,7 +205,7 @@ const CategoryManager = ({ categories, onAdd, onDelete, onEdit, bookmarksCount }
             </div>
             <div className="flat-form-buttons">
               <button type="submit" className="flat-save-btn">
-                <Icon iconName="folder" size={14} />
+                <Icon iconName="check" size={14} />
                 {editingCat ? '保存' : '添加'}
               </button>
               <button
@@ -253,7 +253,7 @@ const CategoryManager = ({ categories, onAdd, onDelete, onEdit, bookmarksCount }
                     title="删除分类"
                     disabled={categories.length <= 1}
                   >
-                    <Icon iconName="folder" size={14} />
+                    <Icon iconName="trash" size={14} />
                   </button>
                 </div>
               </div>
@@ -516,7 +516,7 @@ export default function FlatBookmarks() {
         </div>
         <div className="flat-bookmarks-actions">
           <div className="flat-search-box">
-            <span className="search-icon"><Icon iconName="folder" size={16} /></span>
+            <span className="search-icon"><Icon iconName="search" size={16} /></span>
             <input
               type="text"
               placeholder="搜索网址..."
@@ -535,7 +535,7 @@ export default function FlatBookmarks() {
             <option value="name">名称排序</option>
           </select>
           <button className="flat-add-btn" onClick={() => setShowAdd(!showAdd)}>
-            {showAdd ? <><Icon iconName="bookmark" size={16} /> 取消</> : <><Icon iconName="folder" size={16} /> 添加网址</>}
+            {showAdd ? <><Icon iconName="x" size={16} /> 取消</> : <><Icon iconName="plus" size={16} /> 添加网址</>}
           </button>
         </div>
       </div>
