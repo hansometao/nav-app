@@ -74,10 +74,6 @@ export default function TodoList() {
     save(todos.filter(t => t.id !== id));
   };
 
-  const editTodo = (id, newText) => {
-    save(todos.map(t => (t.id === id ? { ...t, text: newText } : t)));
-  };
-
   const clearDone = () => {
     save(todos.filter(t => !t.done));
   };

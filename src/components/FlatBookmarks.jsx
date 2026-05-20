@@ -1,17 +1,25 @@
 import { useState, useMemo, useCallback, useEffect } from 'react';
 import { validateBookmark, sanitizeHtml, getFavicon } from '../utils';
 import { useDebounce } from '../hooks';
-import { DEFAULT_CATEGORIES, DEFAULT_BOOKMARKS, ICON_OPTIONS, ICON_SVGS, STORAGE_KEYS } from '../constants';
+import {
+  DEFAULT_CATEGORIES,
+  DEFAULT_BOOKMARKS,
+  ICON_OPTIONS,
+  ICON_SVGS,
+  STORAGE_KEYS,
+} from '../constants';
 
 // 图标组件
 const Icon = ({ iconName, className, size = 16 }) => {
   const svgHtml = ICON_SVGS[iconName] || ICON_SVGS.folder;
   return (
-    <span 
-      className={className} 
-      dangerouslySetInnerHTML={{ 
-        __html: svgHtml.replace(/width="20"/, `width="${size}"`).replace(/height="20"/, `height="${size}"`)
-      }} 
+    <span
+      className={className}
+      dangerouslySetInnerHTML={{
+        __html: svgHtml
+          .replace(/width="20"/, `width="${size}"`)
+          .replace(/height="20"/, `height="${size}"`),
+      }}
     />
   );
 };
@@ -95,7 +103,9 @@ const BookmarkItem = ({ bm, stats, onEdit, onDelete, onVisit, updateFavicon }) =
 
 const EmptyState = ({ onAdd }) => (
   <div className="flat-empty-state">
-    <div className="empty-icon"><Icon iconName="bookmark" size={48} /></div>
+    <div className="empty-icon">
+      <Icon iconName="bookmark" size={48} />
+    </div>
     <h3>暂无书签</h3>
     <p>点击下方按钮添加你的第一个网址书签</p>
     <button className="flat-add-btn" onClick={onAdd}>
@@ -127,9 +137,9 @@ const CategoryManager = ({ categories, onAdd, onDelete, onEdit, bookmarksCount }
 
   const startEdit = cat => {
     const existingIcon = ICON_OPTIONS.find(opt => opt.iconName === cat.icon) || ICON_OPTIONS[0];
-    setNewCat({ 
-      name: cat.name, 
-      icon: existingIcon 
+    setNewCat({
+      name: cat.name,
+      icon: existingIcon,
     });
     setEditingCat(cat.name);
     setShowForm(true);
@@ -147,8 +157,8 @@ const CategoryManager = ({ categories, onAdd, onDelete, onEdit, bookmarksCount }
           <span className="manager-title">分类管理</span>
           <span className="category-total-count">{categories.length} 个分类</span>
         </div>
-        <button 
-          className={`flat-manage-cats-btn ${showForm ? 'active' : ''}`} 
+        <button
+          className={`flat-manage-cats-btn ${showForm ? 'active' : ''}`}
           onClick={() => setShowForm(!showForm)}
           title={showForm ? '收起表单' : '添加分类'}
           aria-label={showForm ? '收起表单' : '添加分类'}
@@ -175,7 +185,9 @@ const CategoryManager = ({ categories, onAdd, onDelete, onEdit, bookmarksCount }
                 <label className="field-label">选择图标</label>
                 <div className="icon-selector-wrapper">
                   <div className="icon-preview-display">
-                    <span className="preview-icon"><Icon iconName={newCat.icon.iconName} size={20} /></span>
+                    <span className="preview-icon">
+                      <Icon iconName={newCat.icon.iconName} size={20} />
+                    </span>
                     <span className="preview-icon-label">{newCat.icon.label}</span>
                   </div>
                   <div className="icon-picker-grid">
@@ -234,16 +246,18 @@ const CategoryManager = ({ categories, onAdd, onDelete, onEdit, bookmarksCount }
             return (
               <div key={cat.name} className="category-card">
                 <div className="category-card-header">
-                  <span className="category-card-icon"><Icon iconName={catIcon.iconName} size={20} /></span>
+                  <span className="category-card-icon">
+                    <Icon iconName={catIcon.iconName} size={20} />
+                  </span>
                   <div className="category-card-info">
                     <span className="category-card-name">{cat.name}</span>
                     <span className="category-card-count">{catBookmarks} 个书签</span>
                   </div>
                 </div>
                 <div className="category-card-actions">
-                  <button 
-                    className="category-action-btn edit" 
-                    onClick={() => startEdit(cat)} 
+                  <button
+                    className="category-action-btn edit"
+                    onClick={() => startEdit(cat)}
                     title="编辑分类"
                   >
                     <Icon iconName="settings" size={14} />
@@ -280,7 +294,7 @@ export default function FlatBookmarks() {
         return defaultData;
       }
       return JSON.parse(saved);
-    } catch (e) {
+    } catch {
       return DEFAULT_BOOKMARKS.map((bm, i) => ({
         ...bm,
         id: Date.now() + i,
@@ -297,7 +311,7 @@ export default function FlatBookmarks() {
       }
       localStorage.setItem(STORAGE_KEYS.CATEGORIES, JSON.stringify(DEFAULT_CATEGORIES));
       return DEFAULT_CATEGORIES;
-    } catch (e) {
+    } catch {
       return DEFAULT_CATEGORIES;
     }
   });
@@ -481,7 +495,7 @@ export default function FlatBookmarks() {
     }
 
     return result;
-  }, [bookmarks, searchQuery, sortBy, stats]);
+  }, [bookmarks, debouncedSearchQuery, sortBy, stats]);
 
   const groupedBookmarks = useMemo(() => {
     const cats = {};
@@ -512,12 +526,16 @@ export default function FlatBookmarks() {
     <div className="flat-bookmarks">
       <div className="flat-bookmarks-header">
         <div className="flat-bookmarks-title-row">
-          <h2 className="flat-bookmarks-title"><Icon iconName="bookmark" size={20} /> 网址导航</h2>
+          <h2 className="flat-bookmarks-title">
+            <Icon iconName="bookmark" size={20} /> 网址导航
+          </h2>
           <span className="flat-bookmarks-count">共 {bookmarks.length} 个书签</span>
         </div>
         <div className="flat-bookmarks-actions">
           <div className="flat-search-box">
-            <span className="search-icon"><Icon iconName="search" size={16} /></span>
+            <span className="search-icon">
+              <Icon iconName="search" size={16} />
+            </span>
             <input
               type="text"
               placeholder="搜索网址..."
@@ -536,7 +554,15 @@ export default function FlatBookmarks() {
             <option value="name">名称排序</option>
           </select>
           <button className="flat-add-btn" onClick={() => setShowAdd(!showAdd)}>
-            {showAdd ? <><Icon iconName="x" size={16} /> 取消</> : <><Icon iconName="plus" size={16} /> 添加网址</>}
+            {showAdd ? (
+              <>
+                <Icon iconName="x" size={16} /> 取消
+              </>
+            ) : (
+              <>
+                <Icon iconName="plus" size={16} /> 添加网址
+              </>
+            )}
           </button>
         </div>
       </div>
@@ -617,13 +643,15 @@ export default function FlatBookmarks() {
           {categories.map(cat => {
             const items = groupedBookmarks[cat.name] || [];
             if (items.length === 0 && searchQuery) return null;
-            
+
             const catIcon = ICON_OPTIONS.find(opt => opt.iconName === cat.icon) || ICON_OPTIONS[0];
 
             return (
               <div key={cat.name} className="flat-category-section">
                 <div className="flat-category-header">
-                  <span className="flat-category-icon"><Icon iconName={catIcon.iconName} size={20} /></span>
+                  <span className="flat-category-icon">
+                    <Icon iconName={catIcon.iconName} size={20} />
+                  </span>
                   <span className="flat-category-name">{cat.name}</span>
                   <span className="flat-category-count">({items.length})</span>
                 </div>

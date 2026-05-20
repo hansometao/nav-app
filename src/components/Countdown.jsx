@@ -176,7 +176,7 @@ export default function Countdown() {
     return '';
   };
 
-  const renderTimeDisplay = (tl, cd) => {
+  const renderTimeDisplay = tl => {
     const showDays = tl.d > 0;
     const urgentClass = getCountdownClass(tl.totalHours);
 
@@ -358,7 +358,7 @@ export default function Countdown() {
               {tl.expired ? (
                 <div className="countdown-expired">时间到！</div>
               ) : (
-                renderTimeDisplay(tl, cd)
+                renderTimeDisplay(tl)
               )}
             </div>
           );

@@ -4,12 +4,6 @@ import { getLunarInfo, getLunarYearInfo } from '../utils/lunarCalendar';
 
 const CALENDAR_KEY = 'nav_app_calendar';
 
-const SOLAR_TERMS = [
-  '小寒', '大寒', '立春', '雨水', '惊蛰', '春分', '清明', '谷雨',
-  '立夏', '小满', '芒种', '夏至', '小暑', '大暑', '立秋', '处暑',
-  '白露', '秋分', '寒露', '霜降', '立冬', '小雪', '大雪', '冬至',
-];
-
 const HOLIDAYS = {
   '01-01': { name: '元旦', type: 'national' },
   '02-14': { name: '情人节', type: 'festival' },
@@ -44,8 +38,16 @@ export const getHolidayInfo = (month, day) => {
 };
 
 const EVENT_COLORS = [
-  '#ef4444', '#f97316', '#eab308', '#22c55e', '#06b6d4',
-  '#3b82f6', '#8b5cf6', '#ec4899', '#f43f5e', '#14b8a6',
+  '#ef4444',
+  '#f97316',
+  '#eab308',
+  '#22c55e',
+  '#06b6d4',
+  '#3b82f6',
+  '#8b5cf6',
+  '#ec4899',
+  '#f43f5e',
+  '#14b8a6',
 ];
 
 const DEFAULT_EVENTS = [
@@ -55,8 +57,18 @@ const DEFAULT_EVENTS = [
 ];
 
 const monthNames = [
-  '一月', '二月', '三月', '四月', '五月', '六月',
-  '七月', '八月', '九月', '十月', '十一月', '十二月',
+  '一月',
+  '二月',
+  '三月',
+  '四月',
+  '五月',
+  '六月',
+  '七月',
+  '八月',
+  '九月',
+  '十月',
+  '十一月',
+  '十二月',
 ];
 
 const dayNames = ['日', '一', '二', '三', '四', '五', '六'];
@@ -85,7 +97,6 @@ export default function CalendarPopup({ onClose }) {
   const year = currentDate.getFullYear();
   const month = currentDate.getMonth();
   const today = new Date();
-  const todayInfo = getLunarInfo(today);
   const yearInfo = getLunarYearInfo(year);
 
   const firstDay = new Date(year, month, 1).getDay();
@@ -137,17 +148,18 @@ export default function CalendarPopup({ onClose }) {
     : getLunarInfo(today);
 
   const monthsGrid = useMemo(() => {
+    const currentYear = currentDate.getFullYear();
     const months = [];
     for (let i = 0; i < 12; i++) {
-      const monthDays = new Date(year, i + 1, 0).getDate();
-      const firstDayOfMonth = new Date(year, i, 1).getDay();
+      const monthDays = new Date(currentYear, i + 1, 0).getDate();
+      const firstDayOfMonth = new Date(currentYear, i, 1).getDay();
       const monthDaysArray = [];
       for (let j = 0; j < firstDayOfMonth; j++) monthDaysArray.push(null);
       for (let j = 1; j <= monthDays; j++) monthDaysArray.push(j);
       months.push({ index: i, name: monthNames[i], days: monthDaysArray });
     }
     return months;
-  }, [year]);
+  }, [currentDate]);
 
   return (
     <div className="calendar-popup-overlay" onClick={onClose}>
@@ -202,8 +214,12 @@ export default function CalendarPopup({ onClose }) {
               </div>
             </div>
             <div className="form-actions">
-              <button className="btn-primary" onClick={addEvent}>添加</button>
-              <button className="btn-secondary" onClick={() => setShowAdd(false)}>取消</button>
+              <button className="btn-primary" onClick={addEvent}>
+                添加
+              </button>
+              <button className="btn-secondary" onClick={() => setShowAdd(false)}>
+                取消
+              </button>
             </div>
           </div>
         )}
@@ -236,25 +252,37 @@ export default function CalendarPopup({ onClose }) {
             <>
               <div className="calendar-nav">
                 <button className="btn-icon" onClick={prevYear} title="上一年">
-                  <Icon name="chevronLeft" size={14} /><Icon name="chevronLeft" size={14} />
+                  <Icon name="chevronLeft" size={14} />
+                  <Icon name="chevronLeft" size={14} />
                 </button>
                 <button className="btn-icon" onClick={prevMonth} title="上月">
                   <Icon name="chevronLeft" size={16} />
                 </button>
-                <span className="calendar-title">{year}年 {monthNames[month]}</span>
+                <span className="calendar-title">
+                  {year}年 {monthNames[month]}
+                </span>
                 <button className="btn-icon" onClick={nextMonth} title="下月">
                   <Icon name="chevronRight" size={16} />
                 </button>
                 <button className="btn-icon" onClick={nextYear} title="下一年">
-                  <Icon name="chevronRight" size={14} /><Icon name="chevronRight" size={14} />
+                  <Icon name="chevronRight" size={14} />
+                  <Icon name="chevronRight" size={14} />
                 </button>
               </div>
 
               <div className="calendar-legend">
-                <span className="legend-item"><span className="holiday-dot"></span>节日</span>
-                <span className="legend-item"><span className="lunar-holiday-dot"></span>农历节</span>
-                <span className="legend-item"><span className="event-dot"></span>事件</span>
-                <span className="legend-item"><span className="jieqi-dot"></span>节气</span>
+                <span className="legend-item">
+                  <span className="holiday-dot"></span>节日
+                </span>
+                <span className="legend-item">
+                  <span className="lunar-holiday-dot"></span>农历节
+                </span>
+                <span className="legend-item">
+                  <span className="event-dot"></span>事件
+                </span>
+                <span className="legend-item">
+                  <span className="jieqi-dot"></span>节气
+                </span>
               </div>
 
               <div className="calendar-grid">
@@ -266,7 +294,10 @@ export default function CalendarPopup({ onClose }) {
                 {days.map((day, i) => {
                   if (day === null) return <div key={`e-${i}`} className="calendar-day empty" />;
 
-                  const isToday = day === today.getDate() && month === today.getMonth() && year === today.getFullYear();
+                  const isToday =
+                    day === today.getDate() &&
+                    month === today.getMonth() &&
+                    year === today.getFullYear();
                   const isSelected = selectedDate === day;
                   const dayEvents = getEventsForDay(day);
                   const holiday = getHolidayInfo(day);
@@ -283,7 +314,9 @@ export default function CalendarPopup({ onClose }) {
                       <span className="day-num">{day}</span>
                       {lunar && <span className="lunar-day">{lunar.dayName}</span>}
                       {holiday && (
-                        <span className={`holiday-badge holiday-${holiday.type}`}>{holiday.name}</span>
+                        <span className={`holiday-badge holiday-${holiday.type}`}>
+                          {holiday.name}
+                        </span>
                       )}
                       {lunarHoliday && (
                         <span className="holiday-badge holiday-lunar">{lunarHoliday.name}</span>
@@ -301,7 +334,9 @@ export default function CalendarPopup({ onClose }) {
                               title={evt.title}
                             />
                           ))}
-                          {dayEvents.length > 2 && <span className="more-events">+{dayEvents.length - 2}</span>}
+                          {dayEvents.length > 2 && (
+                            <span className="more-events">+{dayEvents.length - 2}</span>
+                          )}
                         </div>
                       )}
                     </div>
@@ -312,7 +347,9 @@ export default function CalendarPopup({ onClose }) {
               {selectedDate && (
                 <div className="selected-date-detail">
                   <div className="detail-header">
-                    <span className="detail-date">{year}年{month + 1}月{selectedDate}日</span>
+                    <span className="detail-date">
+                      {year}年{month + 1}月{selectedDate}日
+                    </span>
                     <button className="btn-icon" onClick={() => setSelectedDate(null)}>
                       <Icon name="x" size={14} />
                     </button>
@@ -326,10 +363,17 @@ export default function CalendarPopup({ onClose }) {
                       <div className="event-list">
                         <span className="event-label">日程：</span>
                         {getEventsForDay(selectedDate).map((evt, i) => (
-                          <div key={i} className="event-item" style={{ borderLeftColor: evt.color }}>
+                          <div
+                            key={i}
+                            className="event-item"
+                            style={{ borderLeftColor: evt.color }}
+                          >
                             <span className="event-time">{evt.time}</span>
                             <span className="event-title">{evt.title}</span>
-                            <button className="btn-icon btn-remove" onClick={() => removeEvent(evt.id)}>
+                            <button
+                              className="btn-icon btn-remove"
+                              onClick={() => removeEvent(evt.id)}
+                            >
                               <Icon name="trash" size={12} />
                             </button>
                           </div>
@@ -362,7 +406,9 @@ export default function CalendarPopup({ onClose }) {
                     <div className="month-name">{monthData.name}</div>
                     <div className="month-grid">
                       {['日', '一', '二', '三', '四', '五', '六'].map(d => (
-                        <div key={d} className="month-day-header">{d}</div>
+                        <div key={d} className="month-day-header">
+                          {d}
+                        </div>
                       ))}
                       {monthData.days.map((day, i) => (
                         <div

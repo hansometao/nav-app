@@ -223,7 +223,7 @@ export default function Bookmarks() {
         return defaultData;
       }
       return JSON.parse(saved);
-    } catch (e) {
+    } catch {
       const defaultData = DEFAULT_BOOKMARKS.map((bm, i) => ({
         ...bm,
         id: Date.now() + i,
@@ -242,7 +242,7 @@ export default function Bookmarks() {
       }
       localStorage.setItem(CATEGORIES_KEY, JSON.stringify(DEFAULT_CATEGORIES));
       return DEFAULT_CATEGORIES;
-    } catch (e) {
+    } catch {
       return DEFAULT_CATEGORIES;
     }
   });

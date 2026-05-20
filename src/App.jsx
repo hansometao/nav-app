@@ -87,7 +87,7 @@ const WidgetItem = ({
   noCollapse,
 }) => {
   const WidgetComponent = Component || Comp;
-  
+
   if (noCollapse) {
     return (
       <div className="widget-container widget-no-collapse" data-widget={widgetKey}>

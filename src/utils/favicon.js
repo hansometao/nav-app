@@ -28,7 +28,7 @@ export async function getFavicon(url) {
           bestFavicon = faviconUrl;
           break; // 找到第一个可用的就用它
         }
-      } catch (e) {
+      } catch {
         continue;
       }
     }
@@ -41,7 +41,7 @@ export async function getFavicon(url) {
     const fallback = generateFallbackAvatar(url);
     faviconCache.set(url, fallback);
     return fallback;
-  } catch (e) {
+  } catch {
     const fallback = generateFallbackAvatar(url);
     faviconCache.set(url, fallback);
     return fallback;

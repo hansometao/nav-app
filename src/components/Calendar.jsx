@@ -4,8 +4,18 @@ import { getHolidayInfo } from './CalendarPopup';
 import CalendarPopup from './CalendarPopup';
 
 const monthNames = [
-  '一月', '二月', '三月', '四月', '五月', '六月',
-  '七月', '八月', '九月', '十月', '十一月', '十二月',
+  '一月',
+  '二月',
+  '三月',
+  '四月',
+  '五月',
+  '六月',
+  '七月',
+  '八月',
+  '九月',
+  '十月',
+  '十一月',
+  '十二月',
 ];
 
 const weekNames = ['周日', '周一', '周二', '周三', '周四', '周五', '周六'];
@@ -36,7 +46,10 @@ export default function Calendar() {
               </div>
             </div>
             <div className="today-year-info">
-              <span className="year-gan-zhi">{yearInfo.tianGan}{yearInfo.diZhi}年</span>
+              <span className="year-gan-zhi">
+                {yearInfo.tianGan}
+                {yearInfo.diZhi}年
+              </span>
               <span className="year-sheng-xiao">({yearInfo.shengXiao})</span>
             </div>
           </div>

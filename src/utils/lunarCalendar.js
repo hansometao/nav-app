@@ -128,58 +128,15 @@ export function getLunarYearInfo(year) {
   };
 }
 
-// 儒略日计算
-function toJulianDay(date) {
-  const year = date.getFullYear();
-  const month = date.getMonth() + 1;
-  const day = date.getDate();
-
-  const a = Math.floor((14 - month) / 12);
-  const y = year + 4800 - a;
-  const m = month + 12 * a - 3;
-
-  return (
-    day +
-    Math.floor((153 * m + 2) / 5) +
-    365 * y +
-    Math.floor(y / 4) -
-    Math.floor(y / 100) +
-    Math.floor(y / 400) -
-    32045
-  );
-}
-
-// 判断是否为闰年
-function isLeapYear(year) {
-  return (year % 4 === 0 && year % 100 !== 0) || year % 400 === 0;
-}
-
-// 获取某月的天数
-function getDaysInMonth(year, month) {
-  const days = [31, isLeapYear(year) ? 29 : 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31];
-  return days[month - 1];
-}
-
 // 农历转换（简化版，使用查表法）
 export function solarToLunar(date) {
   const year = date.getFullYear();
-  const month = date.getMonth() + 1;
-  const day = date.getDate();
-
-  // 基础儒略日
-  const baseJulian = 2451545; // 2000年1月1日的儒略日
-  const targetJulian = toJulianDay(date);
-  const daysDiff = targetJulian - baseJulian;
-
-  // 简化计算：基于已知数据的线性插值
   const lunarInfo = getLunarYearInfo(year);
 
-  // 计算农历月日（简化算法）
   let lunarYear = year;
-  let lunarMonth = 1;
-  let lunarDay = 1;
+  let lunarMonth;
+  let lunarDay;
 
-  // 估算农历日期
   const springFestival = getSpringFestival(year);
   const daysFromSpring = Math.floor(
     (date.getTime() - springFestival.getTime()) / (1000 * 60 * 60 * 24)
@@ -226,16 +183,12 @@ export function solarToLunar(date) {
 
 // 获取某年春节日期
 function getSpringFestival(year) {
-  // 春节一般在1月21日到2月20日之间
-  const baseDate = new Date(year, 0, 22);
-  const jan1 = new Date(year, 0, 1);
-  const daysToJan22 = 21;
-  return new Date(year, 0, daysToJan22);
+  // 春节一般在1月21日到2月20日之间（简化计算）
+  return new Date(year, 0, 22);
 }
 
 // 获取二十四节气
 export function getJieQi(date) {
-  const year = date.getFullYear();
   const month = date.getMonth() + 1;
   const day = date.getDate();
 

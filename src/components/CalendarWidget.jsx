@@ -4,8 +4,18 @@ import { getHolidayInfo } from './CalendarPopup';
 import CalendarPopup from './CalendarPopup';
 
 const monthNames = [
-  '一月', '二月', '三月', '四月', '五月', '六月',
-  '七月', '八月', '九月', '十月', '十一月', '十二月',
+  '一月',
+  '二月',
+  '三月',
+  '四月',
+  '五月',
+  '六月',
+  '七月',
+  '八月',
+  '九月',
+  '十月',
+  '十一月',
+  '十二月',
 ];
 
 const weekNames = ['周日', '周一', '周二', '周三', '周四', '周五', '周六'];
@@ -23,12 +33,12 @@ export default function CalendarWidget() {
 
   return (
     <>
-      <div 
-        className="calendar-widget-card" 
+      <div
+        className="calendar-widget-card"
         onClick={() => setShowPopup(true)}
         role="button"
         tabIndex={0}
-        onKeyDown={(e) => {
+        onKeyDown={e => {
           if (e.key === 'Enter' || e.key === ' ') {
             setShowPopup(true);
           }
@@ -38,7 +48,7 @@ export default function CalendarWidget() {
           <span className="calendar-widget-icon">📅</span>
           <span className="calendar-widget-title">日历</span>
         </div>
-        
+
         <div className="calendar-widget-content">
           <div className="today-date-display">
             <div className="today-date-main">
@@ -58,11 +68,12 @@ export default function CalendarWidget() {
                 {todayInfo.monthName} {todayInfo.dayName}
               </span>
             </div>
-            
+
             <div className="detail-row">
               <span className="detail-label">年份</span>
               <span className="detail-value">
-                {yearInfo.tianGan}{yearInfo.diZhi}年 ({yearInfo.shengXiao})
+                {yearInfo.tianGan}
+                {yearInfo.diZhi}年 ({yearInfo.shengXiao})
               </span>
             </div>
 
@@ -76,16 +87,12 @@ export default function CalendarWidget() {
             {holiday && (
               <div className="detail-row">
                 <span className="detail-label">节日</span>
-                <span className={`detail-value holiday-value ${holiday.type}`}>
-                  {holiday.name}
-                </span>
+                <span className={`detail-value holiday-value ${holiday.type}`}>{holiday.name}</span>
               </div>
             )}
           </div>
 
-          <div className="calendar-widget-hint">
-            点击查看完整日历 →
-          </div>
+          <div className="calendar-widget-hint">点击查看完整日历 →</div>
         </div>
       </div>
 

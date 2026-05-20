@@ -2,7 +2,6 @@ import { useState, useEffect, useCallback, useRef } from 'react';
 import { STORAGE_KEYS, CACHE_CONFIG } from '../config/storage';
 import { Icon } from '../utils/icons';
 import ErrorMessage from './ErrorMessage';
-import { fetchWithTimeout, getErrorMessage, withRetry } from '../utils/apiErrorHandler';
 
 // 平台配置
 const PLATFORMS = [
@@ -97,91 +96,66 @@ const MOCK_DATA = {
   ],
 };
 
-function formatCount(n) {
-  if (!n && n !== 0) return '';
-  if (n >= 100000000) return (n / 100000000).toFixed(1) + '亿';
-  if (n >= 10000) return (n / 10000).toFixed(1) + '万';
-  if (n >= 1000) return (n / 1000).toFixed(1) + '千';
-  return String(n);
-}
-
-function formatTime(ts) {
-  const d = new Date(ts);
-  return `${String(d.getHours()).padStart(2, '0')}:${String(d.getMinutes()).padStart(2, '0')}`;
-}
-
-// 使用公共API获取真实数据
 async function fetchRealData(platform) {
   try {
-    let url, data;
-
     switch (platform) {
-      case 'zhihu':
-        try {
-          const res = await fetch('https://api.oioweb.cn/api/zhihu/hot');
-          if (res.ok) {
-            const json = await res.json();
-            if (json.result && json.result.length > 0) {
-              return json.result.map((item, idx) => ({
-                id: item.id || idx,
-                title: item.title,
-                heat: item.hot || item.heat || Math.floor(Math.random() * 500000) + 100000,
-                url: item.url || 'https://www.zhihu.com',
-              }));
-            }
+      case 'zhihu': {
+        const res = await fetch('https://api.oioweb.cn/api/zhihu/hot');
+        if (res.ok) {
+          const json = await res.json();
+          if (json.result && json.result.length > 0) {
+            return json.result.map((item, idx) => ({
+              id: item.id || idx,
+              title: item.title,
+              heat: item.hot || item.heat || Math.floor(Math.random() * 500000) + 100000,
+              url: item.url || 'https://www.zhihu.com',
+            }));
           }
-        } catch (e) {
-          console.log('知乎API获取失败，使用备用数据');
         }
         break;
+      }
 
-      case 'bilibili':
-        try {
-          const res = await fetch(
-            'https://api.bilibili.com/x/web-interface/ranking/v2?rid=0&type=all'
-          );
-          if (res.ok) {
-            const json = await res.json();
-            if (json.code === 0 && json.data && json.data.list) {
-              return json.data.list.slice(0, 20).map(item => ({
-                id: item.aid,
-                title: item.title,
-                url: `https://www.bilibili.com/video/${item.bvid || `av${item.aid}`}`,
-                heat: item.play || item.stat?.view || Math.floor(Math.random() * 500000) + 100000,
-              }));
-            }
+      case 'bilibili': {
+        const res = await fetch(
+          'https://api.bilibili.com/x/web-interface/ranking/v2?rid=0&type=all'
+        );
+        if (res.ok) {
+          const json = await res.json();
+          if (json.code === 0 && json.data && json.data.list) {
+            return json.data.list.slice(0, 20).map(item => ({
+              id: item.aid,
+              title: item.title,
+              url: `https://www.bilibili.com/video/${item.bvid || `av${item.aid}`}`,
+              heat: item.play || item.stat?.view || Math.floor(Math.random() * 500000) + 100000,
+            }));
           }
-        } catch (e) {
-          console.log('B站API获取失败，使用备用数据');
         }
         break;
+      }
 
-      case 'weibo':
-        try {
-          const res = await fetch('https://api.oioweb.cn/api/weibo/hot');
-          if (res.ok) {
-            const json = await res.json();
-            if (json.result && json.result.length > 0) {
-              return json.result.map((item, idx) => ({
-                id: item.id || idx,
-                title: item.title || item.word,
-                heat: item.hot || item.num || Math.floor(Math.random() * 500000) + 100000,
-                url: item.url || 'https://s.weibo.com/top/summary',
-              }));
-            }
+      case 'weibo': {
+        const res = await fetch('https://api.oioweb.cn/api/weibo/hot');
+        if (res.ok) {
+          const json = await res.json();
+          if (json.result && json.result.length > 0) {
+            return json.result.map((item, idx) => ({
+              id: item.id || idx,
+              title: item.title || item.word,
+              heat: item.hot || item.num || Math.floor(Math.random() * 500000) + 100000,
+              url: item.url || 'https://s.weibo.com/top/summary',
+            }));
           }
-        } catch (e) {
-          console.log('微博API获取失败，使用备用数据');
         }
         break;
+      }
 
       default:
         break;
     }
 
     return null;
-  } catch (error) {
-    console.log(`${platform} API获取失败:`, error);
+  } catch {
+    console.log(`${platform} API获取失败`);
     return null;
   }
 }
@@ -191,7 +165,6 @@ export default function HotNews() {
   const [items, setItems] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
-  const [lastUpdate, setLastUpdate] = useState(null);
   const [useMockData, setUseMockData] = useState(false);
 
   const abortControllerRef = useRef(null);
@@ -214,7 +187,6 @@ export default function HotNews() {
           const { data, timestamp, isMock } = JSON.parse(raw);
           if (Date.now() - timestamp < CACHE_CONFIG.NEWS_DURATION) {
             setItems(data);
-            setLastUpdate(timestamp);
             setUseMockData(isMock || false);
             setLoading(false);
             return;
@@ -239,7 +211,6 @@ export default function HotNews() {
 
         setItems(list);
         setUseMockData(isMock);
-        setLastUpdate(Date.now());
 
         try {
           localStorage.setItem(
@@ -263,9 +234,8 @@ export default function HotNews() {
           const fallbackList = MOCK_DATA[plat.key] || [];
           setItems(fallbackList);
           setUseMockData(true);
-          setLastUpdate(Date.now());
           setError(`获取热榜失败，已加载本地数据`);
-        } catch (fallbackErr) {
+        } catch {
           setError('获取热榜失败，请稍后重试');
         }
       } finally {

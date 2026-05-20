@@ -67,7 +67,7 @@ const getSearchHistory = () => {
 const saveSearchHistory = history => {
   try {
     localStorage.setItem('navAppSearchHistory', JSON.stringify(history.slice(0, 10)));
-  } catch (e) {
+  } catch {
     // Silent fail for localStorage operations
   }
 };
@@ -172,20 +172,22 @@ export default function AITools({ searchEngine, onSearchEngineChange, compact = 
       <section className="search-bar-container">
         <form onSubmit={handleSubmit} className="search-bar-large">
           {/* 搜索引擎选择器 */}
-          <div 
+          <div
             className="search-engine-indicator"
             onClick={() => {
-              const nextIndex = (SEARCH_ENGINES.findIndex(se => se.name === searchEngine.name) + 1) % SEARCH_ENGINES.length;
+              const nextIndex =
+                (SEARCH_ENGINES.findIndex(se => se.name === searchEngine.name) + 1) %
+                SEARCH_ENGINES.length;
               if (onSearchEngineChange) {
                 onSearchEngineChange(SEARCH_ENGINES[nextIndex]);
               }
             }}
           >
-            <img 
-              src={searchEngine.favicon} 
+            <img
+              src={searchEngine.favicon}
               alt={searchEngine.name}
               className="se-favicon"
-              onError={(e) => {
+              onError={e => {
                 e.target.style.display = 'none';
               }}
             />
@@ -263,7 +265,7 @@ export default function AITools({ searchEngine, onSearchEngineChange, compact = 
                 src={se.favicon}
                 alt={se.name}
                 className="se-tab-favicon"
-                onError={(e) => {
+                onError={e => {
                   e.target.style.display = 'none';
                 }}
               />

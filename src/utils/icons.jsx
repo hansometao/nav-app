@@ -272,7 +272,7 @@ export function Icon({ name, size = 24, className = '', color = 'currentColor' }
   );
 }
 
-export function iconToString(name, size = 24) {
+export function iconToString(name) {
   const svg = SVG_ICONS[name];
   if (!svg) return '';
 

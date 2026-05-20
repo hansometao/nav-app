@@ -3,7 +3,7 @@ import { useTheme, THEMES } from '../hooks/useTheme.jsx';
 import { exportAllData, importData, clearAllData } from '../utils/dataManagement';
 
 export default function SettingsPanel({ onClose }) {
-  const { theme, toggleTheme, setLightTheme, setDarkTheme } = useTheme();
+  const { theme, setLightTheme, setDarkTheme } = useTheme();
   const [importStatus, setImportStatus] = useState(null);
   const fileInputRef = useRef(null);
 

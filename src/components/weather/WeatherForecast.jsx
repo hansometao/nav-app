@@ -1,9 +1,42 @@
 import { useState, useEffect } from 'react';
 import { Icon, getWeatherIcon } from '../../utils/icons';
 import ErrorMessage from '../ErrorMessage';
-import { fetchWithTimeout, getErrorMessage, withRetry } from '../../utils/apiErrorHandler';
 
-export default function WeatherForecast({ cityCode, cityName }) {
+const getDayName = index => {
+  const days = ['今天', '明天', '后天'];
+  if (index < 3) return days[index];
+  const date = new Date();
+  date.setDate(date.getDate() + index);
+  const weekDays = ['周日', '周一', '周二', '周三', '周四', '周五', '周六'];
+  return weekDays[date.getDay()];
+};
+
+const generateMockForecast = () => {
+  const weatherTypes = [
+    { name: '晴', icon: 'sun' },
+    { name: '多云', icon: 'cloud' },
+    { name: '阴', icon: 'cloud' },
+    { name: '小雨', icon: 'cloudRain' },
+    { name: '中雨', icon: 'cloudRain' },
+  ];
+
+  return Array.from({ length: 5 }, (_, i) => {
+    const weather = weatherTypes[Math.floor(Math.random() * weatherTypes.length)];
+    const baseTemp = 20 + Math.floor(Math.random() * 10) - 5;
+    return {
+      date: new Date(Date.now() + i * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
+      dayName: getDayName(i),
+      tempHigh: baseTemp + 5,
+      tempLow: baseTemp - 3,
+      weather: weather.name,
+      icon: weather.icon,
+      wind: ['微风', '东风', '南风', '北风'][Math.floor(Math.random() * 4)],
+      windLevel: `${Math.floor(Math.random() * 3) + 1}级`,
+    };
+  });
+};
+
+export default function WeatherForecast({ cityCode }) {
   const [forecast, setForecast] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
@@ -15,30 +48,19 @@ export default function WeatherForecast({ cityCode, cityName }) {
     setError(null);
 
     try {
-      // 使用中国天气网的预报接口
-      const fetchData = async () => {
-        const response = await fetchWithTimeout(
-          `https://d1.weather.com.cn/calendar_new/${cityCode.slice(0, 2)}/${cityCode}.html`,
-          {},
-          10000
-        );
+      const response = await fetch(
+        `https://d1.weather.com.cn/calendar_new/${cityCode.slice(0, 2)}/${cityCode}.html`,
+        { signal: AbortSignal.timeout(10000) }
+      );
 
-        if (!response.ok) {
-          throw new Error(`HTTP ${response.status}`);
-        }
+      if (!response.ok) {
+        throw new Error(`HTTP ${response.status}`);
+      }
 
-        const text = await response.text();
-        // 解析返回的数据（这是一个 JSONP 格式的数据）
-        const match = text.match(/var observe24h_data = (\[.*?\]);/);
-        if (match) {
-          return JSON.parse(match[1]);
-        }
-        return [];
-      };
+      const text = await response.text();
+      const match = text.match(/var observe24h_data = (\[.*?\]);/);
+      const data = match ? JSON.parse(match[1]) : [];
 
-      const data = await withRetry(fetchData, 2, 1500);
-
-      // 处理数据，获取未来5天
       const processedForecast = data.slice(0, 5).map((day, index) => ({
         date:
           day.date ||
@@ -52,9 +74,7 @@ export default function WeatherForecast({ cityCode, cityName }) {
       }));
 
       setForecast(processedForecast);
-    } catch (err) {
-      console.error('Forecast fetch error:', err);
-      // 使用模拟数据作为 fallback
+    } catch {
       setForecast(generateMockForecast());
     } finally {
       setLoading(false);
@@ -64,40 +84,6 @@ export default function WeatherForecast({ cityCode, cityName }) {
   useEffect(() => {
     fetchForecast();
   }, [cityCode]);
-
-  const getDayName = index => {
-    const days = ['今天', '明天', '后天'];
-    if (index < 3) return days[index];
-    const date = new Date();
-    date.setDate(date.getDate() + index);
-    const weekDays = ['周日', '周一', '周二', '周三', '周四', '周五', '周六'];
-    return weekDays[date.getDay()];
-  };
-
-  const generateMockForecast = () => {
-    const weatherTypes = [
-      { name: '晴', icon: 'sun' },
-      { name: '多云', icon: 'cloud' },
-      { name: '阴', icon: 'cloud' },
-      { name: '小雨', icon: 'cloudRain' },
-      { name: '中雨', icon: 'cloudRain' },
-    ];
-
-    return Array.from({ length: 5 }, (_, i) => {
-      const weather = weatherTypes[Math.floor(Math.random() * weatherTypes.length)];
-      const baseTemp = 20 + Math.floor(Math.random() * 10) - 5;
-      return {
-        date: new Date(Date.now() + i * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
-        dayName: getDayName(i),
-        tempHigh: baseTemp + 5,
-        tempLow: baseTemp - 3,
-        weather: weather.name,
-        icon: weather.icon,
-        wind: ['微风', '东风', '南风', '北风'][Math.floor(Math.random() * 4)],
-        windLevel: `${Math.floor(Math.random() * 3) + 1}级`,
-      };
-    });
-  };
 
   if (loading) {
     return (
@@ -118,7 +104,7 @@ export default function WeatherForecast({ cityCode, cityName }) {
         <span>未来5天预报</span>
       </div>
       <div className="forecast-list">
-        {forecast.map((day, index) => (
+        {forecast.map(day => (
           <div key={day.date} className="forecast-item">
             <div className="forecast-day">{day.dayName}</div>
             <div className="forecast-date">{day.date.slice(5)}</div>
