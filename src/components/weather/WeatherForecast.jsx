@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { Icon, getWeatherIcon } from '../../utils/icons';
 import ErrorMessage from '../ErrorMessage';
+import { fetchWithTimeout, getErrorMessage, withRetry } from '../../utils/apiErrorHandler';
 
 const getDayName = index => {
   const days = ['今天', '明天', '后天'];
@@ -36,7 +37,7 @@ const generateMockForecast = () => {
   });
 };
 
-export default function WeatherForecast({ cityCode }) {
+export default function WeatherForecast({ cityCode, cityName }) {
   const [forecast, setForecast] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
@@ -48,23 +49,32 @@ export default function WeatherForecast({ cityCode }) {
     setError(null);
 
     try {
-      const response = await fetch(
-        `https://d1.weather.com.cn/calendar_new/${cityCode.slice(0, 2)}/${cityCode}.html`,
-        { signal: AbortSignal.timeout(10000) }
-      );
+      // 使用中国天气网的预报接口
+      const fetchData = async () => {
+        const response = await fetchWithTimeout(
+          `https://d1.weather.com.cn/calendar_new/${cityCode.slice(0, 2)}/${cityCode}.html`,
+          {},
+          10000
+        );
+        
+        if (!response.ok) {
+          throw new Error(`HTTP ${response.status}`);
+        }
+        
+        const text = await response.text();
+        // 解析返回的数据（这是一个 JSONP 格式的数据）
+        const match = text.match(/var observe24h_data = (\[.*?\]);/);
+        if (match) {
+          return JSON.parse(match[1]);
+        }
+        return [];
+      };
 
-      if (!response.ok) {
-        throw new Error(`HTTP ${response.status}`);
-      }
-
-      const text = await response.text();
-      const match = text.match(/var observe24h_data = (\[.*?\]);/);
-      const data = match ? JSON.parse(match[1]) : [];
-
+      const data = await withRetry(fetchData, 2, 1500);
+      
+      // 处理数据，获取未来5天
       const processedForecast = data.slice(0, 5).map((day, index) => ({
-        date:
-          day.date ||
-          new Date(Date.now() + index * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
+        date: day.date || new Date(Date.now() + index * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
         dayName: getDayName(index),
         tempHigh: day.hmax || '--',
         tempLow: day.hmin || '--',
@@ -74,7 +84,9 @@ export default function WeatherForecast({ cityCode }) {
       }));
 
       setForecast(processedForecast);
-    } catch {
+    } catch (err) {
+      console.error('Forecast fetch error:', err);
+      // 使用模拟数据作为 fallback
       setForecast(generateMockForecast());
     } finally {
       setLoading(false);
@@ -104,7 +116,7 @@ export default function WeatherForecast({ cityCode }) {
         <span>未来5天预报</span>
       </div>
       <div className="forecast-list">
-        {forecast.map(day => (
+        {forecast.map((day, index) => (
           <div key={day.date} className="forecast-item">
             <div className="forecast-day">{day.dayName}</div>
             <div className="forecast-date">{day.date.slice(5)}</div>

@@ -2,6 +2,7 @@ import { useState, useEffect, useMemo } from 'react';
 import { CACHE_CONFIG, STORAGE_KEYS } from '../config/storage';
 import { Icon, getWeatherIcon } from '../utils/icons';
 import ErrorMessage from './ErrorMessage';
+import { fetchWithTimeout, getErrorMessage, withRetry } from '../utils/apiErrorHandler';
 import { WeatherForecast } from './weather';
 
 // 中国天气网城市代码 (国家气象局数据)
@@ -184,31 +185,30 @@ export default function Weather() {
         throw new Error('Use mock data');
       }
 
-      const fetchWithTimeout = (url, options = {}, timeout = 10000) => {
-        const controller = new AbortController();
-        const timeoutId = setTimeout(() => controller.abort(), timeout);
-        return fetch(url, { ...options, signal: controller.signal }).finally(() => clearTimeout(timeoutId));
+      // 使用重试机制和超时控制
+      const fetchWeatherData = async () => {
+        const [skRes, infoRes] = await Promise.all([
+          fetchWithTimeout(`https://www.weather.com.cn/data/sk/${code}.html`, {
+            headers: { 'Referer': 'https://www.weather.com.cn' }
+          }, 5000),
+          fetchWithTimeout(`https://www.weather.com.cn/data/cityinfo/${code}.html`, {
+            headers: { 'Referer': 'https://www.weather.com.cn' }
+          }, 5000),
+        ]);
+
+        if (!skRes.ok || !infoRes.ok) {
+          const error = new Error(`HTTP ${skRes.status || infoRes.status}`);
+          error.status = skRes.status || infoRes.status;
+          throw error;
+        }
+
+        const skData = await skRes.json();
+        const infoData = await infoRes.json();
+
+        return { skData, infoData };
       };
 
-      const [skRes, infoRes] = await Promise.all([
-        fetchWithTimeout(
-          `https://www.weather.com.cn/data/sk/${code}.html`,
-          { headers: { Referer: 'https://www.weather.com.cn' } },
-          5000
-        ),
-        fetchWithTimeout(
-          `https://www.weather.com.cn/data/cityinfo/${code}.html`,
-          { headers: { Referer: 'https://www.weather.com.cn' } },
-          5000
-        ),
-      ]);
-
-      if (!skRes.ok || !infoRes.ok) {
-        throw new Error(`HTTP ${skRes.status || infoRes.status}`);
-      }
-
-      const skData = await skRes.json();
-      const infoData = await infoRes.json();
+      const { skData, infoData } = await withRetry(fetchWeatherData, 1, 1000);
 
       setWeather(skData.weatherinfo);
       setForecast(infoData.weatherinfo);
@@ -277,6 +277,16 @@ export default function Weather() {
       } catch (e) {
         console.error('Failed to save custom city:', e);
       }
+    }
+  };
+
+  const clearCustomCity = () => {
+    try {
+      localStorage.removeItem(CUSTOM_CITY_KEY);
+      setCustomCityData(null);
+      setSelectedCity(CITY_DB[0]);
+    } catch (e) {
+      console.error('Failed to clear custom city:', e);
     }
   };
 
