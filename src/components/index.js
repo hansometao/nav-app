@@ -9,6 +9,7 @@ export { default as Bookmarks } from './Bookmarks.jsx';
 // 小部件组件
 export { default as Weather } from './Weather.jsx';
 export { default as Calendar } from './Calendar.jsx';
+export { default as CalendarPopup } from './CalendarPopup.jsx';
 export { default as TodoList } from './TodoList.jsx';
 export { default as HotNews } from './HotNews.jsx';
 export { default as Countdown } from './Countdown.jsx';
