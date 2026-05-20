@@ -150,9 +150,10 @@ const CategoryManager = ({ categories, onAdd, onDelete, onEdit, bookmarksCount }
         <button 
           className={`flat-manage-cats-btn ${showForm ? 'active' : ''}`} 
           onClick={() => setShowForm(!showForm)}
+          title={showForm ? '收起表单' : '添加分类'}
+          aria-label={showForm ? '收起表单' : '添加分类'}
         >
-          {showForm ? <Icon iconName="x" size={14} /> : <Icon iconName="plus" size={14} />}
-          {showForm ? '收起' : '添加分类'}
+          {showForm ? <Icon iconName="x" size={18} /> : <Icon iconName="plus" size={18} />}
         </button>
       </div>
 
