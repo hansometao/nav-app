@@ -705,6 +705,10 @@
 
 .flat-category-icon {
   font-size: 16px;
+  color: var(--accent-400);
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .flat-category-name {
@@ -962,8 +966,12 @@
 }
 
 .preview-icon {
-  font-size: 28px;
+  font-size: 20px;
   line-height: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--accent-400);
 }
 
 .preview-icon-label {
@@ -986,7 +994,6 @@
   background: var(--bg-tertiary);
   border: 1px solid var(--border);
   border-radius: var(--radius-xs);
-  font-size: 20px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -1144,8 +1151,12 @@
 }
 
 .category-card-icon {
-  font-size: 28px;
+  font-size: 20px;
   line-height: 1;
+  color: var(--accent-400);
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .category-card-info {
