@@ -27,7 +27,7 @@ export default function TodoList() {
       return [];
     }
   });
-  
+
   const [input, setInput] = useState('');
   const [category, setCategory] = useState('all');
   const [priority, setPriority] = useState('medium');
@@ -40,16 +40,16 @@ export default function TodoList() {
     localStorage.setItem(STORAGE_KEY, JSON.stringify(todos));
   }, [todos]);
 
-  const save = (list) => {
+  const save = list => {
     setTodos(list);
     localStorage.setItem(STORAGE_KEY, JSON.stringify(list));
   };
 
-  const addTodo = (e) => {
+  const addTodo = e => {
     e.preventDefault();
     const text = input.trim();
     if (!text) return;
-    
+
     const newTodo = {
       id: Date.now(),
       text,
@@ -59,23 +59,23 @@ export default function TodoList() {
       priority: priority,
       dueDate: dueDate || null,
     };
-    
+
     save([...todos, newTodo]);
     setInput('');
     setDueDate('');
     setShowAddForm(false);
   };
 
-  const toggle = (id) => {
-    save(todos.map(t => t.id === id ? { ...t, done: !t.done } : t));
+  const toggle = id => {
+    save(todos.map(t => (t.id === id ? { ...t, done: !t.done } : t)));
   };
 
-  const remove = (id) => {
+  const remove = id => {
     save(todos.filter(t => t.id !== id));
   };
 
   const editTodo = (id, newText) => {
-    save(todos.map(t => t.id === id ? { ...t, text: newText } : t));
+    save(todos.map(t => (t.id === id ? { ...t, text: newText } : t)));
   };
 
   const clearDone = () => {
@@ -89,12 +89,12 @@ export default function TodoList() {
 
   const filtered = useMemo(() => {
     let result = todos;
-    
+
     // 分类筛选
     if (category !== 'all') {
       result = result.filter(t => t.category === category);
     }
-    
+
     // 状态筛选
     if (filter === 'active') {
       result = result.filter(t => !t.done);
@@ -107,7 +107,7 @@ export default function TodoList() {
       const today = new Date().toISOString().split('T')[0];
       result = result.filter(t => !t.done && t.dueDate && t.dueDate < today);
     }
-    
+
     // 排序
     result = [...result].sort((a, b) => {
       if (sortBy === 'priority') {
@@ -122,7 +122,7 @@ export default function TodoList() {
         return b.createdAt - a.createdAt;
       }
     });
-    
+
     return result;
   }, [todos, category, filter, sortBy]);
 
@@ -137,27 +137,27 @@ export default function TodoList() {
     };
   }, [todos]);
 
-  const getPriorityIcon = (priorityId) => {
+  const getPriorityIcon = priorityId => {
     const p = PRIORITIES.find(p => p.id === priorityId);
     return p ? p.icon : 'minus';
   };
 
-  const getPriorityColor = (priorityId) => {
+  const getPriorityColor = priorityId => {
     const p = PRIORITIES.find(p => p.id === priorityId);
     return p ? p.color : '#6b7280';
   };
 
-  const formatDueDate = (dateStr) => {
+  const formatDueDate = dateStr => {
     if (!dateStr) return '';
     const date = new Date(dateStr);
     const today = new Date();
     today.setHours(0, 0, 0, 0);
     const tomorrow = new Date(today);
     tomorrow.setDate(tomorrow.getDate() + 1);
-    
+
     const targetDate = new Date(dateStr);
     targetDate.setHours(0, 0, 0, 0);
-    
+
     if (targetDate.getTime() === today.getTime()) {
       return '今天';
     } else if (targetDate.getTime() === tomorrow.getTime()) {
@@ -167,7 +167,7 @@ export default function TodoList() {
     }
   };
 
-  const isOverdue = (dateStr) => {
+  const isOverdue = dateStr => {
     if (!dateStr) return false;
     const today = new Date().toISOString().split('T')[0];
     return dateStr < today;
@@ -176,7 +176,9 @@ export default function TodoList() {
   return (
     <div className="widget todo-widget" role="region" aria-label="待办事项">
       <div className="widget-header">
-        <h3><Icon name="checkCircle" size={18} /> 待办事项</h3>
+        <h3>
+          <Icon name="checkCircle" size={18} /> 待办事项
+        </h3>
         <div className="todo-stats">
           <span className="stat-badge">{stats.active} 待办</span>
           {stats.overdue > 0 && (
@@ -206,13 +208,13 @@ export default function TodoList() {
           placeholder="添加新任务... (回车添加)"
           className="todo-input"
         />
-        <button 
-          type="button" 
-          className="btn-icon btn-expand" 
+        <button
+          type="button"
+          className="btn-icon btn-expand"
           onClick={() => setShowAddForm(!showAddForm)}
           title="展开高级选项"
         >
-          <Icon name={showAddForm ? "chevronUp" : "plus"} size={16} />
+          <Icon name={showAddForm ? 'chevronUp' : 'plus'} size={16} />
         </button>
       </form>
 
@@ -268,14 +270,10 @@ export default function TodoList() {
             </button>
           ))}
         </div>
-        
+
         <div className="sort-select-wrapper">
           <Icon name="sort" size={14} />
-          <select 
-            value={sortBy} 
-            onChange={(e) => setSortBy(e.target.value)}
-            className="sort-select"
-          >
+          <select value={sortBy} onChange={e => setSortBy(e.target.value)} className="sort-select">
             <option value="created">按创建时间</option>
             <option value="priority">按优先级</option>
             <option value="dueDate">按截止日期</option>
@@ -305,39 +303,34 @@ export default function TodoList() {
           </div>
         ) : (
           filtered.map(todo => (
-            <div 
-              key={todo.id} 
+            <div
+              key={todo.id}
               className={`todo-item ${todo.done ? 'done' : ''} ${isOverdue(todo.dueDate) ? 'overdue' : ''}`}
             >
               <label className="todo-check-label">
-                <input
-                  type="checkbox"
-                  checked={todo.done}
-                  onChange={() => toggle(todo.id)}
-                />
+                <input type="checkbox" checked={todo.done} onChange={() => toggle(todo.id)} />
                 <span className="todo-checkmark"></span>
               </label>
-              
+
               <div className="todo-content">
                 <span className="todo-text">{todo.text}</span>
                 <div className="todo-meta">
-                  <span 
-                    className="priority-tag"
-                    style={{ color: getPriorityColor(todo.priority) }}
-                  >
+                  <span className="priority-tag" style={{ color: getPriorityColor(todo.priority) }}>
                     <Icon name={getPriorityIcon(todo.priority)} size={12} />
                   </span>
                   {todo.dueDate && (
-                    <span className={`due-date ${isOverdue(todo.dueDate) && !todo.done ? 'overdue' : ''}`}>
+                    <span
+                      className={`due-date ${isOverdue(todo.dueDate) && !todo.done ? 'overdue' : ''}`}
+                    >
                       <Icon name="calendar" size={12} />
                       {formatDueDate(todo.dueDate)}
                     </span>
                   )}
                 </div>
               </div>
-              
-              <button 
-                className="btn-icon btn-remove" 
+
+              <button
+                className="btn-icon btn-remove"
                 onClick={() => remove(todo.id)}
                 title="删除任务"
               >

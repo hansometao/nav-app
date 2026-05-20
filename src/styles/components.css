@@ -876,9 +876,9 @@
   color: white;
 }
 
-.countdown-add-form input[type="text"],
-.countdown-add-form input[type="date"],
-.countdown-add-form input[type="time"] {
+.countdown-add-form input[type='text'],
+.countdown-add-form input[type='date'],
+.countdown-add-form input[type='time'] {
   padding: 8px 10px;
   background: var(--bg-tertiary);
   border: 1px solid var(--border);
@@ -963,7 +963,7 @@
   color: var(--text-muted);
 }
 
-.color-picker-row input[type="color"] {
+.color-picker-row input[type='color'] {
   width: 40px;
   height: 30px;
   border: none;
@@ -1644,6 +1644,11 @@
 
 /* ---- 动画 ---- */
 @keyframes pulse {
-  0%, 100% { opacity: 1; }
-  50% { opacity: 0.6; }
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.6;
+  }
 }

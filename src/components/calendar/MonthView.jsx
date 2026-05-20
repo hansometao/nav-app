@@ -1,6 +1,6 @@
 import { getLunarInfo } from '../../utils/lunarCalendar';
 
-const DAY_NAMES = ['日','一','二','三','四','五','六'];
+const DAY_NAMES = ['日', '一', '二', '三', '四', '五', '六'];
 const HOLIDAYS = {
   '01-01': { name: '元旦', type: 'national' },
   '02-14': { name: '情人节', type: 'festival' },
@@ -14,7 +14,7 @@ const HOLIDAYS = {
   '08-01': { name: '建军节', type: 'festival' },
   '09-10': { name: '教师节', type: 'festival' },
   '10-01': { name: '国庆节', type: 'national' },
-  '12-25': { name: '圣诞节', type: 'festival' }
+  '12-25': { name: '圣诞节', type: 'festival' },
 };
 
 const LUNAR_HOLIDAYS = {
@@ -26,41 +26,34 @@ const LUNAR_HOLIDAYS = {
   '09-09': { name: '重阳节', type: 'lunar' },
   '12-08': { name: '腊八节', type: 'lunar' },
   '12-23': { name: '小年', type: 'lunar' },
-  '12-30': { name: '除夕', type: 'lunar' }
+  '12-30': { name: '除夕', type: 'lunar' },
 };
 
-export default function MonthView({ 
-  year, 
-  month, 
-  today, 
-  selectedDate,
-  events,
-  onSelectDate 
-}) {
+export default function MonthView({ year, month, today, selectedDate, events, onSelectDate }) {
   const firstDay = new Date(year, month, 1).getDay();
   const daysInMonth = new Date(year, month + 1, 0).getDate();
-  
+
   const days = [];
   for (let i = 0; i < firstDay; i++) days.push(null);
   for (let i = 1; i <= daysInMonth; i++) days.push(i);
 
-  const getHolidayInfo = (day) => {
+  const getHolidayInfo = day => {
     const monthDay = `${String(month + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
     return HOLIDAYS[monthDay] || null;
   };
 
-  const getLunarHoliday = (lunarInfo) => {
+  const getLunarHoliday = lunarInfo => {
     if (!lunarInfo) return null;
     const lunarMonthDay = `${String(lunarInfo.month).padStart(2, '0')}-${String(lunarInfo.day).padStart(2, '0')}`;
     return LUNAR_HOLIDAYS[lunarMonthDay] || null;
   };
 
-  const getEventsForDay = (day) => {
+  const getEventsForDay = day => {
     const dateStr = `${year}-${String(month + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
     return events.filter(e => e.date === dateStr);
   };
 
-  const getWeekNumber = (day) => {
+  const getWeekNumber = day => {
     const date = new Date(year, month, day);
     const startOfYear = new Date(year, 0, 1);
     const daysDiff = Math.floor((date.getTime() - startOfYear.getTime()) / (1000 * 60 * 60 * 24));
@@ -93,8 +86,9 @@ export default function MonthView({
         ))}
         {days.map((day, i) => {
           if (day === null) return <div key={`e-${i}`} className="calendar-day empty" />;
-          
-          const isToday = day === today.getDate() && month === today.getMonth() && year === today.getFullYear();
+
+          const isToday =
+            day === today.getDate() && month === today.getMonth() && year === today.getFullYear();
           const isSelected = selectedDate === day;
           const dayEvents = getEventsForDay(day);
           const holiday = getHolidayInfo(day);
@@ -102,25 +96,31 @@ export default function MonthView({
           const lunarHoliday = getLunarHoliday(lunar);
           const weekNum = getWeekNumber(day);
           const isWeekend = (firstDay + i) % 7 === 0 || (firstDay + i) % 7 === 6;
-          
+
           return (
-            <div 
-              key={day} 
+            <div
+              key={day}
               className={`calendar-day ${isToday ? 'today' : ''} ${isSelected ? 'selected' : ''} ${dayEvents.length ? 'has-event' : ''} ${isWeekend ? 'weekend' : ''}`}
               onClick={() => onSelectDate(day)}
             >
               {i % 7 === 0 && <span className="week-number">{weekNum}</span>}
               <span className="day-num">{day}</span>
               {lunar && <span className="lunar-day">{lunar.dayName}</span>}
-              {holiday && <span className={`holiday-badge holiday-${holiday.type}`}>{holiday.name}</span>}
-              {lunarHoliday && <span className="holiday-badge holiday-lunar">{lunarHoliday.name}</span>}
-              {lunar?.currentJieQi && <span className="jieqi-badge-small">{lunar.currentJieQi}</span>}
+              {holiday && (
+                <span className={`holiday-badge holiday-${holiday.type}`}>{holiday.name}</span>
+              )}
+              {lunarHoliday && (
+                <span className="holiday-badge holiday-lunar">{lunarHoliday.name}</span>
+              )}
+              {lunar?.currentJieQi && (
+                <span className="jieqi-badge-small">{lunar.currentJieQi}</span>
+              )}
               {dayEvents.length > 0 && (
                 <div className="day-events">
                   {dayEvents.slice(0, 2).map((evt, ei) => (
-                    <span 
-                      key={ei} 
-                      className="day-event-dot" 
+                    <span
+                      key={ei}
+                      className="day-event-dot"
                       style={{ backgroundColor: evt.color }}
                       title={evt.title}
                     />

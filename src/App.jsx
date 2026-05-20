@@ -1,7 +1,15 @@
-import { useState, lazy, Suspense, memo, useRef, useCallback, useEffect } from 'react';
+import { useState, lazy, Suspense, memo, useCallback, useEffect } from 'react';
 import { useGreeting, useTime, useLayoutStorage, useTheme, useKeyboardShortcuts } from './hooks';
 import { THEMES } from './hooks/useTheme.jsx';
-import { Calendar, Countdown, TodoList, Memo, LunarCalendar, SettingsPanel, FlatBookmarks } from './components';
+import {
+  Calendar,
+  Countdown,
+  TodoList,
+  Memo,
+  LunarCalendar,
+  SettingsPanel,
+  FlatBookmarks,
+} from './components';
 import { DEFAULT_SEARCH_ENGINE } from './constants';
 import './styles';
 
@@ -14,25 +22,25 @@ const DEFAULT_SE = DEFAULT_SEARCH_ENGINE;
 const SIDE_WIDGETS_LEFT = [
   { key: 'weather', title: '天气', Comp: Weather, passProps: false },
   { key: 'calendar', title: '日历', Comp: Calendar, passProps: false },
-  { key: 'todo', title: '待办', Comp: TodoList, passProps: false }
+  { key: 'todo', title: '待办', Comp: TodoList, passProps: false },
 ];
 
 const SIDE_WIDGETS_RIGHT = [
   { key: 'hotnews', title: '热榜', Comp: HotNews, passProps: false },
   { key: 'countdown', title: '倒计时', Comp: Countdown, passProps: false },
-  { key: 'memo', title: '备忘', Comp: Memo, passProps: false }
+  { key: 'memo', title: '备忘', Comp: Memo, passProps: false },
 ];
 
 const SHORTCUTS = [
   { key: 'Ctrl/Cmd + K', desc: '聚焦搜索框' },
   { key: 'Ctrl/Cmd + D', desc: '切换主题' },
   { key: 'Escape', desc: '关闭弹窗' },
-  { key: '?', desc: '显示帮助' }
+  { key: '?', desc: '显示帮助' },
 ];
 
 function ShortcutHelp({ onClose }) {
   useEffect(() => {
-    const handleEsc = (e) => {
+    const handleEsc = e => {
       if (e.key === 'Escape') onClose();
     };
     window.addEventListener('keydown', handleEsc);
@@ -40,8 +48,14 @@ function ShortcutHelp({ onClose }) {
   }, [onClose]);
 
   return (
-    <div className="shortcut-overlay" onClick={onClose} role="dialog" aria-modal="true" aria-label="键盘快捷键">
-      <div className="shortcut-panel" onClick={(e) => e.stopPropagation()}>
+    <div
+      className="shortcut-overlay"
+      onClick={onClose}
+      role="dialog"
+      aria-modal="true"
+      aria-label="键盘快捷键"
+    >
+      <div className="shortcut-panel" onClick={e => e.stopPropagation()}>
         <div className="shortcut-header">
           <h2>⌨️ 键盘快捷键</h2>
           <button className="settings-close" onClick={onClose} aria-label="关闭">
@@ -49,7 +63,7 @@ function ShortcutHelp({ onClose }) {
           </button>
         </div>
         <div className="shortcut-list">
-          {SHORTCUTS.map((s) => (
+          {SHORTCUTS.map(s => (
             <div key={s.key} className="shortcut-item">
               <kbd className="shortcut-key">{s.key}</kbd>
               <span className="shortcut-desc">{s.desc}</span>
@@ -61,7 +75,16 @@ function ShortcutHelp({ onClose }) {
   );
 }
 
-const WidgetItem = ({ widgetKey, title, Comp, passProps, searchEngine, onSearchEngineChange, collapsedWidgets, onToggleWidget }) => (
+const WidgetItem = ({
+  widgetKey,
+  title,
+  Comp,
+  passProps,
+  searchEngine,
+  onSearchEngineChange,
+  collapsedWidgets,
+  onToggleWidget,
+}) => (
   <div
     className={`widget-container ${collapsedWidgets[widgetKey] ? 'collapsed' : ''}`}
     data-widget={widgetKey}
@@ -87,7 +110,16 @@ const WidgetItem = ({ widgetKey, title, Comp, passProps, searchEngine, onSearchE
   </div>
 );
 
-const MobileWidgetItem = ({ widgetKey, title, Comp, passProps, searchEngine, onSearchEngineChange, collapsedWidgets, onToggleWidget }) => (
+const MobileWidgetItem = ({
+  widgetKey,
+  title,
+  Comp,
+  passProps,
+  searchEngine,
+  onSearchEngineChange,
+  collapsedWidgets,
+  onToggleWidget,
+}) => (
   <div className="mobile-widget-item">
     <div className="mobile-widget-header" onClick={() => onToggleWidget(widgetKey)}>
       <span>{title}</span>
@@ -110,19 +142,18 @@ const MobileWidgetItem = ({ widgetKey, title, Comp, passProps, searchEngine, onS
 export default memo(function App() {
   const greeting = useGreeting();
   const { currentTime, formatTime, formatDate } = useTime();
-  const { layouts, editMode, setEditMode, onLayoutChange, resetLayout } = useLayoutStorage();
+  const { editMode, setEditMode, resetLayout } = useLayoutStorage();
   const { theme, toggleTheme } = useTheme();
   const [searchEngine, setSearchEngine] = useState(DEFAULT_SE);
   const [showSettings, setShowSettings] = useState(false);
   const [showShortcuts, setShowShortcuts] = useState(false);
   const [collapsedWidgets, setCollapsedWidgets] = useState({});
   const [showMobileDrawer, setShowMobileDrawer] = useState(false);
-  const appRef = useRef(null);
 
-  const toggleWidgetCollapse = useCallback((widgetKey) => {
-    setCollapsedWidgets((prev) => ({
+  const toggleWidgetCollapse = useCallback(widgetKey => {
+    setCollapsedWidgets(prev => ({
       ...prev,
-      [widgetKey]: !prev[widgetKey]
+      [widgetKey]: !prev[widgetKey],
     }));
   }, []);
 
@@ -144,11 +175,11 @@ export default memo(function App() {
     },
     showHelp: () => {
       setShowShortcuts(true);
-    }
+    },
   });
 
   return (
-    <div className="app" ref={appRef}>
+    <div className="app">
       <header className={`app-header ${editMode ? 'edit-mode' : ''}`} role="banner">
         <div className="header-left">
           <button
@@ -205,7 +236,7 @@ export default memo(function App() {
         <div className="main-layout-container">
           <aside className="side-widgets side-left">
             <div className="side-grid">
-              {SIDE_WIDGETS_LEFT.map((widget) => (
+              {SIDE_WIDGETS_LEFT.map(widget => (
                 <WidgetItem
                   key={widget.key}
                   widgetKey={widget.key}
@@ -231,7 +262,7 @@ export default memo(function App() {
 
           <aside className="side-widgets side-right">
             <div className="side-grid">
-              {SIDE_WIDGETS_RIGHT.map((widget) => (
+              {SIDE_WIDGETS_RIGHT.map(widget => (
                 <WidgetItem
                   key={widget.key}
                   widgetKey={widget.key}
@@ -250,11 +281,7 @@ export default memo(function App() {
       </main>
 
       <footer className="app-footer" role="contentinfo">
-        <button
-          className="footer-settings-btn"
-          onClick={() => setShowSettings(true)}
-          title="设置"
-        >
+        <button className="footer-settings-btn" onClick={() => setShowSettings(true)} title="设置">
           ⚙️ 设置
         </button>
         <button
@@ -272,7 +299,7 @@ export default memo(function App() {
 
       {showMobileDrawer && (
         <div className="mobile-drawer-overlay" onClick={closeMobileDrawer}>
-          <div className="mobile-drawer" onClick={(e) => e.stopPropagation()}>
+          <div className="mobile-drawer" onClick={e => e.stopPropagation()}>
             <div className="mobile-drawer-header">
               <h2>功能菜单</h2>
               <button
@@ -286,7 +313,7 @@ export default memo(function App() {
             <div className="mobile-drawer-content">
               <div className="mobile-widget-section">
                 <h3>左侧小部件</h3>
-                {SIDE_WIDGETS_LEFT.map((widget) => (
+                {SIDE_WIDGETS_LEFT.map(widget => (
                   <MobileWidgetItem
                     key={widget.key}
                     widgetKey={widget.key}
@@ -302,7 +329,7 @@ export default memo(function App() {
               </div>
               <div className="mobile-widget-section">
                 <h3>右侧小部件</h3>
-                {SIDE_WIDGETS_RIGHT.map((widget) => (
+                {SIDE_WIDGETS_RIGHT.map(widget => (
                   <MobileWidgetItem
                     key={widget.key}
                     widgetKey={widget.key}

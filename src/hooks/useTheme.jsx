@@ -15,7 +15,9 @@ export function ThemeProvider({ children }) {
       if (window.matchMedia('(prefers-color-scheme: light)').matches) {
         return THEMES.LIGHT;
       }
-    } catch {}
+    } catch {
+      // Silent fail, default to dark theme
+    }
     return THEMES.DARK;
   });
 
@@ -26,7 +28,7 @@ export function ThemeProvider({ children }) {
 
   useEffect(() => {
     const mediaQuery = window.matchMedia('(prefers-color-scheme: light)');
-    const handler = (e) => {
+    const handler = e => {
       const saved = localStorage.getItem(THEME_KEY);
       if (!saved) {
         setTheme(e.matches ? THEMES.LIGHT : THEMES.DARK);
@@ -37,7 +39,7 @@ export function ThemeProvider({ children }) {
   }, []);
 
   const toggleTheme = useCallback(() => {
-    setTheme(prev => prev === THEMES.DARK ? THEMES.LIGHT : THEMES.DARK);
+    setTheme(prev => (prev === THEMES.DARK ? THEMES.LIGHT : THEMES.DARK));
   }, []);
 
   const setLightTheme = useCallback(() => setTheme(THEMES.LIGHT), []);
@@ -53,7 +55,12 @@ export function ThemeProvider({ children }) {
 export function useTheme() {
   const context = useContext(ThemeContext);
   if (!context) {
-    return { theme: THEMES.DARK, toggleTheme: () => {}, setLightTheme: () => {}, setDarkTheme: () => {} };
+    return {
+      theme: THEMES.DARK,
+      toggleTheme: () => {},
+      setLightTheme: () => {},
+      setDarkTheme: () => {},
+    };
   }
   return context;
 }

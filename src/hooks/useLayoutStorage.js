@@ -8,43 +8,43 @@ const EDIT_MODE_KEY = STORAGE_KEYS.EDIT_MODE;
 export const DEFAULT_LAYOUTS = {
   // 大屏幕：网址导航占据主要区域，自动调整适应
   lg: [
-    { i: 'bookmarks', x: 0, y: 0,  w: 9,  h: 10, minW: 3, minH: 4 }, // 网址导航占据主要空间（9列宽，10行高）
-    { i: 'hotnews',   x: 9, y: 0,  w: 3,  h: 5,  minW: 2, minH: 3 }, // 热榜在右侧
-    { i: 'weather',   x: 9, y: 5,  w: 3,  h: 5,  minW: 2, minH: 3 }, // 天气在右侧下方
-    { i: 'calendar',  x: 0, y: 10, w: 3,  h: 4,  minW: 2, minH: 3 }, // 日历左下
-    { i: 'todo',      x: 3, y: 10, w: 3,  h: 4,  minW: 2, minH: 3 }, // 待办中下
-    { i: 'countdown', x: 6, y: 10, w: 3,  h: 4,  minW: 2, minH: 3 }, // 倒计时右下
-    { i: 'memo',      x: 0, y: 14, w: 12, h: 4,  minW: 3, minH: 3 }, // 备忘录全宽底部
+    { i: 'bookmarks', x: 0, y: 0, w: 9, h: 10, minW: 3, minH: 4 }, // 网址导航占据主要空间（9列宽，10行高）
+    { i: 'hotnews', x: 9, y: 0, w: 3, h: 5, minW: 2, minH: 3 }, // 热榜在右侧
+    { i: 'weather', x: 9, y: 5, w: 3, h: 5, minW: 2, minH: 3 }, // 天气在右侧下方
+    { i: 'calendar', x: 0, y: 10, w: 3, h: 4, minW: 2, minH: 3 }, // 日历左下
+    { i: 'todo', x: 3, y: 10, w: 3, h: 4, minW: 2, minH: 3 }, // 待办中下
+    { i: 'countdown', x: 6, y: 10, w: 3, h: 4, minW: 2, minH: 3 }, // 倒计时右下
+    { i: 'memo', x: 0, y: 14, w: 12, h: 4, minW: 3, minH: 3 }, // 备忘录全宽底部
   ],
   // 中等屏幕
   md: [
-    { i: 'bookmarks', x: 0, y: 0,  w: 12, h: 10 }, // 网址导航全宽，占据主要区域
-    { i: 'hotnews',   x: 0, y: 10, w: 6,  h: 5 }, // 热榜左下
-    { i: 'weather',   x: 6, y: 10, w: 6,  h: 5 }, // 天气右下
-    { i: 'calendar',  x: 0, y: 15, w: 4,  h: 4 }, // 日历左下
-    { i: 'todo',      x: 4, y: 15, w: 4,  h: 4 }, // 待办中下
-    { i: 'countdown', x: 8, y: 15, w: 4,  h: 4 }, // 倒计时右下
-    { i: 'memo',      x: 0, y: 19, w: 12, h: 4 }, // 备忘录全宽
+    { i: 'bookmarks', x: 0, y: 0, w: 12, h: 10 }, // 网址导航全宽，占据主要区域
+    { i: 'hotnews', x: 0, y: 10, w: 6, h: 5 }, // 热榜左下
+    { i: 'weather', x: 6, y: 10, w: 6, h: 5 }, // 天气右下
+    { i: 'calendar', x: 0, y: 15, w: 4, h: 4 }, // 日历左下
+    { i: 'todo', x: 4, y: 15, w: 4, h: 4 }, // 待办中下
+    { i: 'countdown', x: 8, y: 15, w: 4, h: 4 }, // 倒计时右下
+    { i: 'memo', x: 0, y: 19, w: 12, h: 4 }, // 备忘录全宽
   ],
   // 小屏幕
   sm: [
-    { i: 'bookmarks', x: 0, y: 0,  w: 12, h: 10 }, // 网址导航全宽，主要区域
-    { i: 'hotnews',   x: 0, y: 10, w: 12, h: 5 }, // 热榜全宽
-    { i: 'weather',   x: 0, y: 15, w: 12, h: 5 }, // 天气全宽
-    { i: 'calendar',  x: 0, y: 20, w: 12, h: 4 }, // 日历全宽
-    { i: 'todo',      x: 0, y: 24, w: 12, h: 4 }, // 待办全宽
+    { i: 'bookmarks', x: 0, y: 0, w: 12, h: 10 }, // 网址导航全宽，主要区域
+    { i: 'hotnews', x: 0, y: 10, w: 12, h: 5 }, // 热榜全宽
+    { i: 'weather', x: 0, y: 15, w: 12, h: 5 }, // 天气全宽
+    { i: 'calendar', x: 0, y: 20, w: 12, h: 4 }, // 日历全宽
+    { i: 'todo', x: 0, y: 24, w: 12, h: 4 }, // 待办全宽
     { i: 'countdown', x: 0, y: 28, w: 12, h: 4 }, // 倒计时全宽
-    { i: 'memo',      x: 0, y: 32, w: 12, h: 4 }, // 备忘录全宽
+    { i: 'memo', x: 0, y: 32, w: 12, h: 4 }, // 备忘录全宽
   ],
   // 超小屏幕（手机）
   xs: [
-    { i: 'bookmarks', x: 0, y: 0,  w: 12, h: 10 },
-    { i: 'hotnews',   x: 0, y: 10, w: 12, h: 5 },
-    { i: 'weather',   x: 0, y: 15, w: 12, h: 5 },
-    { i: 'calendar',  x: 0, y: 20, w: 12, h: 4 },
-    { i: 'todo',      x: 0, y: 24, w: 12, h: 4 },
+    { i: 'bookmarks', x: 0, y: 0, w: 12, h: 10 },
+    { i: 'hotnews', x: 0, y: 10, w: 12, h: 5 },
+    { i: 'weather', x: 0, y: 15, w: 12, h: 5 },
+    { i: 'calendar', x: 0, y: 20, w: 12, h: 4 },
+    { i: 'todo', x: 0, y: 24, w: 12, h: 4 },
     { i: 'countdown', x: 0, y: 28, w: 12, h: 4 },
-    { i: 'memo',      x: 0, y: 32, w: 12, h: 4 },
+    { i: 'memo', x: 0, y: 32, w: 12, h: 4 },
   ],
 };
 

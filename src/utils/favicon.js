@@ -2,11 +2,11 @@ const faviconCache = new Map();
 
 // 更好的favicon服务优先级
 const FAVICON_SERVICES = [
-  (domain) => `https://api.faviconkit.com/${domain}/64`,
-  (domain) => `https://www.google.com/s2/favicons?domain=${domain}&sz=64`,
-  (domain) => `https://icon.horse/icon/${domain}`,
-  (domain) => `https://icons.duckduckgo.com/ip3/${domain}.ico`,
-  (domain) => `https://f1.allesedv.com/64/${domain}`,
+  domain => `https://api.faviconkit.com/${domain}/64`,
+  domain => `https://www.google.com/s2/favicons?domain=${domain}&sz=64`,
+  domain => `https://icon.horse/icon/${domain}`,
+  domain => `https://icons.duckduckgo.com/ip3/${domain}.ico`,
+  domain => `https://f1.allesedv.com/64/${domain}`,
 ];
 
 export async function getFavicon(url) {
@@ -16,10 +16,10 @@ export async function getFavicon(url) {
 
   try {
     const domain = new URL(url).origin.replace(/^https?:\/\//, '');
-    
+
     // 尝试多个favicon服务，并行快速获取
     let bestFavicon = null;
-    
+
     for (const service of FAVICON_SERVICES) {
       try {
         const faviconUrl = service(domain);
@@ -32,12 +32,12 @@ export async function getFavicon(url) {
         continue;
       }
     }
-    
+
     if (bestFavicon) {
       faviconCache.set(url, bestFavicon);
       return bestFavicon;
     }
-    
+
     const fallback = generateFallbackAvatar(url);
     faviconCache.set(url, fallback);
     return fallback;
@@ -49,7 +49,7 @@ export async function getFavicon(url) {
 }
 
 async function testImageLoad(url) {
-  return new Promise((resolve) => {
+  return new Promise(resolve => {
     const img = new Image();
     img.crossOrigin = 'anonymous';
     img.onload = () => {
@@ -95,15 +95,15 @@ function generateFallbackAvatar(url) {
   } catch {
     domain = url;
   }
-  
+
   const cleanDomain = domain.replace('www.', '').split('.')[0] || domain;
   const firstChar = cleanDomain.charAt(0).toUpperCase();
-  
+
   // 使用域名生成确定性的索引
   const hash = domain.split('').reduce((acc, char) => acc + char.charCodeAt(0), 0);
   const gradientIndex = hash % GRADIENTS.length;
   const gradient = GRADIENTS[gradientIndex];
-  
+
   const svg = `data:image/svg+xml,${encodeURIComponent(`
     <svg xmlns="http://www.w3.org/2000/svg" width="128" height="128" viewBox="0 0 128 128">
       <defs>
@@ -125,7 +125,7 @@ function generateFallbackAvatar(url) {
       <text x="64" y="82" font-family="system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="52" font-weight="800" fill="white" text-anchor="middle" style="text-shadow: 0 3px 8px rgba(0,0,0,0.25);">${firstChar}</text>
     </svg>
   `)}`;
-  
+
   return svg;
 }
 

@@ -12,7 +12,7 @@ export const STORAGE_KEYS_TO_EXPORT = [
 
 export function exportAllData() {
   const data = {};
-  
+
   for (const key of STORAGE_KEYS_TO_EXPORT) {
     try {
       const value = localStorage.getItem(key);
@@ -23,14 +23,14 @@ export function exportAllData() {
       console.warn(`Failed to export ${key}:`, e);
     }
   }
-  
+
   const exportData = {
     version: '1.0',
     exportTime: new Date().toISOString(),
     appName: 'nav-app',
     data: data,
   };
-  
+
   const blob = new Blob([JSON.stringify(exportData, null, 2)], { type: 'application/json' });
   const url = URL.createObjectURL(blob);
   const a = document.createElement('a');
@@ -40,32 +40,32 @@ export function exportAllData() {
   a.click();
   document.body.removeChild(a);
   URL.revokeObjectURL(url);
-  
+
   return true;
 }
 
 export function importData(file) {
   return new Promise((resolve, reject) => {
     const reader = new FileReader();
-    
-    reader.onload = (e) => {
+
+    reader.onload = e => {
       try {
         const content = e.target.result;
         const importData = JSON.parse(content);
-        
+
         if (!importData.appName || importData.appName !== 'nav-app') {
           reject(new Error('无效的备份文件格式'));
           return;
         }
-        
+
         if (!importData.data || typeof importData.data !== 'object') {
           reject(new Error('备份数据格式错误'));
           return;
         }
-        
+
         const keys = Object.keys(importData.data);
         let importedCount = 0;
-        
+
         for (const key of keys) {
           try {
             if (STORAGE_KEYS_TO_EXPORT.includes(key)) {
@@ -76,21 +76,21 @@ export function importData(file) {
             console.warn(`Failed to import ${key}:`, e);
           }
         }
-        
-        resolve({ 
-          success: true, 
+
+        resolve({
+          success: true,
           count: importedCount,
-          message: `成功导入 ${importedCount} 项数据` 
+          message: `成功导入 ${importedCount} 项数据`,
         });
       } catch (e) {
         reject(new Error('文件解析失败：' + e.message));
       }
     };
-    
+
     reader.onerror = () => {
       reject(new Error('文件读取失败'));
     };
-    
+
     reader.readAsText(file);
   });
 }

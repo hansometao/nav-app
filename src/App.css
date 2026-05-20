@@ -83,23 +83,23 @@
 }
 
 /* 亮色主题下的错误消息 */
-[data-theme="light"] .error-message.error-error {
+[data-theme='light'] .error-message.error-error {
   background: rgba(239, 68, 68, 0.08);
 }
 
-[data-theme="light"] .error-message.error-warning {
+[data-theme='light'] .error-message.error-warning {
   background: rgba(245, 158, 11, 0.08);
 }
 
-[data-theme="light"] .error-message.error-info {
+[data-theme='light'] .error-message.error-info {
   background: rgba(59, 130, 246, 0.08);
 }
 
-[data-theme="light"] .error-retry-btn {
+[data-theme='light'] .error-retry-btn {
   background: rgba(0, 0, 0, 0.05);
 }
 
-[data-theme="light"] .error-retry-btn:hover {
+[data-theme='light'] .error-retry-btn:hover {
   background: var(--accent-soft);
 }
 
@@ -145,7 +145,9 @@
 
 .widget-container:hover {
   border-color: var(--accent-400);
-  box-shadow: var(--shadow-md), 0 0 24px var(--accent-glow);
+  box-shadow:
+    var(--shadow-md),
+    0 0 24px var(--accent-glow);
   transform: translateY(-2px);
 }
 
@@ -743,7 +745,7 @@
   border-right: none;
 }
 
-.flat-bookmark-item:nth-last-child(-n+6) {
+.flat-bookmark-item:nth-last-child(-n + 6) {
   border-bottom: none;
 }
 
@@ -751,16 +753,16 @@
   .flat-category-items {
     grid-template-columns: repeat(4, 1fr);
   }
-  
+
   .flat-bookmark-item:nth-child(6n) {
     border-right: 1px solid var(--border);
   }
-  
+
   .flat-bookmark-item:nth-child(4n) {
     border-right: none;
   }
-  
-  .flat-bookmark-item:nth-last-child(-n+4) {
+
+  .flat-bookmark-item:nth-last-child(-n + 4) {
     border-bottom: none;
   }
 }
@@ -769,16 +771,16 @@
   .flat-category-items {
     grid-template-columns: repeat(3, 1fr);
   }
-  
+
   .flat-bookmark-item:nth-child(4n) {
     border-right: 1px solid var(--border);
   }
-  
+
   .flat-bookmark-item:nth-child(3n) {
     border-right: none;
   }
-  
-  .flat-bookmark-item:nth-last-child(-n+3) {
+
+  .flat-bookmark-item:nth-last-child(-n + 3) {
     border-bottom: none;
   }
 }
@@ -1015,18 +1017,18 @@
     grid-template-columns: 1fr;
     gap: 16px;
   }
-  
+
   .side-left,
   .side-right {
     grid-column: 1;
   }
-  
+
   .side-widgets {
     flex-direction: row;
     flex-wrap: wrap;
     justify-content: center;
   }
-  
+
   .widget-container {
     width: calc(50% - 8px);
     min-width: 240px;
@@ -1037,40 +1039,40 @@
   .app-main {
     padding: 16px;
   }
-  
+
   .flat-bookmarks-header {
     flex-direction: column;
     align-items: stretch;
   }
-  
+
   .flat-bookmarks-actions {
     justify-content: space-between;
   }
-  
+
   .flat-search-input {
     width: 100%;
   }
-  
+
   .flat-search-input:focus {
     width: 100%;
   }
-  
+
   .flat-add-form {
     grid-template-columns: 1fr;
   }
-  
+
   .flat-bookmarks-grid {
     grid-template-columns: 1fr;
   }
-  
+
   .flat-category-items {
     grid-template-columns: repeat(2, 1fr);
   }
-  
+
   .flat-bookmark-item:nth-child(3n) {
     border-right: 1px solid var(--border);
   }
-  
+
   .flat-bookmark-item:nth-child(2n) {
     border-right: none;
   }
@@ -1080,20 +1082,20 @@
   .flat-category-items {
     grid-template-columns: repeat(3, 1fr);
   }
-  
+
   .flat-bookmark-item:nth-child(2n) {
     border-right: 1px solid var(--border);
   }
-  
+
   .flat-bookmark-item:nth-child(3n) {
     border-right: none;
   }
-  
+
   .flat-bookmark-name {
     max-width: 60px;
     font-size: 10px;
   }
-  
+
   .flat-bookmark-icon-wrapper {
     width: 32px;
     height: 32px;
@@ -1135,4 +1137,3 @@
   padding: 2px 6px;
   border-radius: 8px;
 }
-

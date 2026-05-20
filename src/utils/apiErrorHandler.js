@@ -9,7 +9,7 @@ export const ErrorTypes = {
   TIMEOUT: 'timeout',
   SERVER: 'server',
   CLIENT: 'client',
-  UNKNOWN: 'unknown'
+  UNKNOWN: 'unknown',
 };
 
 // 错误消息映射
@@ -18,7 +18,7 @@ const errorMessages = {
   [ErrorTypes.TIMEOUT]: '请求超时，请稍后重试',
   [ErrorTypes.SERVER]: '服务器暂时不可用，请稍后重试',
   [ErrorTypes.CLIENT]: '请求参数错误',
-  [ErrorTypes.UNKNOWN]: '发生未知错误，请稍后重试'
+  [ErrorTypes.UNKNOWN]: '发生未知错误，请稍后重试',
 };
 
 /**
@@ -28,23 +28,23 @@ const errorMessages = {
  */
 export function analyzeError(error) {
   if (!error) return ErrorTypes.UNKNOWN;
-  
+
   // 网络错误
   if (error.name === 'TypeError' && error.message.includes('fetch')) {
     return ErrorTypes.NETWORK;
   }
-  
+
   // 超时错误
   if (error.name === 'AbortError' || error.message.includes('timeout')) {
     return ErrorTypes.TIMEOUT;
   }
-  
+
   // HTTP 状态码错误
   if (error.status) {
     if (error.status >= 500) return ErrorTypes.SERVER;
     if (error.status >= 400) return ErrorTypes.CLIENT;
   }
-  
+
   return ErrorTypes.UNKNOWN;
 }
 
@@ -69,10 +69,10 @@ export function getErrorMessage(error, fallbackMessage) {
 export function fetchWithTimeout(url, options = {}, timeout = 10000) {
   const controller = new AbortController();
   const timeoutId = setTimeout(() => controller.abort(), timeout);
-  
+
   return fetch(url, {
     ...options,
-    signal: controller.signal
+    signal: controller.signal,
   }).finally(() => clearTimeout(timeoutId));
 }
 
@@ -85,28 +85,28 @@ export function fetchWithTimeout(url, options = {}, timeout = 10000) {
  */
 export async function withRetry(fn, maxRetries = 3, delay = 1000) {
   let lastError;
-  
+
   for (let i = 0; i <= maxRetries; i++) {
     try {
       return await fn();
     } catch (error) {
       lastError = error;
-      
+
       // 如果是客户端错误，不重试
       if (analyzeError(error) === ErrorTypes.CLIENT) {
         throw error;
       }
-      
+
       // 最后一次尝试，抛出错误
       if (i === maxRetries) {
         throw error;
       }
-      
+
       // 等待后重试
       await new Promise(resolve => setTimeout(resolve, delay * (i + 1)));
     }
   }
-  
+
   throw lastError;
 }
 
@@ -119,13 +119,13 @@ export async function withRetry(fn, maxRetries = 3, delay = 1000) {
 export async function apiRequest(url, options = {}) {
   try {
     const response = await fetchWithTimeout(url, options);
-    
+
     if (!response.ok) {
       const error = new Error(`HTTP ${response.status}: ${response.statusText}`);
       error.status = response.status;
       throw error;
     }
-    
+
     return await response.json();
   } catch (error) {
     console.error('API Request failed:', error);

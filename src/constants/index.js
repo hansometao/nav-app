@@ -2,14 +2,14 @@
 export const DEFAULT_SEARCH_ENGINE = {
   name: 'Bing',
   url: 'https://www.bing.com/search?q=',
-  favicon: 'https://www.bing.com/favicon.ico'
+  favicon: 'https://www.bing.com/favicon.ico',
 };
 
 // 存储键名
 export const STORAGE_KEYS = {
   BOOKMARKS: 'nav_app_bookmarks_v1',
   CATEGORIES: 'nav_app_categories_v1',
-  STATS: 'nav_app_bookmark_stats_v1'
+  STATS: 'nav_app_bookmark_stats_v1',
 };
 
 // 默认分类
@@ -18,7 +18,7 @@ export const DEFAULT_CATEGORIES = [
   { name: '工作学习', icon: '💼' },
   { name: 'AI 工具', icon: '🤖' },
   { name: '娱乐生活', icon: '🎮' },
-  { name: '开发工具', icon: '🛠' }
+  { name: '开发工具', icon: '🛠' },
 ];
 
 // 默认书签
@@ -42,21 +42,42 @@ export const DEFAULT_BOOKMARKS = [
   { name: '淘宝', url: 'https://www.taobao.com', favicon: '', category: '娱乐生活' },
   { name: 'Vercel', url: 'https://vercel.com', favicon: '', category: '开发工具' },
   { name: 'Netlify', url: 'https://www.netlify.com', favicon: '', category: '开发工具' },
-  { name: 'CodePen', url: 'https://codepen.io', favicon: '', category: '开发工具' }
+  { name: 'CodePen', url: 'https://codepen.io', favicon: '', category: '开发工具' },
 ];
 
 // 图标选项
-export const ICON_OPTIONS = ['📁', '🌐', '💼', '🤖', '🎮', '🛠', '📚', '🎵', '🛒', '✈️', '🏠', '📷', '🔧', '🎓', '❤️', '🔖', '⭐', '💻', '📱', '📺'];
+export const ICON_OPTIONS = [
+  '📁',
+  '🌐',
+  '💼',
+  '🤖',
+  '🎮',
+  '🛠',
+  '📚',
+  '🎵',
+  '🛒',
+  '✈️',
+  '🏠',
+  '📷',
+  '🔧',
+  '🎓',
+  '❤️',
+  '🔖',
+  '⭐',
+  '💻',
+  '📱',
+  '📺',
+];
 
 // 侧边栏小部件
 export const SIDE_WIDGETS_LEFT = [
   { key: 'weather', title: '天气' },
   { key: 'calendar', title: '日历' },
-  { key: 'todo', title: '待办' }
+  { key: 'todo', title: '待办' },
 ];
 
 export const SIDE_WIDGETS_RIGHT = [
   { key: 'hotnews', title: '热榜' },
   { key: 'countdown', title: '倒计时' },
-  { key: 'memo', title: '备忘' }
+  { key: 'memo', title: '备忘' },
 ];

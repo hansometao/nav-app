@@ -16,63 +16,224 @@ const DEFAULT_CATEGORIES = [
 ];
 
 const DEFAULT_BOOKMARKS = [
-  { name: 'Google', url: 'https://www.google.com', favicon: 'https://www.google.com/s2/favicons?domain=google.com&sz=64', category: '常用网站' },
-  { name: '百度', url: 'https://www.baidu.com', favicon: 'https://www.baidu.com/favicon.ico', category: '常用网站' },
-  { name: 'Bilibili', url: 'https://www.bilibili.com', favicon: 'https://www.bilibili.com/favicon.ico', category: '常用网站' },
-  { name: '知乎', url: 'https://www.zhihu.com', favicon: 'https://static.zhihu.com/heifetz/favicon.ico', category: '常用网站' },
-  { name: '微博', url: 'https://weibo.com', favicon: 'https://weibo.com/favicon.ico', category: '常用网站' },
-  { name: 'YouTube', url: 'https://youtube.com', favicon: 'https://youtube.com/s/desktop/favicon.ico', category: '常用网站' },
-  { name: 'GitHub', url: 'https://github.com', favicon: 'https://github.githubassets.com/favicons/favicon.svg', category: '工作学习' },
-  { name: '掘金', url: 'https://juejin.cn', favicon: 'https://juejin.cn/favicon.ico', category: '工作学习' },
-  { name: 'CSDN', url: 'https://www.csdn.net', favicon: 'https://www.csdn.net/favicon.ico', category: '工作学习' },
-  { name: 'StackOverflow', url: 'https://stackoverflow.com', favicon: 'https://cdn.sstatic.net/Sites/stackoverflow/Img/favicon.ico', category: '工作学习' },
-  { name: 'Wikipedia', url: 'https://en.wikipedia.org', favicon: 'https://en.wikipedia.org/static/favicon.ico', category: '工作学习' },
-  { name: 'ChatGPT', url: 'https://chat.openai.com', favicon: 'https://chat.openai.com/favicon.ico', category: 'AI 工具' },
-  { name: 'Claude', url: 'https://claude.ai', favicon: 'https://claude.ai/favicon.ico', category: 'AI 工具' },
-  { name: 'DeepSeek', url: 'https://chat.deepseek.com', favicon: 'https://chat.deepseek.com/favicon.ico', category: 'AI 工具' },
-  { name: 'Kimi', url: 'https://kimi.moonshot.cn', favicon: 'https://kimi.moonshot.cn/favicon.ico', category: 'AI 工具' },
-  { name: '通义千问', url: 'https://tongyi.aliyun.com', favicon: 'https://tongyi.aliyun.com/favicon.ico', category: 'AI 工具' },
-  { name: '文心一言', url: 'https://yiyan.baidu.com', favicon: 'https://yiyan.baidu.com/favicon.ico', category: 'AI 工具' },
-  { name: 'Midjourney', url: 'https://www.midjourney.com', favicon: 'https://www.midjourney.com/favicon.ico', category: 'AI 工具' },
-  { name: 'Perplexity', url: 'https://www.perplexity.ai', favicon: 'https://www.perplexity.ai/favicon.ico', category: 'AI 工具' },
-  { name: 'Netflix', url: 'https://www.netflix.com', favicon: 'https://www.netflix.com/favicon.ico', category: '娱乐生活' },
-  { name: 'Spotify', url: 'https://open.spotify.com', favicon: 'https://open.spotify.com/favicon.ico', category: '娱乐生活' },
-  { name: 'Reddit', url: 'https://www.reddit.com', favicon: 'https://www.reddit.com/favicon.ico', category: '娱乐生活' },
-  { name: '淘宝', url: 'https://www.taobao.com', favicon: 'https://www.taobao.com/favicon.ico', category: '娱乐生活' },
-  { name: 'Vercel', url: 'https://vercel.com', favicon: 'https://vercel.com/favicon.ico', category: '开发工具' },
-  { name: 'Netlify', url: 'https://www.netlify.com', favicon: 'https://www.netlify.com/favicon.ico', category: '开发工具' },
-  { name: 'CodePen', url: 'https://codepen.io', favicon: 'https://cpwebassets.codepen.io/favicon.ico', category: '开发工具' },
-  { name: 'Replit', url: 'https://replit.com', favicon: 'https://replit.com/favicon.ico', category: '开发工具' },
+  {
+    name: 'Google',
+    url: 'https://www.google.com',
+    favicon: 'https://www.google.com/s2/favicons?domain=google.com&sz=64',
+    category: '常用网站',
+  },
+  {
+    name: '百度',
+    url: 'https://www.baidu.com',
+    favicon: 'https://www.baidu.com/favicon.ico',
+    category: '常用网站',
+  },
+  {
+    name: 'Bilibili',
+    url: 'https://www.bilibili.com',
+    favicon: 'https://www.bilibili.com/favicon.ico',
+    category: '常用网站',
+  },
+  {
+    name: '知乎',
+    url: 'https://www.zhihu.com',
+    favicon: 'https://static.zhihu.com/heifetz/favicon.ico',
+    category: '常用网站',
+  },
+  {
+    name: '微博',
+    url: 'https://weibo.com',
+    favicon: 'https://weibo.com/favicon.ico',
+    category: '常用网站',
+  },
+  {
+    name: 'YouTube',
+    url: 'https://youtube.com',
+    favicon: 'https://youtube.com/s/desktop/favicon.ico',
+    category: '常用网站',
+  },
+  {
+    name: 'GitHub',
+    url: 'https://github.com',
+    favicon: 'https://github.githubassets.com/favicons/favicon.svg',
+    category: '工作学习',
+  },
+  {
+    name: '掘金',
+    url: 'https://juejin.cn',
+    favicon: 'https://juejin.cn/favicon.ico',
+    category: '工作学习',
+  },
+  {
+    name: 'CSDN',
+    url: 'https://www.csdn.net',
+    favicon: 'https://www.csdn.net/favicon.ico',
+    category: '工作学习',
+  },
+  {
+    name: 'StackOverflow',
+    url: 'https://stackoverflow.com',
+    favicon: 'https://cdn.sstatic.net/Sites/stackoverflow/Img/favicon.ico',
+    category: '工作学习',
+  },
+  {
+    name: 'Wikipedia',
+    url: 'https://en.wikipedia.org',
+    favicon: 'https://en.wikipedia.org/static/favicon.ico',
+    category: '工作学习',
+  },
+  {
+    name: 'ChatGPT',
+    url: 'https://chat.openai.com',
+    favicon: 'https://chat.openai.com/favicon.ico',
+    category: 'AI 工具',
+  },
+  {
+    name: 'Claude',
+    url: 'https://claude.ai',
+    favicon: 'https://claude.ai/favicon.ico',
+    category: 'AI 工具',
+  },
+  {
+    name: 'DeepSeek',
+    url: 'https://chat.deepseek.com',
+    favicon: 'https://chat.deepseek.com/favicon.ico',
+    category: 'AI 工具',
+  },
+  {
+    name: 'Kimi',
+    url: 'https://kimi.moonshot.cn',
+    favicon: 'https://kimi.moonshot.cn/favicon.ico',
+    category: 'AI 工具',
+  },
+  {
+    name: '通义千问',
+    url: 'https://tongyi.aliyun.com',
+    favicon: 'https://tongyi.aliyun.com/favicon.ico',
+    category: 'AI 工具',
+  },
+  {
+    name: '文心一言',
+    url: 'https://yiyan.baidu.com',
+    favicon: 'https://yiyan.baidu.com/favicon.ico',
+    category: 'AI 工具',
+  },
+  {
+    name: 'Midjourney',
+    url: 'https://www.midjourney.com',
+    favicon: 'https://www.midjourney.com/favicon.ico',
+    category: 'AI 工具',
+  },
+  {
+    name: 'Perplexity',
+    url: 'https://www.perplexity.ai',
+    favicon: 'https://www.perplexity.ai/favicon.ico',
+    category: 'AI 工具',
+  },
+  {
+    name: 'Netflix',
+    url: 'https://www.netflix.com',
+    favicon: 'https://www.netflix.com/favicon.ico',
+    category: '娱乐生活',
+  },
+  {
+    name: 'Spotify',
+    url: 'https://open.spotify.com',
+    favicon: 'https://open.spotify.com/favicon.ico',
+    category: '娱乐生活',
+  },
+  {
+    name: 'Reddit',
+    url: 'https://www.reddit.com',
+    favicon: 'https://www.reddit.com/favicon.ico',
+    category: '娱乐生活',
+  },
+  {
+    name: '淘宝',
+    url: 'https://www.taobao.com',
+    favicon: 'https://www.taobao.com/favicon.ico',
+    category: '娱乐生活',
+  },
+  {
+    name: 'Vercel',
+    url: 'https://vercel.com',
+    favicon: 'https://vercel.com/favicon.ico',
+    category: '开发工具',
+  },
+  {
+    name: 'Netlify',
+    url: 'https://www.netlify.com',
+    favicon: 'https://www.netlify.com/favicon.ico',
+    category: '开发工具',
+  },
+  {
+    name: 'CodePen',
+    url: 'https://codepen.io',
+    favicon: 'https://cpwebassets.codepen.io/favicon.ico',
+    category: '开发工具',
+  },
+  {
+    name: 'Replit',
+    url: 'https://replit.com',
+    favicon: 'https://replit.com/favicon.ico',
+    category: '开发工具',
+  },
 ];
 
-const ICON_OPTIONS = ['📁', '🌐', '💼', '🤖', '🎮', '🛠', '📚', '🎵', '🛒', '✈️', '🏠', '📷', '🔧', '🎓', '❤️', '🔖', '⭐', '💻', '📱', '📺', '🌙', '🌊', '📖', '🎨', '🎬'];
+const ICON_OPTIONS = [
+  '📁',
+  '🌐',
+  '💼',
+  '🤖',
+  '🎮',
+  '🛠',
+  '📚',
+  '🎵',
+  '🛒',
+  '✈️',
+  '🏠',
+  '📷',
+  '🔧',
+  '🎓',
+  '❤️',
+  '🔖',
+  '⭐',
+  '💻',
+  '📱',
+  '📺',
+  '🌙',
+  '🌊',
+  '📖',
+  '🎨',
+  '🎬',
+];
 
 export default function Bookmarks() {
   const [bookmarks, setBookmarks] = useState(() => {
     try {
       const saved = localStorage.getItem(STORAGE_KEY);
       if (!saved) {
-        const defaultData = DEFAULT_BOOKMARKS.map((bm, i) => ({ 
-          ...bm, 
+        const defaultData = DEFAULT_BOOKMARKS.map((bm, i) => ({
+          ...bm,
           id: Date.now() + i,
           createdAt: Date.now(),
-          order: i
+          order: i,
         }));
         localStorage.setItem(STORAGE_KEY, JSON.stringify(defaultData));
         return defaultData;
       }
       return JSON.parse(saved);
     } catch (e) {
-      const defaultData = DEFAULT_BOOKMARKS.map((bm, i) => ({ 
-        ...bm, 
+      const defaultData = DEFAULT_BOOKMARKS.map((bm, i) => ({
+        ...bm,
         id: Date.now() + i,
         createdAt: Date.now(),
-        order: i
+        order: i,
       }));
       return defaultData;
     }
   });
-  
+
   const [categories, setCategories] = useState(() => {
     try {
       const savedCats = localStorage.getItem(CATEGORIES_KEY);
@@ -106,7 +267,7 @@ export default function Bookmarks() {
       return [];
     }
   });
-  
+
   const [showAdd, setShowAdd] = useState(false);
   const [editId, setEditId] = useState(null);
   const [form, setForm] = useState({ name: '', url: '', favicon: '', category: '常用网站' });
@@ -135,7 +296,7 @@ export default function Bookmarks() {
   const draggedRef = useRef(null);
   const menuRef = useRef(null);
 
-  const recordVisit = useCallback((bookmarkId) => {
+  const recordVisit = useCallback(bookmarkId => {
     setStats(prev => {
       const newStats = { ...prev };
       if (!newStats[bookmarkId]) {
@@ -148,17 +309,17 @@ export default function Bookmarks() {
     });
   }, []);
 
-  const saveBookmarks = useCallback((newList) => {
+  const saveBookmarks = useCallback(newList => {
     setBookmarks(newList);
     localStorage.setItem(STORAGE_KEY, JSON.stringify(newList));
   }, []);
 
-  const saveCategories = useCallback((newCats) => {
+  const saveCategories = useCallback(newCats => {
     setCategories(newCats);
     localStorage.setItem(CATEGORIES_KEY, JSON.stringify(newCats));
   }, []);
 
-  const saveQuickAccess = useCallback((newList) => {
+  const saveQuickAccess = useCallback(newList => {
     setQuickAccess(newList);
     localStorage.setItem(QUICK_ACCESS_KEY, JSON.stringify(newList));
   }, []);
@@ -182,7 +343,7 @@ export default function Bookmarks() {
     }
   }, [form.url]);
 
-  const handleSubmit = (e) => {
+  const handleSubmit = e => {
     e.preventDefault();
     const validated = validateBookmark({
       name: form.name,
@@ -193,9 +354,9 @@ export default function Bookmarks() {
       alert('请输入有效的网址和名称');
       return;
     }
-    
+
     const faviconToSave = previewFavicon || '';
-    
+
     const entry = {
       ...validated,
       favicon: faviconToSave,
@@ -204,14 +365,17 @@ export default function Bookmarks() {
     };
 
     if (editId !== null) {
-      saveBookmarks(bookmarks.map(b => b.id === editId ? { ...b, ...entry } : b));
+      saveBookmarks(bookmarks.map(b => (b.id === editId ? { ...b, ...entry } : b)));
     } else {
-      saveBookmarks([...bookmarks, { id: Date.now(), ...entry, createdAt: Date.now(), order: bookmarks.length }]);
+      saveBookmarks([
+        ...bookmarks,
+        { id: Date.now(), ...entry, createdAt: Date.now(), order: bookmarks.length },
+      ]);
     }
     resetForm();
   };
 
-  const startEdit = (bm) => {
+  const startEdit = bm => {
     setForm({ name: bm.name, url: bm.url, favicon: bm.favicon || '', category: bm.category });
     setPreviewFavicon(bm.favicon || null);
     setEditId(bm.id);
@@ -219,7 +383,7 @@ export default function Bookmarks() {
     setRightClickMenu(null);
   };
 
-  const removeBookmark = (id) => {
+  const removeBookmark = id => {
     if (confirm('确认删除此书签？')) {
       saveBookmarks(bookmarks.filter(b => b.id !== id));
       setSelectedBookmarks(prev => {
@@ -232,7 +396,7 @@ export default function Bookmarks() {
     }
   };
 
-  const toggleQuickAccess = (id) => {
+  const toggleQuickAccess = id => {
     if (quickAccess.includes(id)) {
       saveQuickAccess(quickAccess.filter(qid => qid !== id));
     } else if (quickAccess.length < 8) {
@@ -250,11 +414,9 @@ export default function Bookmarks() {
       setForm({ ...form, category: newCat.name });
     }
   };
-  
+
   const updateCategoryIcon = (catName, newIcon) => {
-    const newCats = categories.map(c => 
-      c.name === catName ? { ...c, icon: newIcon } : c
-    );
+    const newCats = categories.map(c => (c.name === catName ? { ...c, icon: newIcon } : c));
     saveCategories(newCats);
   };
 
@@ -263,18 +425,16 @@ export default function Bookmarks() {
       setEditingCategory(null);
       return;
     }
-    const newCats = categories.map(c => 
-      c.name === oldName ? { ...c, name: newName } : c
-    );
+    const newCats = categories.map(c => (c.name === oldName ? { ...c, name: newName } : c));
     saveCategories(newCats);
-    const updatedBookmarks = bookmarks.map(b => 
+    const updatedBookmarks = bookmarks.map(b =>
       b.category === oldName ? { ...b, category: newName } : b
     );
     saveBookmarks(updatedBookmarks);
     setEditingCategory(null);
   };
 
-  const deleteCategory = (catName) => {
+  const deleteCategory = catName => {
     const hasBookmarks = bookmarks.some(b => b.category === catName);
     if (hasBookmarks) {
       alert('请先删除或移动该分类下的书签');
@@ -289,7 +449,7 @@ export default function Bookmarks() {
     }
   };
 
-  const toggleCategoryCollapse = (catName) => {
+  const toggleCategoryCollapse = catName => {
     setCollapsedCategories(prev => {
       const next = new Set(prev);
       if (next.has(catName)) {
@@ -301,7 +461,7 @@ export default function Bookmarks() {
     });
   };
 
-  const toggleBookmarkSelection = (id) => {
+  const toggleBookmarkSelection = id => {
     setSelectedBookmarks(prev => {
       const next = new Set(prev);
       if (next.has(id)) {
@@ -337,11 +497,11 @@ export default function Bookmarks() {
     }
   };
 
-  const moveSelectedToCategory = (targetCategory) => {
+  const moveSelectedToCategory = targetCategory => {
     if (selectedBookmarks.size === 0) return;
-    saveBookmarks(bookmarks.map(b => 
-      selectedBookmarks.has(b.id) ? { ...b, category: targetCategory } : b
-    ));
+    saveBookmarks(
+      bookmarks.map(b => (selectedBookmarks.has(b.id) ? { ...b, category: targetCategory } : b))
+    );
     setSelectedBookmarks(new Set());
     setShowMoveMenu(null);
   };
@@ -351,12 +511,12 @@ export default function Bookmarks() {
     setRightClickMenu({
       x: e.clientX,
       y: e.clientY,
-      bookmark
+      bookmark,
     });
   };
 
   useEffect(() => {
-    const handleClickOutside = (e) => {
+    const handleClickOutside = e => {
       if (menuRef.current && !menuRef.current.contains(e.target)) {
         setRightClickMenu(null);
       }
@@ -371,7 +531,7 @@ export default function Bookmarks() {
     e.target.style.opacity = '0.5';
   };
 
-  const handleDragEnd = (e) => {
+  const handleDragEnd = e => {
     e.target.style.opacity = '1';
     draggedRef.current = null;
     setDragOverId(null);
@@ -387,22 +547,24 @@ export default function Bookmarks() {
   const handleDrop = (e, targetBookmark) => {
     e.preventDefault();
     if (!draggedRef.current || draggedRef.current.id === targetBookmark.id) return;
-    
+
     const draggedItem = draggedRef.current;
     const targetItem = targetBookmark;
-    
-    saveBookmarks(bookmarks.map(b => {
-      if (b.id === draggedItem.id) {
-        return { ...b, category: targetItem.category };
-      }
-      return b;
-    }));
-    
+
+    saveBookmarks(
+      bookmarks.map(b => {
+        if (b.id === draggedItem.id) {
+          return { ...b, category: targetItem.category };
+        }
+        return b;
+      })
+    );
+
     setDragOverId(null);
     draggedRef.current = null;
   };
 
-  const addToSearchHistory = (query) => {
+  const addToSearchHistory = query => {
     if (query.trim().length < 2) return;
     setSearchHistory(prev => {
       const filtered = prev.filter(q => q !== query);
@@ -424,10 +586,11 @@ export default function Bookmarks() {
   const filteredBookmarks = useMemo(() => {
     if (!searchQuery.trim()) return bookmarks;
     const query = searchQuery.toLowerCase();
-    return bookmarks.filter(bm => 
-      bm.name.toLowerCase().includes(query) || 
-      bm.url.toLowerCase().includes(query) ||
-      bm.category.toLowerCase().includes(query)
+    return bookmarks.filter(
+      bm =>
+        bm.name.toLowerCase().includes(query) ||
+        bm.url.toLowerCase().includes(query) ||
+        bm.category.toLowerCase().includes(query)
     );
   }, [bookmarks, searchQuery]);
 
@@ -438,7 +601,7 @@ export default function Bookmarks() {
       if (!cats[cat]) cats[cat] = [];
       cats[cat].push(bm);
     });
-    
+
     Object.keys(cats).forEach(cat => {
       if (sortMode === 'visits') {
         cats[cat].sort((a, b) => (stats[b.id]?.visits || 0) - (stats[a.id]?.visits || 0));
@@ -448,7 +611,7 @@ export default function Bookmarks() {
         cats[cat].sort((a, b) => b.createdAt - a.createdAt);
       }
     });
-    
+
     return cats;
   }, [filteredBookmarks, stats, sortMode]);
 
@@ -461,29 +624,38 @@ export default function Bookmarks() {
       <div className="widget-header">
         <h3>🔖 自定义书签</h3>
         <div style={{ display: 'flex', gap: '4px' }}>
-          <button 
-            className="btn-icon" 
-            onClick={() => setSortMode(sortMode === 'name' ? 'visits' : sortMode === 'visits' ? 'date' : 'name')}
+          <button
+            className="btn-icon"
+            onClick={() =>
+              setSortMode(sortMode === 'name' ? 'visits' : sortMode === 'visits' ? 'date' : 'name')
+            }
             title="排序方式"
           >
             {sortMode === 'name' ? '📝' : sortMode === 'visits' ? '🔥' : '📅'}
           </button>
-          <button 
-            className="btn-icon" 
-            onClick={() => setBatchMode(!batchMode)} 
+          <button
+            className="btn-icon"
+            onClick={() => setBatchMode(!batchMode)}
             title={batchMode ? '退出批量模式' : '批量选择'}
             style={{ background: batchMode ? 'var(--accent-soft)' : undefined }}
           >
             ☑️
           </button>
-          <button 
-            className="btn-icon" 
-            onClick={() => setShowCategoryManager(!showCategoryManager)} 
+          <button
+            className="btn-icon"
+            onClick={() => setShowCategoryManager(!showCategoryManager)}
             title="管理分类"
           >
             📁
           </button>
-          <button className="btn-icon" onClick={() => { resetForm(); setShowAdd(!showAdd); }} title="添加书签">
+          <button
+            className="btn-icon"
+            onClick={() => {
+              resetForm();
+              setShowAdd(!showAdd);
+            }}
+            title="添加书签"
+          >
             {showAdd ? '✕' : '+'}
           </button>
         </div>
@@ -531,8 +703,8 @@ export default function Bookmarks() {
           aria-label="搜索书签"
         />
         {searchQuery && (
-          <button 
-            className="search-clear-btn" 
+          <button
+            className="search-clear-btn"
             onClick={() => setSearchQuery('')}
             aria-label="清除搜索"
           >
@@ -545,15 +717,13 @@ export default function Bookmarks() {
         <div className="search-history">
           <span className="history-label">搜索历史:</span>
           {searchHistory.slice(0, 5).map((q, i) => (
-            <button 
-              key={i} 
-              className="history-item"
-              onClick={() => setSearchQuery(q)}
-            >
+            <button key={i} className="history-item" onClick={() => setSearchQuery(q)}>
               {q}
             </button>
           ))}
-          <button className="history-clear-btn" onClick={clearSearchHistory}>清除</button>
+          <button className="history-clear-btn" onClick={clearSearchHistory}>
+            清除
+          </button>
         </div>
       )}
 
@@ -562,7 +732,7 @@ export default function Bookmarks() {
           <span className="batch-count">已选择 {selectedBookmarks.size} 个</span>
           <div className="batch-actions">
             <div className="move-dropdown">
-              <button 
+              <button
                 className="batch-btn move-btn"
                 onClick={() => setShowMoveMenu(showMoveMenu ? null : 'batch')}
               >
@@ -571,7 +741,7 @@ export default function Bookmarks() {
               {showMoveMenu === 'batch' && (
                 <div className="move-menu">
                   {categories.map(cat => (
-                    <button 
+                    <button
                       key={cat.name}
                       className="move-menu-item"
                       onClick={() => moveSelectedToCategory(cat.name)}
@@ -592,7 +762,7 @@ export default function Bookmarks() {
       {showCategoryManager && (
         <div className="category-manager">
           <h4 className="category-manager-title">📋 管理分类</h4>
-          
+
           <div className="category-add-form">
             <div className="category-add-row">
               <select
@@ -601,7 +771,9 @@ export default function Bookmarks() {
                 className="icon-select"
               >
                 {ICON_OPTIONS.map(ic => (
-                  <option key={ic} value={ic}>{ic}</option>
+                  <option key={ic} value={ic}>
+                    {ic}
+                  </option>
                 ))}
               </select>
               <input
@@ -612,10 +784,12 @@ export default function Bookmarks() {
                 className="category-name-input"
                 onKeyDown={e => e.key === 'Enter' && addCategory()}
               />
-              <button className="btn-sm" onClick={addCategory}>添加</button>
+              <button className="btn-sm" onClick={addCategory}>
+                添加
+              </button>
             </div>
           </div>
-          
+
           <div className="category-list">
             {categories.map(cat => {
               const count = bookmarks.filter(b => b.category === cat.name).length;
@@ -628,7 +802,9 @@ export default function Bookmarks() {
                       className="icon-select-small"
                     >
                       {ICON_OPTIONS.map(ic => (
-                        <option key={ic} value={ic}>{ic}</option>
+                        <option key={ic} value={ic}>
+                          {ic}
+                        </option>
                       ))}
                     </select>
                     {editingCategory === cat.name ? (
@@ -644,7 +820,7 @@ export default function Bookmarks() {
                         onBlur={e => editCategory(cat.name, e.target.value)}
                       />
                     ) : (
-                      <span 
+                      <span
                         className="category-manager-name"
                         onClick={() => setEditingCategory(cat.name)}
                       >
@@ -653,8 +829,8 @@ export default function Bookmarks() {
                     )}
                   </div>
                   {cat.name !== '常用网站' && (
-                    <button 
-                      className="btn-text delete-category-btn" 
+                    <button
+                      className="btn-text delete-category-btn"
                       onClick={() => deleteCategory(cat.name)}
                     >
                       🗑
@@ -673,17 +849,17 @@ export default function Bookmarks() {
             type="text"
             placeholder="名称"
             value={form.name}
-            onChange={e => setForm({...form, name: e.target.value})}
+            onChange={e => setForm({ ...form, name: e.target.value })}
             required
           />
           <input
             type="text"
             placeholder="网址 (例：https://example.com)"
             value={form.url}
-            onChange={e => setForm({...form, url: e.target.value})}
+            onChange={e => setForm({ ...form, url: e.target.value })}
             required
           />
-          
+
           {form.url && (
             <div className="favicon-preview-box">
               <span className="favicon-preview-label">图标预览:</span>
@@ -696,15 +872,17 @@ export default function Bookmarks() {
               )}
             </div>
           )}
-          
+
           <div className="bookmark-form-row">
             <select
               value={form.category}
-              onChange={e => setForm({...form, category: e.target.value})}
+              onChange={e => setForm({ ...form, category: e.target.value })}
               className="cat-input"
             >
               {categories.map(cat => (
-                <option key={cat.name} value={cat.name}>{cat.icon} {cat.name}</option>
+                <option key={cat.name} value={cat.name}>
+                  {cat.icon} {cat.name}
+                </option>
               ))}
             </select>
           </div>
@@ -712,7 +890,9 @@ export default function Bookmarks() {
             <button type="submit" className="btn-sm">
               {editId !== null ? '保存' : '添加'}
             </button>
-            <button type="button" className="btn-sm btn-cancel" onClick={resetForm}>取消</button>
+            <button type="button" className="btn-sm btn-cancel" onClick={resetForm}>
+              取消
+            </button>
           </div>
         </form>
       )}
@@ -728,13 +908,17 @@ export default function Bookmarks() {
       ) : (
         <div className="bookmark-categories-scrollable">
           {sortedCategories.map(cat => {
-            const catInfo = categories.find(c => c.name === cat.name) || { name: cat.name, icon: '📁' };
+            const catInfo = categories.find(c => c.name === cat.name) || {
+              name: cat.name,
+              icon: '📁',
+            };
             const items = groupedBookmarks[cat.name] || [];
             if (items.length === 0 && searchQuery) return null;
-            
+
             const isCollapsed = collapsedCategories.has(cat.name);
-            const allSelected = items.length > 0 && items.every(item => selectedBookmarks.has(item.id));
-            
+            const allSelected =
+              items.length > 0 && items.every(item => selectedBookmarks.has(item.id));
+
             return (
               <div key={cat.name} className="bookmark-category">
                 <div className="category-header">
@@ -747,7 +931,7 @@ export default function Bookmarks() {
                       aria-label={`选择${cat.name}分类下的所有书签`}
                     />
                   )}
-                  <button 
+                  <button
                     className="category-collapse-btn"
                     onClick={() => toggleCategoryCollapse(cat.name)}
                     aria-expanded={!isCollapsed}
@@ -763,15 +947,15 @@ export default function Bookmarks() {
                     <div className="category-actions">
                       {cat.name !== '常用网站' && (
                         <>
-                          <button 
-                            className="cat-action-btn" 
+                          <button
+                            className="cat-action-btn"
                             onClick={() => setEditingCategory(cat.name)}
                             title="编辑分类"
                           >
                             ✏️
                           </button>
-                          <button 
-                            className="cat-action-btn cat-delete" 
+                          <button
+                            className="cat-action-btn cat-delete"
                             onClick={() => deleteCategory(cat.name)}
                             title="删除分类"
                           >
@@ -788,15 +972,15 @@ export default function Bookmarks() {
                       const isQuickAccess = quickAccess.includes(bm.id);
                       const visitCount = stats[bm.id]?.visits || 0;
                       return (
-                        <div 
-                          key={bm.id} 
+                        <div
+                          key={bm.id}
                           className={`bookmark-item ${dragOverId === bm.id ? 'drag-over' : ''} ${isQuickAccess ? 'is-quick-access' : ''}`}
                           draggable={!batchMode}
-                          onDragStart={(e) => handleDragStart(e, bm)}
+                          onDragStart={e => handleDragStart(e, bm)}
                           onDragEnd={handleDragEnd}
-                          onDragOver={(e) => handleDragOver(e, bm)}
-                          onDrop={(e) => handleDrop(e, bm)}
-                          onContextMenu={(e) => handleRightClick(e, bm)}
+                          onDragOver={e => handleDragOver(e, bm)}
+                          onDrop={e => handleDrop(e, bm)}
+                          onContextMenu={e => handleRightClick(e, bm)}
                         >
                           {batchMode && (
                             <input
@@ -807,29 +991,34 @@ export default function Bookmarks() {
                               aria-label={`选择书签：${bm.name}`}
                             />
                           )}
-                          <a 
-                            href={bm.url} 
-                            target="_blank" 
-                            rel="noopener noreferrer" 
+                          <a
+                            href={bm.url}
+                            target="_blank"
+                            rel="noopener noreferrer"
                             className="bookmark-link"
                             onClick={() => recordVisit(bm.id)}
                           >
                             {bm.favicon ? (
-                              <img src={bm.favicon} alt="" className="bm-favicon" onError={(e) => { e.target.style.display = 'none'; }} />
+                              <img
+                                src={bm.favicon}
+                                alt=""
+                                className="bm-favicon"
+                                onError={e => {
+                                  e.target.style.display = 'none';
+                                }}
+                              />
                             ) : (
                               <span className="bm-icon">{bm.icon || '🌐'}</span>
                             )}
                             <span className="bm-name">{bm.name}</span>
-                            {visitCount > 0 && (
-                              <span className="bm-visits">🔥 {visitCount}</span>
-                            )}
+                            {visitCount > 0 && <span className="bm-visits">🔥 {visitCount}</span>}
                           </a>
                           {!batchMode && (
                             <div className="bookmark-actions">
                               {!isQuickAccess && quickAccess.length < 8 && (
-                                <button 
-                                  className="bm-action-btn bm-pin-btn" 
-                                  onClick={(e) => {
+                                <button
+                                  className="bm-action-btn bm-pin-btn"
+                                  onClick={e => {
                                     e.preventDefault();
                                     e.stopPropagation();
                                     toggleQuickAccess(bm.id);
@@ -839,9 +1028,9 @@ export default function Bookmarks() {
                                   ⭐
                                 </button>
                               )}
-                              <button 
-                                className="bm-action-btn" 
-                                onClick={(e) => {
+                              <button
+                                className="bm-action-btn"
+                                onClick={e => {
                                   e.preventDefault();
                                   e.stopPropagation();
                                   startEdit(bm);
@@ -850,9 +1039,9 @@ export default function Bookmarks() {
                               >
                                 ✏️
                               </button>
-                              <button 
-                                className="bm-action-btn" 
-                                onClick={(e) => {
+                              <button
+                                className="bm-action-btn"
+                                onClick={e => {
                                   e.preventDefault();
                                   e.stopPropagation();
                                   removeBookmark(bm.id);
@@ -875,27 +1064,36 @@ export default function Bookmarks() {
       )}
 
       {rightClickMenu && (
-        <div 
+        <div
           ref={menuRef}
           className="right-click-menu"
           style={{
             position: 'fixed',
             left: rightClickMenu.x,
             top: rightClickMenu.y,
-            zIndex: 1000
+            zIndex: 1000,
           }}
         >
-          <button className="menu-item" onClick={() => window.open(rightClickMenu.bookmark.url, '_blank')}>
+          <button
+            className="menu-item"
+            onClick={() => window.open(rightClickMenu.bookmark.url, '_blank')}
+          >
             🔗 在新标签页打开
           </button>
-          <button className="menu-item" onClick={() => toggleQuickAccess(rightClickMenu.bookmark.id)}>
+          <button
+            className="menu-item"
+            onClick={() => toggleQuickAccess(rightClickMenu.bookmark.id)}
+          >
             {quickAccess.includes(rightClickMenu.bookmark.id) ? '❌ 从常用移除' : '⭐ 添加到常用'}
           </button>
           <button className="menu-item" onClick={() => startEdit(rightClickMenu.bookmark)}>
             ✏️ 编辑
           </button>
           <div className="menu-divider" />
-          <button className="menu-item menu-danger" onClick={() => removeBookmark(rightClickMenu.bookmark.id)}>
+          <button
+            className="menu-item menu-danger"
+            onClick={() => removeBookmark(rightClickMenu.bookmark.id)}
+          >
             🗑 删除
           </button>
         </div>

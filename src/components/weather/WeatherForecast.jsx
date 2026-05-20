@@ -10,7 +10,7 @@ export default function WeatherForecast({ cityCode, cityName }) {
 
   const fetchForecast = async () => {
     if (!cityCode) return;
-    
+
     setLoading(true);
     setError(null);
 
@@ -22,11 +22,11 @@ export default function WeatherForecast({ cityCode, cityName }) {
           {},
           10000
         );
-        
+
         if (!response.ok) {
           throw new Error(`HTTP ${response.status}`);
         }
-        
+
         const text = await response.text();
         // 解析返回的数据（这是一个 JSONP 格式的数据）
         const match = text.match(/var observe24h_data = (\[.*?\]);/);
@@ -37,16 +37,18 @@ export default function WeatherForecast({ cityCode, cityName }) {
       };
 
       const data = await withRetry(fetchData, 2, 1500);
-      
+
       // 处理数据，获取未来5天
       const processedForecast = data.slice(0, 5).map((day, index) => ({
-        date: day.date || new Date(Date.now() + index * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
+        date:
+          day.date ||
+          new Date(Date.now() + index * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
         dayName: getDayName(index),
         tempHigh: day.hmax || '--',
         tempLow: day.hmin || '--',
         weather: day.hgl || '晴',
         wind: day.hwd || '微风',
-        windLevel: day.hwl || '1级'
+        windLevel: day.hwl || '1级',
       }));
 
       setForecast(processedForecast);
@@ -63,7 +65,7 @@ export default function WeatherForecast({ cityCode, cityName }) {
     fetchForecast();
   }, [cityCode]);
 
-  const getDayName = (index) => {
+  const getDayName = index => {
     const days = ['今天', '明天', '后天'];
     if (index < 3) return days[index];
     const date = new Date();
@@ -78,9 +80,9 @@ export default function WeatherForecast({ cityCode, cityName }) {
       { name: '多云', icon: 'cloud' },
       { name: '阴', icon: 'cloud' },
       { name: '小雨', icon: 'cloudRain' },
-      { name: '中雨', icon: 'cloudRain' }
+      { name: '中雨', icon: 'cloudRain' },
     ];
-    
+
     return Array.from({ length: 5 }, (_, i) => {
       const weather = weatherTypes[Math.floor(Math.random() * weatherTypes.length)];
       const baseTemp = 20 + Math.floor(Math.random() * 10) - 5;
@@ -92,7 +94,7 @@ export default function WeatherForecast({ cityCode, cityName }) {
         weather: weather.name,
         icon: weather.icon,
         wind: ['微风', '东风', '南风', '北风'][Math.floor(Math.random() * 4)],
-        windLevel: `${Math.floor(Math.random() * 3) + 1}级`
+        windLevel: `${Math.floor(Math.random() * 3) + 1}级`,
       };
     });
   };
@@ -106,13 +108,7 @@ export default function WeatherForecast({ cityCode, cityName }) {
   }
 
   if (error && forecast.length === 0) {
-    return (
-      <ErrorMessage 
-        message={error} 
-        onRetry={fetchForecast}
-        type="warning"
-      />
-    );
+    return <ErrorMessage message={error} onRetry={fetchForecast} type="warning" />;
   }
 
   return (

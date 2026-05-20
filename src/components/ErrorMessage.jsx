@@ -1,21 +1,16 @@
 import { Icon } from '../utils/icons';
 
-export default function ErrorMessage({ 
-  message, 
-  onRetry, 
-  type = 'error',
-  retryText = '重试'
-}) {
+export default function ErrorMessage({ message, onRetry, type = 'error', retryText = '重试' }) {
   const icons = {
     error: 'alertCircle',
     warning: 'alertTriangle',
-    info: 'info'
+    info: 'info',
   };
 
   const titles = {
     error: '出错了',
     warning: '注意',
-    info: '提示'
+    info: '提示',
   };
 
   return (

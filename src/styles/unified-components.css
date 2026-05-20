@@ -392,13 +392,17 @@ button:disabled,
   border: 2px solid var(--border);
   border-radius: var(--radius-lg);
   padding: 4px;
-  box-shadow: var(--shadow-lg), 0 0 30px var(--accent-glow);
+  box-shadow:
+    var(--shadow-lg),
+    0 0 30px var(--accent-glow);
   transition: all var(--transition-base);
 }
 
 .search-bar-large:focus-within {
   border-color: var(--accent);
-  box-shadow: var(--shadow-xl), 0 0 40px var(--accent-glow-strong);
+  box-shadow:
+    var(--shadow-xl),
+    0 0 40px var(--accent-glow-strong);
   transform: translateY(-2px);
 }
 
@@ -632,7 +636,9 @@ button:disabled,
   background: var(--bg-card);
   border: 1px solid var(--border);
   border-radius: var(--radius-lg);
-  box-shadow: var(--shadow-xl), 0 0 60px var(--accent-glow);
+  box-shadow:
+    var(--shadow-xl),
+    0 0 60px var(--accent-glow);
   max-width: 500px;
   width: 100%;
   max-height: 80vh;
@@ -938,46 +944,46 @@ button:disabled,
   .app-header {
     padding: 12px 16px;
   }
-  
+
   .header-left {
     gap: 12px;
   }
-  
+
   .app-title {
     font-size: 18px;
   }
-  
+
   .app-subtitle {
     display: none;
   }
-  
+
   .header-greeting {
     display: none;
   }
-  
+
   .header-right {
     gap: 12px;
   }
-  
+
   .time-display {
     font-size: 16px;
   }
-  
+
   .mobile-menu-btn {
     display: flex;
   }
-  
+
   .btn-edit-mode span:last-child,
   .btn-reset-layout span:last-child {
     display: none;
   }
-  
+
   .search-bar-large {
     flex-direction: column;
     gap: 8px;
     padding: 12px;
   }
-  
+
   .search-engine-indicator {
     width: 100%;
     justify-content: center;
@@ -985,20 +991,20 @@ button:disabled,
     border-bottom: 1px solid var(--border);
     padding: 10px;
   }
-  
+
   .search-input {
     width: 100%;
     text-align: center;
   }
-  
+
   .search-engines-bar {
     display: none;
   }
-  
+
   .mobile-drawer-overlay {
     display: flex;
   }
-  
+
   .shortcut-panel,
   .settings-panel {
     margin: 0 16px;

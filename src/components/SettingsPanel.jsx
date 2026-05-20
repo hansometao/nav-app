@@ -21,7 +21,7 @@ export default function SettingsPanel({ onClose }) {
     fileInputRef.current?.click();
   }, []);
 
-  const handleFileChange = useCallback(async (e) => {
+  const handleFileChange = useCallback(async e => {
     const file = e.target.files?.[0];
     if (!file) return;
 
@@ -36,14 +36,18 @@ export default function SettingsPanel({ onClose }) {
       setImportStatus({ type: 'error', message: e.message });
       setTimeout(() => setImportStatus(null), 5000);
     }
-    
+
     if (fileInputRef.current) {
       fileInputRef.current.value = '';
     }
   }, []);
 
   const handleClearData = useCallback(() => {
-    if (confirm('⚠️ 确定要清除所有数据吗？\n\n这将删除：\n- 所有书签\n- 待办事项\n- 备忘录\n- 倒计时\n- 日历事件\n- 布局设置\n\n此操作不可恢复！')) {
+    if (
+      confirm(
+        '⚠️ 确定要清除所有数据吗？\n\n这将删除：\n- 所有书签\n- 待办事项\n- 备忘录\n- 倒计时\n- 日历事件\n- 布局设置\n\n此操作不可恢复！'
+      )
+    ) {
       if (confirm('再次确认：所有数据将被永久删除！')) {
         clearAllData();
       }
@@ -52,17 +56,24 @@ export default function SettingsPanel({ onClose }) {
 
   return (
     <div className="settings-overlay" onClick={onClose}>
-      <div className="settings-panel" onClick={e => e.stopPropagation()} role="dialog" aria-modal="true">
+      <div
+        className="settings-panel"
+        onClick={e => e.stopPropagation()}
+        role="dialog"
+        aria-modal="true"
+      >
         <div className="settings-header">
           <h2>⚙️ 设置</h2>
-          <button className="settings-close" onClick={onClose} aria-label="关闭设置">✕</button>
+          <button className="settings-close" onClick={onClose} aria-label="关闭设置">
+            ✕
+          </button>
         </div>
 
         <div className="settings-content">
           <section className="settings-section">
             <h3>🎨 主题设置</h3>
             <div className="theme-options">
-              <button 
+              <button
                 className={`theme-option ${theme === THEMES.DARK ? 'active' : ''}`}
                 onClick={() => setDarkTheme()}
                 aria-pressed={theme === THEMES.DARK}
@@ -70,7 +81,7 @@ export default function SettingsPanel({ onClose }) {
                 <span className="theme-icon">🌙</span>
                 <span className="theme-label">深色模式</span>
               </button>
-              <button 
+              <button
                 className={`theme-option ${theme === THEMES.LIGHT ? 'active' : ''}`}
                 onClick={() => setLightTheme()}
                 aria-pressed={theme === THEMES.LIGHT}
@@ -84,7 +95,7 @@ export default function SettingsPanel({ onClose }) {
           <section className="settings-section">
             <h3>💾 数据管理</h3>
             <p className="settings-hint">备份或恢复您的所有数据</p>
-            
+
             <div className="data-actions">
               <button className="data-action-btn export-btn" onClick={handleExport}>
                 <span>📤</span> 导出数据
@@ -92,9 +103,9 @@ export default function SettingsPanel({ onClose }) {
               <button className="data-action-btn import-btn" onClick={handleImportClick}>
                 <span>📥</span> 导入数据
               </button>
-              <input 
+              <input
                 ref={fileInputRef}
-                type="file" 
+                type="file"
                 accept=".json"
                 onChange={handleFileChange}
                 style={{ display: 'none' }}
@@ -102,9 +113,7 @@ export default function SettingsPanel({ onClose }) {
             </div>
 
             {importStatus && (
-              <div className={`import-status ${importStatus.type}`}>
-                {importStatus.message}
-              </div>
+              <div className={`import-status ${importStatus.type}`}>{importStatus.message}</div>
             )}
           </section>
 

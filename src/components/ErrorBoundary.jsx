@@ -16,10 +16,10 @@ const isDevelopment = (() => {
 export class ErrorBoundary extends Component {
   constructor(props) {
     super(props);
-    this.state = { 
-      hasError: false, 
+    this.state = {
+      hasError: false,
       error: null,
-      errorInfo: null 
+      errorInfo: null,
     };
   }
 
@@ -32,19 +32,19 @@ export class ErrorBoundary extends Component {
     // 记录错误信息（可集成错误上报服务）
     console.error('🚨 Error caught by boundary:', error);
     console.error('📋 Component stack:', errorInfo.componentStack);
-    
+
     // 保存错误信息供调试
     this.setState({ errorInfo });
-    
+
     // 可选：发送到错误监控服务
     // sendErrorToMonitoring(error, errorInfo);
   }
 
   handleReset = () => {
-    this.setState({ 
-      hasError: false, 
-      error: null, 
-      errorInfo: null 
+    this.setState({
+      hasError: false,
+      error: null,
+      errorInfo: null,
     });
   };
 
@@ -59,31 +59,21 @@ export class ErrorBoundary extends Component {
           <div className="error-boundary-content">
             <div className="error-icon">😕</div>
             <h2>出错了</h2>
-            <p className="error-message">
-              应用遇到了一些问题，请尝试刷新页面
-            </p>
-            
+            <p className="error-message">应用遇到了一些问题，请尝试刷新页面</p>
+
             {isDevelopment && this.state.error && (
               <details className="error-details">
                 <summary>错误详情（仅开发环境）</summary>
                 <pre>{this.state.error.toString()}</pre>
-                {this.state.errorInfo && (
-                  <pre>{this.state.errorInfo.componentStack}</pre>
-                )}
+                {this.state.errorInfo && <pre>{this.state.errorInfo.componentStack}</pre>}
               </details>
             )}
-            
+
             <div className="error-actions">
-              <button 
-                className="btn-reset" 
-                onClick={this.handleReset}
-              >
+              <button className="btn-reset" onClick={this.handleReset}>
                 返回主页
               </button>
-              <button 
-                className="btn-reload" 
-                onClick={this.handleReload}
-              >
+              <button className="btn-reload" onClick={this.handleReload}>
                 刷新页面
               </button>
             </div>

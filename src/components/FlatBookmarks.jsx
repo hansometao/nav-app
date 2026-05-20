@@ -1,12 +1,7 @@
 import { useState, useMemo, useCallback, useEffect } from 'react';
 import { validateBookmark, sanitizeHtml, getFavicon } from '../utils';
 import { useDebounce } from '../hooks';
-import {
-  DEFAULT_CATEGORIES,
-  DEFAULT_BOOKMARKS,
-  ICON_OPTIONS,
-  STORAGE_KEYS
-} from '../constants';
+import { DEFAULT_CATEGORIES, DEFAULT_BOOKMARKS, ICON_OPTIONS, STORAGE_KEYS } from '../constants';
 
 const BookmarkItem = ({ bm, stats, onEdit, onDelete, onVisit, updateFavicon }) => {
   const [faviconUrl, setFaviconUrl] = useState(bm.favicon);
@@ -15,7 +10,7 @@ const BookmarkItem = ({ bm, stats, onEdit, onDelete, onVisit, updateFavicon }) =
 
   useEffect(() => {
     if (!bm.favicon) {
-      getFavicon(bm.url).then((favicon) => {
+      getFavicon(bm.url).then(favicon => {
         setFaviconUrl(favicon);
         updateFavicon(bm.id, favicon);
       });
@@ -41,7 +36,7 @@ const BookmarkItem = ({ bm, stats, onEdit, onDelete, onVisit, updateFavicon }) =
             alt=""
             className="flat-bookmark-favicon"
             onError={() => {
-              getFavicon(bm.url).then((newFavicon) => {
+              getFavicon(bm.url).then(newFavicon => {
                 setFaviconUrl(newFavicon);
                 updateFavicon(bm.id, newFavicon);
               });
@@ -58,7 +53,7 @@ const BookmarkItem = ({ bm, stats, onEdit, onDelete, onVisit, updateFavicon }) =
       <div className={`flat-bookmark-actions ${isHovered ? 'visible' : ''}`}>
         <button
           className="flat-edit-btn"
-          onClick={(e) => {
+          onClick={e => {
             e.preventDefault();
             e.stopPropagation();
             onEdit(bm);
@@ -70,7 +65,7 @@ const BookmarkItem = ({ bm, stats, onEdit, onDelete, onVisit, updateFavicon }) =
         </button>
         <button
           className="flat-delete-btn"
-          onClick={(e) => {
+          onClick={e => {
             e.preventDefault();
             e.stopPropagation();
             onDelete(bm.id);
@@ -101,7 +96,7 @@ const CategoryManager = ({ categories, onAdd, onDelete, onEdit, bookmarksCount }
   const [newCat, setNewCat] = useState({ name: '', icon: '📁' });
   const [editingCat, setEditingCat] = useState(null);
 
-  const handleSubmit = (e) => {
+  const handleSubmit = e => {
     e.preventDefault();
     if (!newCat.name.trim()) return;
 
@@ -115,7 +110,7 @@ const CategoryManager = ({ categories, onAdd, onDelete, onEdit, bookmarksCount }
     setEditingCat(null);
   };
 
-  const startEdit = (cat) => {
+  const startEdit = cat => {
     setNewCat(cat);
     setEditingCat(cat.name);
     setShowForm(true);
@@ -124,10 +119,7 @@ const CategoryManager = ({ categories, onAdd, onDelete, onEdit, bookmarksCount }
   return (
     <div className="flat-category-manager">
       <div className="flat-category-manager-header">
-        <button
-          className="flat-manage-cats-btn"
-          onClick={() => setShowForm(!showForm)}
-        >
+        <button className="flat-manage-cats-btn" onClick={() => setShowForm(!showForm)}>
           📁 {showForm ? '收起' : '管理分类'}
         </button>
         <span className="category-total-count">共 {categories.length} 个分类</span>
@@ -140,12 +132,12 @@ const CategoryManager = ({ categories, onAdd, onDelete, onEdit, bookmarksCount }
               type="text"
               placeholder="分类名称"
               value={newCat.name}
-              onChange={(e) => setNewCat({ ...newCat, name: e.target.value })}
+              onChange={e => setNewCat({ ...newCat, name: e.target.value })}
               required
             />
             <div className="flat-icon-picker">
               <span className="icon-picker-label">选择图标：</span>
-              {ICON_OPTIONS.map((icon) => (
+              {ICON_OPTIONS.map(icon => (
                 <button
                   key={icon}
                   type="button"
@@ -179,7 +171,7 @@ const CategoryManager = ({ categories, onAdd, onDelete, onEdit, bookmarksCount }
 
       {categories.length > 0 && (
         <div className="flat-category-list">
-          {categories.map((cat) => {
+          {categories.map(cat => {
             const catBookmarks = bookmarksCount[cat.name] || 0;
             return (
               <div key={cat.name} className="flat-category-item">
@@ -189,11 +181,7 @@ const CategoryManager = ({ categories, onAdd, onDelete, onEdit, bookmarksCount }
                   <span className="cat-bookmark-count">({catBookmarks})</span>
                 </div>
                 <div className="cat-actions">
-                  <button
-                    className="cat-edit"
-                    onClick={() => startEdit(cat)}
-                    title="编辑"
-                  >
+                  <button className="cat-edit" onClick={() => startEdit(cat)} title="编辑">
                     ✏️
                   </button>
                   <button
@@ -222,7 +210,7 @@ export default function FlatBookmarks() {
         const defaultData = DEFAULT_BOOKMARKS.map((bm, i) => ({
           ...bm,
           id: Date.now() + i,
-          createdAt: Date.now()
+          createdAt: Date.now(),
         }));
         localStorage.setItem(STORAGE_KEYS.BOOKMARKS, JSON.stringify(defaultData));
         return defaultData;
@@ -232,7 +220,7 @@ export default function FlatBookmarks() {
       return DEFAULT_BOOKMARKS.map((bm, i) => ({
         ...bm,
         id: Date.now() + i,
-        createdAt: Date.now()
+        createdAt: Date.now(),
       }));
     }
   });
@@ -261,15 +249,20 @@ export default function FlatBookmarks() {
 
   const [showAdd, setShowAdd] = useState(false);
   const [editId, setEditId] = useState(null);
-  const [form, setForm] = useState({ name: '', url: '', favicon: '', category: categories[0]?.name || '常用网站' });
+  const [form, setForm] = useState({
+    name: '',
+    url: '',
+    favicon: '',
+    category: categories[0]?.name || '常用网站',
+  });
   const [previewFavicon, setPreviewFavicon] = useState(null);
   const [faviconLoading, setFaviconLoading] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
   const [sortBy, setSortBy] = useState('default');
   const debouncedSearchQuery = useDebounce(searchQuery, 300);
 
-  const recordVisit = useCallback((bookmarkId) => {
-    setStats((prev) => {
+  const recordVisit = useCallback(bookmarkId => {
+    setStats(prev => {
       const newStats = { ...prev };
       if (!newStats[bookmarkId]) {
         newStats[bookmarkId] = { visits: 0, lastVisit: 0 };
@@ -281,18 +274,18 @@ export default function FlatBookmarks() {
     });
   }, []);
 
-  const saveBookmarks = useCallback((newList) => {
+  const saveBookmarks = useCallback(newList => {
     setBookmarks(newList);
     localStorage.setItem(STORAGE_KEYS.BOOKMARKS, JSON.stringify(newList));
   }, []);
 
   const updateFavicon = useCallback((bookmarkId, favicon) => {
-    setBookmarks((prev) => prev.map((b) => (b.id === bookmarkId ? { ...b, favicon } : b)));
+    setBookmarks(prev => prev.map(b => (b.id === bookmarkId ? { ...b, favicon } : b)));
     try {
       const saved = localStorage.getItem(STORAGE_KEYS.BOOKMARKS);
       if (saved) {
         const bookmarks = JSON.parse(saved);
-        const updated = bookmarks.map((b) => (b.id === bookmarkId ? { ...b, favicon } : b));
+        const updated = bookmarks.map(b => (b.id === bookmarkId ? { ...b, favicon } : b));
         localStorage.setItem(STORAGE_KEYS.BOOKMARKS, JSON.stringify(updated));
       }
     } catch (e) {
@@ -300,34 +293,48 @@ export default function FlatBookmarks() {
     }
   }, []);
 
-  const saveCategories = useCallback((newCats) => {
+  const saveCategories = useCallback(newCats => {
     setCategories(newCats);
     localStorage.setItem(STORAGE_KEYS.CATEGORIES, JSON.stringify(newCats));
   }, []);
 
-  const addCategory = useCallback((cat) => {
-    const newCat = { name: sanitizeHtml(cat.name), icon: cat.icon };
-    if (!categories.find((c) => c.name === newCat.name)) {
-      saveCategories([...categories, newCat]);
-    }
-  }, [categories, saveCategories]);
+  const addCategory = useCallback(
+    cat => {
+      const newCat = { name: sanitizeHtml(cat.name), icon: cat.icon };
+      if (!categories.find(c => c.name === newCat.name)) {
+        saveCategories([...categories, newCat]);
+      }
+    },
+    [categories, saveCategories]
+  );
 
-  const deleteCategory = useCallback((catName) => {
-    if (categories.length <= 1) return;
-    saveCategories(categories.filter((c) => c.name !== catName));
-    const newDefaultCat = categories[0].name === catName ? categories[1].name : categories[0].name;
-    saveBookmarks(bookmarks.map((b) => (b.category === catName ? { ...b, category: newDefaultCat } : b)));
-  }, [categories, bookmarks, saveCategories, saveBookmarks]);
+  const deleteCategory = useCallback(
+    catName => {
+      if (categories.length <= 1) return;
+      saveCategories(categories.filter(c => c.name !== catName));
+      const newDefaultCat =
+        categories[0].name === catName ? categories[1].name : categories[0].name;
+      saveBookmarks(
+        bookmarks.map(b => (b.category === catName ? { ...b, category: newDefaultCat } : b))
+      );
+    },
+    [categories, bookmarks, saveCategories, saveBookmarks]
+  );
 
-  const editCategory = useCallback((oldName, newCat) => {
-    const updatedCats = categories.map((c) =>
-      c.name === oldName ? { name: sanitizeHtml(newCat.name), icon: newCat.icon } : c
-    );
-    saveCategories(updatedCats);
-    saveBookmarks(bookmarks.map((b) =>
-      b.category === oldName ? { ...b, category: sanitizeHtml(newCat.name) } : b
-    ));
-  }, [categories, bookmarks, saveCategories, saveBookmarks]);
+  const editCategory = useCallback(
+    (oldName, newCat) => {
+      const updatedCats = categories.map(c =>
+        c.name === oldName ? { name: sanitizeHtml(newCat.name), icon: newCat.icon } : c
+      );
+      saveCategories(updatedCats);
+      saveBookmarks(
+        bookmarks.map(b =>
+          b.category === oldName ? { ...b, category: sanitizeHtml(newCat.name) } : b
+        )
+      );
+    },
+    [categories, bookmarks, saveCategories, saveBookmarks]
+  );
 
   const resetForm = () => {
     setForm({ name: '', url: '', favicon: '', category: categories[0]?.name || '常用网站' });
@@ -339,7 +346,7 @@ export default function FlatBookmarks() {
   useEffect(() => {
     if (form.url && form.url.includes('.')) {
       setFaviconLoading(true);
-      getFavicon(form.url).then((favicon) => {
+      getFavicon(form.url).then(favicon => {
         setPreviewFavicon(favicon);
         setFaviconLoading(false);
       });
@@ -348,12 +355,12 @@ export default function FlatBookmarks() {
     }
   }, [form.url]);
 
-  const handleSubmit = (e) => {
+  const handleSubmit = e => {
     e.preventDefault();
     const validated = validateBookmark({
       name: form.name,
       url: form.url,
-      category: form.category
+      category: form.category,
     });
     if (!validated) {
       alert('请输入有效的网址和名称');
@@ -366,27 +373,27 @@ export default function FlatBookmarks() {
       ...validated,
       favicon: faviconToSave,
       name: sanitizeHtml(validated.name),
-      category: sanitizeHtml(validated.category)
+      category: sanitizeHtml(validated.category),
     };
 
     if (editId !== null) {
-      saveBookmarks(bookmarks.map((b) => (b.id === editId ? { ...b, ...entry } : b)));
+      saveBookmarks(bookmarks.map(b => (b.id === editId ? { ...b, ...entry } : b)));
     } else {
       saveBookmarks([...bookmarks, { id: Date.now(), ...entry, createdAt: Date.now() }]);
     }
     resetForm();
   };
 
-  const startEdit = (bm) => {
+  const startEdit = bm => {
     setForm({ name: bm.name, url: bm.url, favicon: bm.favicon || '', category: bm.category });
     setPreviewFavicon(bm.favicon || null);
     setEditId(bm.id);
     setShowAdd(true);
   };
 
-  const removeBookmark = (id) => {
+  const removeBookmark = id => {
     if (confirm('确认删除此书签？')) {
-      saveBookmarks(bookmarks.filter((b) => b.id !== id));
+      saveBookmarks(bookmarks.filter(b => b.id !== id));
     }
   };
 
@@ -395,10 +402,11 @@ export default function FlatBookmarks() {
 
     if (debouncedSearchQuery.trim()) {
       const query = debouncedSearchQuery.toLowerCase();
-      result = result.filter((bm) =>
-        bm.name.toLowerCase().includes(query) ||
-        bm.url.toLowerCase().includes(query) ||
-        bm.category.toLowerCase().includes(query)
+      result = result.filter(
+        bm =>
+          bm.name.toLowerCase().includes(query) ||
+          bm.url.toLowerCase().includes(query) ||
+          bm.category.toLowerCase().includes(query)
       );
     }
 
@@ -413,7 +421,7 @@ export default function FlatBookmarks() {
 
   const groupedBookmarks = useMemo(() => {
     const cats = {};
-    filteredBookmarks.forEach((bm) => {
+    filteredBookmarks.forEach(bm => {
       const cat = bm.category || '默认';
       if (!cats[cat]) cats[cat] = [];
       cats[cat].push(bm);
@@ -423,7 +431,7 @@ export default function FlatBookmarks() {
 
   const bookmarksCountByCategory = useMemo(() => {
     const counts = {};
-    bookmarks.forEach((bm) => {
+    bookmarks.forEach(bm => {
       const cat = bm.category || '默认';
       counts[cat] = (counts[cat] || 0) + 1;
     });
@@ -450,14 +458,14 @@ export default function FlatBookmarks() {
               type="text"
               placeholder="搜索网址..."
               value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
+              onChange={e => setSearchQuery(e.target.value)}
               className="flat-search-input"
             />
           </div>
           <select
             className="flat-sort-select"
             value={sortBy}
-            onChange={(e) => setSortBy(e.target.value)}
+            onChange={e => setSortBy(e.target.value)}
           >
             <option value="default">默认排序</option>
             <option value="visits">热门优先</option>
@@ -476,21 +484,21 @@ export default function FlatBookmarks() {
               type="text"
               placeholder="网站名称"
               value={form.name}
-              onChange={(e) => setForm({ ...form, name: e.target.value })}
+              onChange={e => setForm({ ...form, name: e.target.value })}
               required
             />
             <input
               type="text"
               placeholder="网址 (https://...)"
               value={form.url}
-              onChange={(e) => setForm({ ...form, url: e.target.value })}
+              onChange={e => setForm({ ...form, url: e.target.value })}
               required
             />
             <select
               value={form.category}
-              onChange={(e) => setForm({ ...form, category: e.target.value })}
+              onChange={e => setForm({ ...form, category: e.target.value })}
             >
-              {categories.map((cat) => (
+              {categories.map(cat => (
                 <option key={cat.name} value={cat.name}>
                   {cat.icon} {cat.name}
                 </option>
@@ -523,7 +531,7 @@ export default function FlatBookmarks() {
         <div className="flat-hot-section">
           <h3 className="flat-hot-title">🔥 热门访问</h3>
           <div className="flat-hot-list">
-            {hotBookmarks.map((bm) => (
+            {hotBookmarks.map(bm => (
               <BookmarkItem
                 key={bm.id}
                 bm={bm}
@@ -542,7 +550,7 @@ export default function FlatBookmarks() {
         <EmptyState onAdd={() => setShowAdd(true)} />
       ) : (
         <div className="flat-bookmarks-vertical">
-          {categories.map((cat) => {
+          {categories.map(cat => {
             const items = groupedBookmarks[cat.name] || [];
             if (items.length === 0 && searchQuery) return null;
 
@@ -554,7 +562,7 @@ export default function FlatBookmarks() {
                   <span className="flat-category-count">({items.length})</span>
                 </div>
                 <div className="flat-category-items">
-                  {items.map((bm) => (
+                  {items.map(bm => (
                     <BookmarkItem
                       key={bm.id}
                       bm={bm}

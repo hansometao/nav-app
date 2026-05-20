@@ -1,11 +1,11 @@
-import { expect, afterEach, vi } from 'vitest'
-import { cleanup } from '@testing-library/react'
-import '@testing-library/jest-dom'
+import { expect, afterEach, vi } from 'vitest';
+import { cleanup } from '@testing-library/react';
+import '@testing-library/jest-dom';
 
 // 清理 DOM 和 mock 状态
 afterEach(() => {
-  cleanup()
-})
+  cleanup();
+});
 
 // Mock localStorage
 const localStorageMock = {
@@ -13,10 +13,10 @@ const localStorageMock = {
   setItem: vi.fn(),
   removeItem: vi.fn(),
   clear: vi.fn(),
-}
+};
 Object.defineProperty(window, 'localStorage', {
   value: localStorageMock,
-})
+});
 
 // Mock matchMedia
 Object.defineProperty(window, 'matchMedia', {
@@ -31,13 +31,13 @@ Object.defineProperty(window, 'matchMedia', {
     removeEventListener: vi.fn(),
     dispatchEvent: vi.fn(),
   })),
-})
+});
 
 // Mock window.confirm
-window.confirm = vi.fn()
+window.confirm = vi.fn();
 
 // Mock window.alert
-window.alert = vi.fn()
+window.alert = vi.fn();
 
 // Mock window.open
-window.open = vi.fn()
+window.open = vi.fn();

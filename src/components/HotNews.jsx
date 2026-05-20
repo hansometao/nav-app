@@ -16,18 +16,48 @@ const PLATFORMS = [
 // 热榜数据（模拟数据，可替换为真实API）
 const MOCK_DATA = {
   zhihu: [
-    { id: '1', title: '如何看待人工智能的未来发展趋势', heat: 852000, url: 'https://www.zhihu.com' },
-    { id: '2', title: '2024年最值得关注的技术领域有哪些', heat: 689000, url: 'https://www.zhihu.com' },
-    { id: '3', title: '深度学习在医疗影像中的应用进展', heat: 542000, url: 'https://www.zhihu.com' },
+    {
+      id: '1',
+      title: '如何看待人工智能的未来发展趋势',
+      heat: 852000,
+      url: 'https://www.zhihu.com',
+    },
+    {
+      id: '2',
+      title: '2024年最值得关注的技术领域有哪些',
+      heat: 689000,
+      url: 'https://www.zhihu.com',
+    },
+    {
+      id: '3',
+      title: '深度学习在医疗影像中的应用进展',
+      heat: 542000,
+      url: 'https://www.zhihu.com',
+    },
     { id: '4', title: '推荐系统算法的最新研究成果', heat: 421000, url: 'https://www.zhihu.com' },
-    { id: '5', title: '大语言模型在教育领域的应用场景', heat: 398000, url: 'https://www.zhihu.com' },
+    {
+      id: '5',
+      title: '大语言模型在教育领域的应用场景',
+      heat: 398000,
+      url: 'https://www.zhihu.com',
+    },
     { id: '6', title: '计算机视觉在自动驾驶中的突破', heat: 365000, url: 'https://www.zhihu.com' },
     { id: '7', title: '边缘计算技术的发展现状', heat: 312000, url: 'https://www.zhihu.com' },
     { id: '8', title: '量子计算在密码学中的应用', heat: 289000, url: 'https://www.zhihu.com' },
   ],
   bilibili: [
-    { id: '1', title: '【技术解析】最新的前端框架对比', heat: 1250000, url: 'https://www.bilibili.com' },
-    { id: '2', title: '从零开始学编程：Python入门教程', heat: 980000, url: 'https://www.bilibili.com' },
+    {
+      id: '1',
+      title: '【技术解析】最新的前端框架对比',
+      heat: 1250000,
+      url: 'https://www.bilibili.com',
+    },
+    {
+      id: '2',
+      title: '从零开始学编程：Python入门教程',
+      heat: 980000,
+      url: 'https://www.bilibili.com',
+    },
     { id: '3', title: '2024年程序员必备技能清单', heat: 870000, url: 'https://www.bilibili.com' },
     { id: '4', title: 'Git版本控制完整教程', heat: 760000, url: 'https://www.bilibili.com' },
     { id: '5', title: '微服务架构实战演练', heat: 650000, url: 'https://www.bilibili.com' },
@@ -84,8 +114,8 @@ function formatTime(ts) {
 async function fetchRealData(platform) {
   try {
     let url, data;
-    
-    switch(platform) {
+
+    switch (platform) {
       case 'zhihu':
         try {
           const res = await fetch('https://api.oioweb.cn/api/zhihu/hot');
@@ -104,10 +134,12 @@ async function fetchRealData(platform) {
           console.log('知乎API获取失败，使用备用数据');
         }
         break;
-        
+
       case 'bilibili':
         try {
-          const res = await fetch('https://api.bilibili.com/x/web-interface/ranking/v2?rid=0&type=all');
+          const res = await fetch(
+            'https://api.bilibili.com/x/web-interface/ranking/v2?rid=0&type=all'
+          );
           if (res.ok) {
             const json = await res.json();
             if (json.code === 0 && json.data && json.data.list) {
@@ -123,7 +155,7 @@ async function fetchRealData(platform) {
           console.log('B站API获取失败，使用备用数据');
         }
         break;
-        
+
       case 'weibo':
         try {
           const res = await fetch('https://api.oioweb.cn/api/weibo/hot');
@@ -142,11 +174,11 @@ async function fetchRealData(platform) {
           console.log('微博API获取失败，使用备用数据');
         }
         break;
-        
+
       default:
         break;
     }
-    
+
     return null;
   } catch (error) {
     console.log(`${platform} API获取失败:`, error);
@@ -161,82 +193,91 @@ export default function HotNews() {
   const [error, setError] = useState(null);
   const [lastUpdate, setLastUpdate] = useState(null);
   const [useMockData, setUseMockData] = useState(false);
-  
+
   const abortControllerRef = useRef(null);
 
-  const fetchNews = useCallback(async (plat) => {
-    if (abortControllerRef.current) {
-      abortControllerRef.current.abort();
-    }
-    abortControllerRef.current = new AbortController();
+  const fetchNews = useCallback(
+    async plat => {
+      if (abortControllerRef.current) {
+        abortControllerRef.current.abort();
+      }
+      abortControllerRef.current = new AbortController();
 
-    setLoading(true);
-    setError(null);
+      setLoading(true);
+      setError(null);
 
-    const cacheKey = `${STORAGE_KEYS.HOTNEWS}_${plat.key}`;
-    
-    try {
-      const raw = localStorage.getItem(cacheKey);
-      if (raw) {
-        const { data, timestamp, isMock } = JSON.parse(raw);
-        if (Date.now() - timestamp < CACHE_CONFIG.NEWS_DURATION) {
-          setItems(data);
-          setLastUpdate(timestamp);
-          setUseMockData(isMock || false);
-          setLoading(false);
+      const cacheKey = `${STORAGE_KEYS.HOTNEWS}_${plat.key}`;
+
+      try {
+        const raw = localStorage.getItem(cacheKey);
+        if (raw) {
+          const { data, timestamp, isMock } = JSON.parse(raw);
+          if (Date.now() - timestamp < CACHE_CONFIG.NEWS_DURATION) {
+            setItems(data);
+            setLastUpdate(timestamp);
+            setUseMockData(isMock || false);
+            setLoading(false);
+            return;
+          }
+        }
+      } catch {
+        /* ignore */
+      }
+
+      try {
+        let list = null;
+        let isMock = false;
+
+        if (!useMockData) {
+          list = await fetchRealData(plat.key);
+        }
+
+        if (!list) {
+          list = MOCK_DATA[plat.key] || [];
+          isMock = true;
+        }
+
+        setItems(list);
+        setUseMockData(isMock);
+        setLastUpdate(Date.now());
+
+        try {
+          localStorage.setItem(
+            cacheKey,
+            JSON.stringify({
+              data: list,
+              timestamp: Date.now(),
+              isMock: isMock,
+            })
+          );
+        } catch {
+          /* quota exceeded */
+        }
+      } catch (e) {
+        if (e.name === 'AbortError') {
+          console.log('请求已取消');
           return;
         }
+        console.error('热榜获取失败:', e);
+        try {
+          const fallbackList = MOCK_DATA[plat.key] || [];
+          setItems(fallbackList);
+          setUseMockData(true);
+          setLastUpdate(Date.now());
+          setError(`获取热榜失败，已加载本地数据`);
+        } catch (fallbackErr) {
+          setError('获取热榜失败，请稍后重试');
+        }
+      } finally {
+        setLoading(false);
       }
-    } catch { /* ignore */ }
-
-    try {
-      let list = null;
-      let isMock = false;
-
-      if (!useMockData) {
-        list = await fetchRealData(plat.key);
-      }
-
-      if (!list) {
-        list = MOCK_DATA[plat.key] || [];
-        isMock = true;
-      }
-
-      setItems(list);
-      setUseMockData(isMock);
-      setLastUpdate(Date.now());
-
-      try {
-        localStorage.setItem(cacheKey, JSON.stringify({
-          data: list,
-          timestamp: Date.now(),
-          isMock: isMock,
-        }));
-      } catch { /* quota exceeded */ }
-
-    } catch (e) {
-      if (e.name === 'AbortError') {
-        console.log('请求已取消');
-        return;
-      }
-      console.error('热榜获取失败:', e);
-      try {
-        const fallbackList = MOCK_DATA[plat.key] || [];
-        setItems(fallbackList);
-        setUseMockData(true);
-        setLastUpdate(Date.now());
-        setError(`获取热榜失败，已加载本地数据`);
-      } catch (fallbackErr) {
-        setError('获取热榜失败，请稍后重试');
-      }
-    } finally {
-      setLoading(false);
-    }
-  }, [useMockData]);
+    },
+    [useMockData]
+  );
 
   useEffect(() => {
     fetchNews(platform);
-    
+
     return () => {
       if (abortControllerRef.current) {
         abortControllerRef.current.abort();
@@ -247,7 +288,9 @@ export default function HotNews() {
   return (
     <div className="widget hotnews-widget">
       <div className="widget-header">
-        <h3><Icon name="news" size={16} /> 热榜</h3>
+        <h3>
+          <Icon name="news" size={16} /> 热榜
+        </h3>
         <div className="hotnews-header-actions">
           <button
             className="btn-icon"
@@ -261,7 +304,7 @@ export default function HotNews() {
       </div>
 
       <div className="hotnews-platforms">
-        {PLATFORMS.map((p) => (
+        {PLATFORMS.map(p => (
           <button
             key={p.key}
             className={`hotnews-platform ${p.key === platform.key ? 'active' : ''}`}
@@ -273,17 +316,9 @@ export default function HotNews() {
         ))}
       </div>
 
-      {loading && items.length === 0 && (
-        <div className="hotnews-loading">加载中...</div>
-      )}
+      {loading && items.length === 0 && <div className="hotnews-loading">加载中...</div>}
 
-      {error && (
-        <ErrorMessage 
-          message={error}
-          onRetry={() => fetchNews(platform)}
-          type="info"
-        />
-      )}
+      {error && <ErrorMessage message={error} onRetry={() => fetchNews(platform)} type="info" />}
 
       {items.length > 0 && (
         <div className="hotnews-list">
@@ -296,9 +331,7 @@ export default function HotNews() {
               className="hotnews-item"
               title={item.title}
             >
-              <span className={`hotnews-rank ${idx < 3 ? `rank-${idx + 1}` : ''}`}>
-                {idx + 1}
-              </span>
+              <span className={`hotnews-rank ${idx < 3 ? `rank-${idx + 1}` : ''}`}>{idx + 1}</span>
               <span className="hotnews-title">{item.title}</span>
             </a>
           ))}

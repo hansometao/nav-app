@@ -4,9 +4,9 @@ import './LunarCalendar.css';
 
 const LunarCalendar = memo(function LunarCalendar({ date }) {
   if (!date) return null;
-  
+
   const info = getLunarInfo(date);
-  
+
   return (
     <div className="lunar-calendar-strip">
       <div className="lunar-info">

@@ -6,10 +6,30 @@ import { getLunarInfo, getLunarYearInfo } from '../utils/lunarCalendar';
 const CALENDAR_KEY = STORAGE_KEYS.CALENDAR;
 
 const SOLAR_TERMS = [
-  '小寒', '大寒', '立春', '雨水', '惊蛰', '春分',
-  '清明', '谷雨', '立夏', '小满', '芒种', '夏至',
-  '小暑', '大暑', '立秋', '处暑', '白露', '秋分',
-  '寒露', '霜降', '立冬', '小雪', '大雪', '冬至'
+  '小寒',
+  '大寒',
+  '立春',
+  '雨水',
+  '惊蛰',
+  '春分',
+  '清明',
+  '谷雨',
+  '立夏',
+  '小满',
+  '芒种',
+  '夏至',
+  '小暑',
+  '大暑',
+  '立秋',
+  '处暑',
+  '白露',
+  '秋分',
+  '寒露',
+  '霜降',
+  '立冬',
+  '小雪',
+  '大雪',
+  '冬至',
 ];
 
 const HOLIDAYS = {
@@ -25,7 +45,7 @@ const HOLIDAYS = {
   '08-01': { name: '建军节', type: 'festival' },
   '09-10': { name: '教师节', type: 'festival' },
   '10-01': { name: '国庆节', type: 'national' },
-  '12-25': { name: '圣诞节', type: 'festival' }
+  '12-25': { name: '圣诞节', type: 'festival' },
 };
 
 const LUNAR_HOLIDAYS = {
@@ -37,18 +57,26 @@ const LUNAR_HOLIDAYS = {
   '09-09': { name: '重阳节', type: 'lunar' },
   '12-08': { name: '腊八节', type: 'lunar' },
   '12-23': { name: '小年', type: 'lunar' },
-  '12-30': { name: '除夕', type: 'lunar' }
+  '12-30': { name: '除夕', type: 'lunar' },
 };
 
 const EVENT_COLORS = [
-  '#ef4444', '#f97316', '#eab308', '#22c55e', '#06b6d4',
-  '#3b82f6', '#8b5cf6', '#ec4899', '#f43f5e', '#14b8a6'
+  '#ef4444',
+  '#f97316',
+  '#eab308',
+  '#22c55e',
+  '#06b6d4',
+  '#3b82f6',
+  '#8b5cf6',
+  '#ec4899',
+  '#f43f5e',
+  '#14b8a6',
 ];
 
 const DEFAULT_EVENTS = [
   { date: '2026-06-01', title: '儿童节', color: '#ef4444', time: '09:00' },
   { date: '2026-10-01', title: '国庆节', color: '#ef4444', time: '00:00' },
-  { date: '2026-12-25', title: '圣诞节', color: '#22c55e', time: '00:00' }
+  { date: '2026-12-25', title: '圣诞节', color: '#22c55e', time: '00:00' },
 ];
 
 export default function Calendar() {
@@ -66,12 +94,12 @@ export default function Calendar() {
   const [selectedDate, setSelectedDate] = useState(null);
   const [viewMode, setViewMode] = useState('month');
   const [showCalendar, setShowCalendar] = useState(false);
-  const [newEvent, setNewEvent] = useState({ 
-    date: '', 
-    title: '', 
+  const [newEvent, setNewEvent] = useState({
+    date: '',
+    title: '',
     color: EVENT_COLORS[0],
     time: '09:00',
-    repeat: 'none'
+    repeat: 'none',
   });
 
   const year = currentDate.getFullYear();
@@ -82,8 +110,21 @@ export default function Calendar() {
   const firstDay = new Date(year, month, 1).getDay();
   const daysInMonth = new Date(year, month + 1, 0).getDate();
 
-  const monthNames = ['一月','二月','三月','四月','五月','六月','七月','八月','九月','十月','十一月','十二月'];
-  const dayNames = ['日','一','二','三','四','五','六'];
+  const monthNames = [
+    '一月',
+    '二月',
+    '三月',
+    '四月',
+    '五月',
+    '六月',
+    '七月',
+    '八月',
+    '九月',
+    '十月',
+    '十一月',
+    '十二月',
+  ];
+  const dayNames = ['日', '一', '二', '三', '四', '五', '六'];
 
   const prevMonth = () => setCurrentDate(new Date(year, month - 1, 1));
   const nextMonth = () => setCurrentDate(new Date(year, month + 1, 1));
@@ -94,28 +135,28 @@ export default function Calendar() {
     setSelectedDate(null);
   };
 
-  const getLunarForDate = (day) => {
+  const getLunarForDate = day => {
     const date = new Date(year, month, day);
     return getLunarInfo(date);
   };
 
-  const getHolidayInfo = (day) => {
+  const getHolidayInfo = day => {
     const monthDay = `${String(month + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
     return HOLIDAYS[monthDay] || null;
   };
 
-  const getLunarHoliday = (lunarInfo) => {
+  const getLunarHoliday = lunarInfo => {
     if (!lunarInfo) return null;
     const lunarMonthDay = `${String(lunarInfo.month).padStart(2, '0')}-${String(lunarInfo.day).padStart(2, '0')}`;
     return LUNAR_HOLIDAYS[lunarMonthDay] || null;
   };
 
-  const getEventsForDay = (day) => {
+  const getEventsForDay = day => {
     const dateStr = `${year}-${String(month + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
     return events.filter(e => e.date === dateStr);
   };
 
-  const getWeekNumber = (day) => {
+  const getWeekNumber = day => {
     const date = new Date(year, month, day);
     const startOfYear = new Date(year, 0, 1);
     const daysDiff = Math.floor((date.getTime() - startOfYear.getTime()) / (1000 * 60 * 60 * 24));
@@ -134,7 +175,7 @@ export default function Calendar() {
     }
   };
 
-  const removeEvent = (id) => {
+  const removeEvent = id => {
     setEvents(events.filter(e => e.id !== id));
   };
 
@@ -142,8 +183,8 @@ export default function Calendar() {
   for (let i = 0; i < firstDay; i++) days.push(null);
   for (let i = 1; i <= daysInMonth; i++) days.push(i);
 
-  const selectedLunarInfo = selectedDate 
-    ? getLunarInfo(new Date(year, month, selectedDate)) 
+  const selectedLunarInfo = selectedDate
+    ? getLunarInfo(new Date(year, month, selectedDate))
     : getLunarInfo(today);
 
   const yearInfo = getLunarYearInfo(year);
@@ -164,7 +205,9 @@ export default function Calendar() {
   return (
     <div className="widget calendar-widget">
       <div className="widget-header">
-        <h3><Icon name="calendar" size={18} /> 日历</h3>
+        <h3>
+          <Icon name="calendar" size={18} /> 日历
+        </h3>
         <div className="calendar-actions">
           <button className="btn-icon" onClick={() => setShowAdd(!showAdd)} title="添加事件">
             <Icon name="plus" size={16} />
@@ -173,30 +216,30 @@ export default function Calendar() {
       </div>
 
       {showAdd && (
-        <div className="calendar-add-form" onClick={(e) => e.stopPropagation()}>
+        <div className="calendar-add-form" onClick={e => e.stopPropagation()}>
           <div className="form-group">
             <label>日期：</label>
-            <input 
-              type="date" 
-              value={newEvent.date} 
-              onChange={e => setNewEvent({...newEvent, date: e.target.value})} 
+            <input
+              type="date"
+              value={newEvent.date}
+              onChange={e => setNewEvent({ ...newEvent, date: e.target.value })}
             />
           </div>
           <div className="form-group">
             <label>时间：</label>
-            <input 
-              type="time" 
-              value={newEvent.time} 
-              onChange={e => setNewEvent({...newEvent, time: e.target.value})} 
+            <input
+              type="time"
+              value={newEvent.time}
+              onChange={e => setNewEvent({ ...newEvent, time: e.target.value })}
             />
           </div>
           <div className="form-group">
             <label>标题：</label>
-            <input 
-              type="text" 
-              placeholder="事件名称" 
-              value={newEvent.title} 
-              onChange={e => setNewEvent({...newEvent, title: e.target.value})} 
+            <input
+              type="text"
+              placeholder="事件名称"
+              value={newEvent.title}
+              onChange={e => setNewEvent({ ...newEvent, title: e.target.value })}
             />
           </div>
           <div className="form-group">
@@ -207,14 +250,18 @@ export default function Calendar() {
                   key={color}
                   className={`color-btn ${newEvent.color === color ? 'active' : ''}`}
                   style={{ backgroundColor: color }}
-                  onClick={() => setNewEvent({...newEvent, color})}
+                  onClick={() => setNewEvent({ ...newEvent, color })}
                 />
               ))}
             </div>
           </div>
           <div className="form-actions">
-            <button className="btn-sm" onClick={addEvent}>添加</button>
-            <button className="btn-sm btn-cancel" onClick={() => setShowAdd(false)}>取消</button>
+            <button className="btn-sm" onClick={addEvent}>
+              添加
+            </button>
+            <button className="btn-sm btn-cancel" onClick={() => setShowAdd(false)}>
+              取消
+            </button>
           </div>
         </div>
       )}
@@ -227,38 +274,43 @@ export default function Calendar() {
           </div>
           <div className="today-info">
             <div className="today-lunar">
-              <span className="lunar-era">{yearInfo.tianGan}{yearInfo.diZhi}年</span>
+              <span className="lunar-era">
+                {yearInfo.tianGan}
+                {yearInfo.diZhi}年
+              </span>
               <span className="lunar-zodiac">{yearInfo.shengXiao}年</span>
             </div>
             <div className="today-date-full">
               {todayInfo.isLeap && <span className="leap-badge">闰月</span>}
               {todayInfo.fullLunar}
             </div>
-            {todayInfo.currentJieQi && <span className="jieqi-badge">{todayInfo.currentJieQi}</span>}
+            {todayInfo.currentJieQi && (
+              <span className="jieqi-badge">{todayInfo.currentJieQi}</span>
+            )}
           </div>
         </div>
         <div className="expand-hint">
-          <Icon name={showCalendar ? "chevronUp" : "chevronDown"} size={18} />
-          <span>{showCalendar ? "收起日历" : "查看日历"}</span>
+          <Icon name={showCalendar ? 'chevronUp' : 'chevronDown'} size={18} />
+          <span>{showCalendar ? '收起日历' : '查看日历'}</span>
         </div>
       </div>
 
       {showCalendar && (
-        <div className="calendar-expanded" onClick={(e) => e.stopPropagation()}>
+        <div className="calendar-expanded" onClick={e => e.stopPropagation()}>
           <div className="calendar-actions-bar">
             <div className="view-toggle">
-              <button 
+              <button
                 className={`btn-sm ${viewMode === 'month' ? 'active' : ''}`}
-                onClick={(e) => {
+                onClick={e => {
                   e.stopPropagation();
                   setViewMode('month');
                 }}
               >
                 月
               </button>
-              <button 
+              <button
                 className={`btn-sm ${viewMode === 'year' ? 'active' : ''}`}
-                onClick={(e) => {
+                onClick={e => {
                   e.stopPropagation();
                   setViewMode('year');
                 }}
@@ -266,10 +318,14 @@ export default function Calendar() {
                 年
               </button>
             </div>
-            <button className="btn-sm" onClick={(e) => {
-              e.stopPropagation();
-              goToToday();
-            }} title="今天">
+            <button
+              className="btn-sm"
+              onClick={e => {
+                e.stopPropagation();
+                goToToday();
+              }}
+              title="今天"
+            >
               今天
             </button>
           </div>
@@ -277,30 +333,48 @@ export default function Calendar() {
           {viewMode === 'month' && (
             <>
               <div className="calendar-nav">
-                <button onClick={(e) => {
-                  e.stopPropagation();
-                  prevYear();
-                }} className="btn-icon" title="上一年">
+                <button
+                  onClick={e => {
+                    e.stopPropagation();
+                    prevYear();
+                  }}
+                  className="btn-icon"
+                  title="上一年"
+                >
                   <Icon name="chevronLeft" size={14} />
                   <Icon name="chevronLeft" size={14} />
                 </button>
-                <button onClick={(e) => {
-                  e.stopPropagation();
-                  prevMonth();
-                }} className="btn-icon" title="上月">
+                <button
+                  onClick={e => {
+                    e.stopPropagation();
+                    prevMonth();
+                  }}
+                  className="btn-icon"
+                  title="上月"
+                >
                   <Icon name="chevronLeft" size={16} />
                 </button>
-                <span className="calendar-title">{year}年 {monthNames[month]}</span>
-                <button onClick={(e) => {
-                  e.stopPropagation();
-                  nextMonth();
-                }} className="btn-icon" title="下月">
+                <span className="calendar-title">
+                  {year}年 {monthNames[month]}
+                </span>
+                <button
+                  onClick={e => {
+                    e.stopPropagation();
+                    nextMonth();
+                  }}
+                  className="btn-icon"
+                  title="下月"
+                >
                   <Icon name="chevronRight" size={16} />
                 </button>
-                <button onClick={(e) => {
-                  e.stopPropagation();
-                  nextYear();
-                }} className="btn-icon" title="下一年">
+                <button
+                  onClick={e => {
+                    e.stopPropagation();
+                    nextYear();
+                  }}
+                  className="btn-icon"
+                  title="下一年"
+                >
                   <Icon name="chevronRight" size={14} />
                   <Icon name="chevronRight" size={14} />
                 </button>
@@ -330,21 +404,25 @@ export default function Calendar() {
                 ))}
                 {days.map((day, i) => {
                   if (day === null) return <div key={`e-${i}`} className="calendar-day empty" />;
-                  
-                  const isToday = day === today.getDate() && month === today.getMonth() && year === today.getFullYear();
+
+                  const isToday =
+                    day === today.getDate() &&
+                    month === today.getMonth() &&
+                    year === today.getFullYear();
                   const isSelected = selectedDate === day;
                   const dayEvents = getEventsForDay(day);
                   const holiday = getHolidayInfo(day);
                   const lunar = getLunarForDate(day);
                   const lunarHoliday = getLunarHoliday(lunar);
                   const weekNum = getWeekNumber(day);
-                  const isWeekend = firstDay + i >= 5 || (firstDay + i) % 7 === 0 || (firstDay + i) % 7 === 6;
-                  
+                  const isWeekend =
+                    firstDay + i >= 5 || (firstDay + i) % 7 === 0 || (firstDay + i) % 7 === 6;
+
                   return (
-                    <div 
-                      key={day} 
+                    <div
+                      key={day}
                       className={`calendar-day ${isToday ? 'today' : ''} ${isSelected ? 'selected' : ''} ${dayEvents.length ? 'has-event' : ''} ${isWeekend ? 'weekend' : ''}`}
-                      onClick={(e) => {
+                      onClick={e => {
                         e.stopPropagation();
                         setSelectedDate(day);
                       }}
@@ -352,15 +430,23 @@ export default function Calendar() {
                       {i % 7 === 0 && <span className="week-number">{weekNum}</span>}
                       <span className="day-num">{day}</span>
                       {lunar && <span className="lunar-day">{lunar.dayName}</span>}
-                      {holiday && <span className={`holiday-badge holiday-${holiday.type}`}>{holiday.name}</span>}
-                      {lunarHoliday && <span className="holiday-badge holiday-lunar">{lunarHoliday.name}</span>}
-                      {lunar?.currentJieQi && <span className="jieqi-badge-small">{lunar.currentJieQi}</span>}
+                      {holiday && (
+                        <span className={`holiday-badge holiday-${holiday.type}`}>
+                          {holiday.name}
+                        </span>
+                      )}
+                      {lunarHoliday && (
+                        <span className="holiday-badge holiday-lunar">{lunarHoliday.name}</span>
+                      )}
+                      {lunar?.currentJieQi && (
+                        <span className="jieqi-badge-small">{lunar.currentJieQi}</span>
+                      )}
                       {dayEvents.length > 0 && (
                         <div className="day-events">
                           {dayEvents.slice(0, 2).map((evt, ei) => (
-                            <span 
-                              key={ei} 
-                              className="day-event-dot" 
+                            <span
+                              key={ei}
+                              className="day-event-dot"
                               style={{ backgroundColor: evt.color }}
                               title={evt.title}
                             />
@@ -376,13 +462,18 @@ export default function Calendar() {
               </div>
 
               {selectedDate && (
-                <div className="selected-date-detail" onClick={(e) => e.stopPropagation()}>
+                <div className="selected-date-detail" onClick={e => e.stopPropagation()}>
                   <div className="detail-header">
-                    <span className="detail-date">{year}年{month + 1}月{selectedDate}日</span>
-                    <button className="btn-icon" onClick={(e) => {
-                      e.stopPropagation();
-                      setSelectedDate(null);
-                    }}>
+                    <span className="detail-date">
+                      {year}年{month + 1}月{selectedDate}日
+                    </span>
+                    <button
+                      className="btn-icon"
+                      onClick={e => {
+                        e.stopPropagation();
+                        setSelectedDate(null);
+                      }}
+                    >
                       <Icon name="x" size={14} />
                     </button>
                   </div>
@@ -395,13 +486,20 @@ export default function Calendar() {
                       <div className="event-list">
                         <span className="event-label">日程：</span>
                         {getEventsForDay(selectedDate).map((evt, i) => (
-                          <div key={i} className="event-item" style={{ borderLeftColor: evt.color }}>
+                          <div
+                            key={i}
+                            className="event-item"
+                            style={{ borderLeftColor: evt.color }}
+                          >
                             <span className="event-time">{evt.time}</span>
                             <span className="event-title">{evt.title}</span>
-                            <button className="btn-icon btn-remove" onClick={(e) => {
-                              e.stopPropagation();
-                              removeEvent(evt.id);
-                            }}>
+                            <button
+                              className="btn-icon btn-remove"
+                              onClick={e => {
+                                e.stopPropagation();
+                                removeEvent(evt.id);
+                              }}
+                            >
                               <Icon name="trash" size={12} />
                             </button>
                           </div>
@@ -419,17 +517,25 @@ export default function Calendar() {
           {viewMode === 'year' && (
             <>
               <div className="calendar-nav">
-                <button onClick={(e) => {
-                  e.stopPropagation();
-                  prevYear();
-                }} className="btn-icon" title="上一年">
+                <button
+                  onClick={e => {
+                    e.stopPropagation();
+                    prevYear();
+                  }}
+                  className="btn-icon"
+                  title="上一年"
+                >
                   <Icon name="chevronLeft" size={16} />
                 </button>
                 <span className="calendar-title">{year}年</span>
-                <button onClick={(e) => {
-                  e.stopPropagation();
-                  nextYear();
-                }} className="btn-icon" title="下一年">
+                <button
+                  onClick={e => {
+                    e.stopPropagation();
+                    nextYear();
+                  }}
+                  className="btn-icon"
+                  title="下一年"
+                >
                   <Icon name="chevronRight" size={16} />
                 </button>
               </div>
@@ -439,14 +545,16 @@ export default function Calendar() {
                   <div key={monthData.index} className="year-month">
                     <div className="month-name">{monthData.name}</div>
                     <div className="month-grid">
-                      {['日','一','二','三','四','五','六'].map(d => (
-                        <div key={d} className="month-day-header">{d}</div>
+                      {['日', '一', '二', '三', '四', '五', '六'].map(d => (
+                        <div key={d} className="month-day-header">
+                          {d}
+                        </div>
                       ))}
                       {monthData.days.map((day, i) => (
-                        <div 
-                          key={i} 
+                        <div
+                          key={i}
                           className={`month-day ${day === null ? 'empty' : ''} ${day === today.getDate() && monthData.index === today.getMonth() && year === today.getFullYear() ? 'today' : ''}`}
-                          onClick={(e) => {
+                          onClick={e => {
                             e.stopPropagation();
                             if (day) {
                               setCurrentDate(new Date(year, monthData.index, day));
@@ -470,7 +578,9 @@ export default function Calendar() {
         <div className="event-detail-overlay" onClick={() => setShowEventDetail(null)}>
           <div className="event-detail" onClick={e => e.stopPropagation()}>
             <div className="event-detail-header">
-              <h4>{year}年{month + 1}月{showEventDetail.day}日</h4>
+              <h4>
+                {year}年{month + 1}月{showEventDetail.day}日
+              </h4>
               <button className="btn-icon" onClick={() => setShowEventDetail(null)}>
                 <Icon name="x" size={16} />
               </button>
