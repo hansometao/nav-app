@@ -119,35 +119,50 @@ const CategoryManager = ({ categories, onAdd, onDelete, onEdit, bookmarksCount }
   return (
     <div className="flat-category-manager">
       <div className="flat-category-manager-header">
-        <button className="flat-manage-cats-btn" onClick={() => setShowForm(!showForm)}>
-          📁 {showForm ? '收起' : '管理分类'}
+        <div className="manager-title-row">
+          <span className="manager-icon">📂</span>
+          <span className="manager-title">分类管理</span>
+          <span className="category-total-count">{categories.length} 个分类</span>
+        </div>
+        <button 
+          className={`flat-manage-cats-btn ${showForm ? 'active' : ''}`} 
+          onClick={() => setShowForm(!showForm)}
+        >
+          {showForm ? '收起' : '添加分类'}
         </button>
-        <span className="category-total-count">共 {categories.length} 个分类</span>
       </div>
 
       {showForm && (
         <div className="flat-category-form">
           <form onSubmit={handleSubmit}>
-            <input
-              type="text"
-              placeholder="分类名称"
-              value={newCat.name}
-              onChange={e => setNewCat({ ...newCat, name: e.target.value })}
-              required
-            />
-            <div className="flat-icon-picker">
-              <span className="icon-picker-label">选择图标：</span>
-              {ICON_OPTIONS.map(icon => (
-                <button
-                  key={icon}
-                  type="button"
-                  className={`icon-option ${newCat.icon === icon ? 'active' : ''}`}
-                  onClick={() => setNewCat({ ...newCat, icon })}
-                  title={icon}
-                >
-                  {icon}
-                </button>
-              ))}
+            <div className="form-row-group">
+              <div className="form-field">
+                <label className="field-label">分类名称</label>
+                <input
+                  type="text"
+                  placeholder="输入分类名称"
+                  value={newCat.name}
+                  onChange={e => setNewCat({ ...newCat, name: e.target.value })}
+                  required
+                />
+              </div>
+              <div className="form-field">
+                <label className="field-label">选择图标</label>
+                <div className="flat-icon-picker-compact">
+                  {ICON_OPTIONS.slice(0, 8).map(icon => (
+                    <button
+                      key={icon}
+                      type="button"
+                      className={`icon-option-compact ${newCat.icon === icon ? 'active' : ''}`}
+                      onClick={() => setNewCat({ ...newCat, icon })}
+                      title={icon}
+                    >
+                      {icon}
+                    </button>
+                  ))}
+                  <span className="icon-more">+{ICON_OPTIONS.length - 8}</span>
+                </div>
+              </div>
             </div>
             <div className="flat-form-buttons">
               <button type="submit" className="flat-save-btn">
@@ -170,24 +185,30 @@ const CategoryManager = ({ categories, onAdd, onDelete, onEdit, bookmarksCount }
       )}
 
       {categories.length > 0 && (
-        <div className="flat-category-list">
+        <div className="flat-category-grid">
           {categories.map(cat => {
             const catBookmarks = bookmarksCount[cat.name] || 0;
             return (
-              <div key={cat.name} className="flat-category-item">
-                <div className="cat-item-content">
-                  <span className="cat-icon">{cat.icon}</span>
-                  <span className="cat-name">{cat.name}</span>
-                  <span className="cat-bookmark-count">({catBookmarks})</span>
+              <div key={cat.name} className="category-card">
+                <div className="category-card-header">
+                  <span className="category-card-icon">{cat.icon}</span>
+                  <div className="category-card-info">
+                    <span className="category-card-name">{cat.name}</span>
+                    <span className="category-card-count">{catBookmarks} 个书签</span>
+                  </div>
                 </div>
-                <div className="cat-actions">
-                  <button className="cat-edit" onClick={() => startEdit(cat)} title="编辑">
+                <div className="category-card-actions">
+                  <button 
+                    className="category-action-btn edit" 
+                    onClick={() => startEdit(cat)} 
+                    title="编辑分类"
+                  >
                     ✏️
                   </button>
                   <button
-                    className="cat-delete"
+                    className="category-action-btn delete"
                     onClick={() => onDelete(cat.name)}
-                    title="删除"
+                    title="删除分类"
                     disabled={categories.length <= 1}
                   >
                     🗑️
