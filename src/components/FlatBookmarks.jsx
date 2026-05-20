@@ -93,8 +93,9 @@ const EmptyState = ({ onAdd }) => (
 
 const CategoryManager = ({ categories, onAdd, onDelete, onEdit, bookmarksCount }) => {
   const [showForm, setShowForm] = useState(false);
-  const [newCat, setNewCat] = useState({ name: '', icon: '📁' });
+  const [newCat, setNewCat] = useState({ name: '', icon: ICON_OPTIONS[0] });
   const [editingCat, setEditingCat] = useState(null);
+  const [showAllIcons, setShowAllIcons] = useState(false);
 
   const handleSubmit = e => {
     e.preventDefault();
@@ -106,21 +107,32 @@ const CategoryManager = ({ categories, onAdd, onDelete, onEdit, bookmarksCount }
       onAdd(newCat);
     }
     setShowForm(false);
-    setNewCat({ name: '', icon: '📁' });
+    setNewCat({ name: '', icon: ICON_OPTIONS[0] });
     setEditingCat(null);
+    setShowAllIcons(false);
   };
 
   const startEdit = cat => {
-    setNewCat(cat);
+    const existingIcon = ICON_OPTIONS.find(opt => opt.icon === cat.icon);
+    setNewCat({ 
+      name: cat.name, 
+      icon: existingIcon || ICON_OPTIONS[0] 
+    });
     setEditingCat(cat.name);
     setShowForm(true);
   };
+
+  const visibleIcons = showAllIcons ? ICON_OPTIONS : ICON_OPTIONS.slice(0, 12);
 
   return (
     <div className="flat-category-manager">
       <div className="flat-category-manager-header">
         <div className="manager-title-row">
-          <span className="manager-icon">📂</span>
+          <span className="manager-icon">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+              <path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/>
+            </svg>
+          </span>
           <span className="manager-title">分类管理</span>
           <span className="category-total-count">{categories.length} 个分类</span>
         </div>
@@ -128,6 +140,13 @@ const CategoryManager = ({ categories, onAdd, onDelete, onEdit, bookmarksCount }
           className={`flat-manage-cats-btn ${showForm ? 'active' : ''}`} 
           onClick={() => setShowForm(!showForm)}
         >
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+            {showForm ? (
+              <path d="M18 6L6 18M6 6l12 12"/>
+            ) : (
+              <path d="M12 5v14M5 12h14"/>
+            )}
+          </svg>
           {showForm ? '收起' : '添加分类'}
         </button>
       </div>
@@ -148,25 +167,47 @@ const CategoryManager = ({ categories, onAdd, onDelete, onEdit, bookmarksCount }
               </div>
               <div className="form-field">
                 <label className="field-label">选择图标</label>
-                <div className="flat-icon-picker-compact">
-                  {ICON_OPTIONS.slice(0, 8).map(icon => (
-                    <button
-                      key={icon}
-                      type="button"
-                      className={`icon-option-compact ${newCat.icon === icon ? 'active' : ''}`}
-                      onClick={() => setNewCat({ ...newCat, icon })}
-                      title={icon}
-                    >
-                      {icon}
-                    </button>
-                  ))}
-                  <span className="icon-more">+{ICON_OPTIONS.length - 8}</span>
+                <div className="icon-selector-wrapper">
+                  <div className="icon-preview-display">
+                    <span className="preview-icon">{newCat.icon.icon}</span>
+                    <span className="preview-icon-label">{newCat.icon.label}</span>
+                  </div>
+                  <div className="icon-picker-grid">
+                    {visibleIcons.map(opt => (
+                      <button
+                        key={opt.icon}
+                        type="button"
+                        className={`icon-option-item ${newCat.icon.icon === opt.icon ? 'active' : ''}`}
+                        onClick={() => setNewCat({ ...newCat, icon: opt })}
+                        title={opt.label}
+                      >
+                        {opt.icon}
+                      </button>
+                    ))}
+                    {!showAllIcons && ICON_OPTIONS.length > 12 && (
+                      <button
+                        type="button"
+                        className="icon-show-more"
+                        onClick={() => setShowAllIcons(true)}
+                        title="显示更多"
+                      >
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                          <path d="M6 9l6 6 6-6"/>
+                        </svg>
+                      </button>
+                    )}
+                  </div>
                 </div>
               </div>
             </div>
             <div className="flat-form-buttons">
               <button type="submit" className="flat-save-btn">
-                {editingCat ? '💾 保存' : '➕ 添加'}
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                  <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/>
+                  <polyline points="17,21 17,13 7,13 7,21"/>
+                  <polyline points="7,3 7,8 15,8"/>
+                </svg>
+                {editingCat ? '保存' : '添加'}
               </button>
               <button
                 type="button"
@@ -174,7 +215,8 @@ const CategoryManager = ({ categories, onAdd, onDelete, onEdit, bookmarksCount }
                 onClick={() => {
                   setShowForm(false);
                   setEditingCat(null);
-                  setNewCat({ name: '', icon: '📁' });
+                  setNewCat({ name: '', icon: ICON_OPTIONS[0] });
+                  setShowAllIcons(false);
                 }}
               >
                 取消
@@ -188,10 +230,11 @@ const CategoryManager = ({ categories, onAdd, onDelete, onEdit, bookmarksCount }
         <div className="flat-category-grid">
           {categories.map(cat => {
             const catBookmarks = bookmarksCount[cat.name] || 0;
+            const catIcon = ICON_OPTIONS.find(opt => opt.icon === cat.icon) || ICON_OPTIONS[0];
             return (
               <div key={cat.name} className="category-card">
                 <div className="category-card-header">
-                  <span className="category-card-icon">{cat.icon}</span>
+                  <span className="category-card-icon">{catIcon.icon}</span>
                   <div className="category-card-info">
                     <span className="category-card-name">{cat.name}</span>
                     <span className="category-card-count">{catBookmarks} 个书签</span>
@@ -203,7 +246,10 @@ const CategoryManager = ({ categories, onAdd, onDelete, onEdit, bookmarksCount }
                     onClick={() => startEdit(cat)} 
                     title="编辑分类"
                   >
-                    ✏️
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                      <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/>
+                      <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/>
+                    </svg>
                   </button>
                   <button
                     className="category-action-btn delete"
@@ -211,7 +257,10 @@ const CategoryManager = ({ categories, onAdd, onDelete, onEdit, bookmarksCount }
                     title="删除分类"
                     disabled={categories.length <= 1}
                   >
-                    🗑️
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                      <polyline points="3 6 5 6 21 6"/>
+                      <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/>
+                    </svg>
                   </button>
                 </div>
               </div>

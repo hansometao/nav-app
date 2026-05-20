@@ -586,6 +586,10 @@
   font-weight: 500;
   cursor: pointer;
   transition: all var(--transition-fast);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
 }
 
 .flat-save-btn:hover {
@@ -893,6 +897,13 @@
 
 .manager-icon {
   font-size: 18px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.manager-icon svg {
+  color: var(--accent-400);
 }
 
 .manager-title {
@@ -927,6 +938,92 @@
 .flat-manage-cats-btn.active:hover {
   background: var(--accent-soft);
   color: var(--accent-300);
+}
+
+.flat-manage-cats-btn svg {
+  margin-right: 6px;
+  vertical-align: middle;
+}
+
+.icon-selector-wrapper {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.icon-preview-display {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 12px;
+  background: var(--bg-tertiary);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-xs);
+}
+
+.preview-icon {
+  font-size: 28px;
+  line-height: 1;
+}
+
+.preview-icon-label {
+  font-size: 13px;
+  color: var(--text-secondary);
+}
+
+.icon-picker-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(40px, 1fr));
+  gap: 8px;
+  max-height: 160px;
+  overflow-y: auto;
+  padding: 2px;
+}
+
+.icon-option-item {
+  width: 40px;
+  height: 40px;
+  background: var(--bg-tertiary);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-xs);
+  font-size: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.icon-option-item:hover {
+  border-color: var(--accent-400);
+  transform: scale(1.1);
+  box-shadow: var(--shadow-md);
+}
+
+.icon-option-item.active {
+  background: var(--accent-soft);
+  border-color: var(--accent);
+  box-shadow: 0 0 0 2px var(--accent);
+}
+
+.icon-show-more {
+  width: 40px;
+  height: 40px;
+  background: var(--bg-tertiary);
+  border: 1px dashed var(--border);
+  border-radius: var(--radius-xs);
+  color: var(--text-muted);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.icon-show-more:hover {
+  border-color: var(--accent-400);
+  color: var(--accent-300);
+  border-style: solid;
 }
 
 .flat-category-form {
@@ -1092,6 +1189,10 @@
   display: flex;
   align-items: center;
   justify-content: center;
+}
+
+.category-action-btn:hover {
+  transform: translateY(-1px);
 }
 
 .category-action-btn.edit:hover {
