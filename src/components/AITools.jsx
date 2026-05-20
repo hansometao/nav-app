@@ -118,6 +118,12 @@ export default function AITools({ searchEngine, onSearchEngineChange, compact = 
     saveSearchHistory([]);
   };
 
+  const handleEngineClick = se => {
+    if (onSearchEngineChange) {
+      onSearchEngineChange(se);
+    }
+  };
+
   return (
     <div className="ai-tools-widget">
       {!compact && (
@@ -163,59 +169,108 @@ export default function AITools({ searchEngine, onSearchEngineChange, compact = 
         </>
       )}
 
-      <section className="search-section search-section-compact">
-        <form onSubmit={handleSubmit} className="search-form">
-          <select
-            className="search-engine-select"
-            value={searchEngine.name}
-            onChange={e => {
-              const se = SEARCH_ENGINES.find(s => s.name === e.target.value);
-              if (se && onSearchEngineChange) onSearchEngineChange(se);
+      <section className="search-bar-container">
+        <form onSubmit={handleSubmit} className="search-bar-large">
+          {/* 搜索引擎选择器 */}
+          <div 
+            className="search-engine-indicator"
+            onClick={() => {
+              const nextIndex = (SEARCH_ENGINES.findIndex(se => se.name === searchEngine.name) + 1) % SEARCH_ENGINES.length;
+              if (onSearchEngineChange) {
+                onSearchEngineChange(SEARCH_ENGINES[nextIndex]);
+              }
             }}
           >
-            {SEARCH_ENGINES.map(se => (
-              <option key={se.name} value={se.name}>
-                {se.name}
-              </option>
-            ))}
-          </select>
-          <div className="search-input-wrapper">
-            <input
-              ref={inputRef}
-              type="text"
-              className="search-input"
-              placeholder={`使用 ${searchEngine.name} 搜索`}
-              value={query}
-              onChange={e => setQuery(e.target.value)}
-              onFocus={() => setShowHistory(true)}
-              onBlur={() => setTimeout(() => setShowHistory(false), 200)}
-              autoComplete="off"
+            <img 
+              src={searchEngine.favicon} 
+              alt={searchEngine.name}
+              className="se-favicon"
+              onError={(e) => {
+                e.target.style.display = 'none';
+              }}
             />
-            {showHistory && searchHistory.length > 0 && (
-              <div className="search-history-dropdown">
-                <div className="search-history-header">
-                  <span>搜索历史</span>
-                  <button type="button" onClick={clearHistory} className="clear-history-btn">
-                    清除
-                  </button>
-                </div>
+            <span className="se-name">{searchEngine.name}</span>
+          </div>
+
+          {/* 搜索输入框 */}
+          <input
+            ref={inputRef}
+            type="text"
+            className="search-input"
+            placeholder={`使用 ${searchEngine.name} 搜索`}
+            value={query}
+            onChange={e => setQuery(e.target.value)}
+            onFocus={() => setShowHistory(true)}
+            onBlur={() => setTimeout(() => setShowHistory(false), 200)}
+            autoComplete="off"
+          />
+
+          {/* 清除按钮 */}
+          {query && (
+            <button
+              type="button"
+              className="btn-clear"
+              onClick={() => setQuery('')}
+              aria-label="清除"
+            >
+              ✕
+            </button>
+          )}
+
+          {/* 搜索按钮 */}
+          <button type="submit" className="btn-search" aria-label="搜索">
+            <span>🔍</span>
+            <span style={{ fontSize: '13px' }}>搜索</span>
+          </button>
+        </form>
+
+        {/* 搜索历史下拉框 */}
+        {showHistory && searchHistory.length > 0 && (
+          <div className="search-history-wrapper">
+            <div className="search-history-dropdown">
+              <div className="history-header">
+                <span className="history-title">搜索历史</span>
+                <button type="button" onClick={clearHistory} className="btn-clear-history">
+                  清除
+                </button>
+              </div>
+              <div className="history-list">
                 {searchHistory.map((q, i) => (
                   <button
                     type="button"
                     key={i}
-                    className="search-history-item"
+                    className="history-item"
                     onClick={() => handleHistoryClick(q)}
                   >
-                    {q}
+                    <span className="history-icon">🕐</span>
+                    <span className="history-text">{q}</span>
                   </button>
                 ))}
               </div>
-            )}
+            </div>
           </div>
-          <button type="submit" className="search-btn" aria-label="搜索">
-            🔍
-          </button>
-        </form>
+        )}
+
+        {/* 搜索引擎标签栏 */}
+        <div className="search-engines-bar">
+          {SEARCH_ENGINES.map(se => (
+            <button
+              key={se.name}
+              className={`se-tab ${searchEngine.name === se.name ? 'active' : ''}`}
+              onClick={() => handleEngineClick(se)}
+            >
+              <img
+                src={se.favicon}
+                alt={se.name}
+                className="se-tab-favicon"
+                onError={(e) => {
+                  e.target.style.display = 'none';
+                }}
+              />
+              <span>{se.name}</span>
+            </button>
+          ))}
+        </div>
       </section>
     </div>
   );
