@@ -1,15 +1,16 @@
 /**
  * 输入验证和 XSS 防护工具函数
+ * @module security
  */
 
 /**
  * 验证 URL 是否合法
- * @param {string} string - 待验证的 URL 字符串
+ * @param {string} str - 待验证的 URL 字符串
  * @returns {boolean} - 是否为有效的 HTTP/HTTPS URL
  */
-export const isValidUrl = string => {
+export const isValidUrl = str => {
   try {
-    const url = new URL(string);
+    const url = new URL(str);
     return url.protocol === 'http:' || url.protocol === 'https:';
   } catch {
     return false;

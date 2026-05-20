@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 
+/** @constant {Array} GREETINGS - 不同时间段的问候语配置 */
 const GREETINGS = [
   { maxHour: 6, text: '夜深了 🌙' },
   { maxHour: 9, text: '早上好 🌅' },
@@ -9,6 +10,10 @@ const GREETINGS = [
   { maxHour: 24, text: '晚上好 🌆' },
 ];
 
+/**
+ * 根据当前时间获取对应的问候语
+ * @returns {string} - 问候语文本
+ */
 function getGreeting() {
   const hour = new Date().getHours();
   for (const g of GREETINGS) {
@@ -18,7 +23,11 @@ function getGreeting() {
 }
 
 /**
- * 返回随时间变化的问候语（每小时检查一次变更多够用了）
+ * 返回随时间变化的问候语 Hook
+ * 根据当前时间自动切换问候语（每小时自动更新一次）
+ * @returns {string} - 当前时间段的问候语
+ * @example
+ * const greeting = useGreeting(); // 返回 "上午好 ☀️"
  */
 export function useGreeting() {
   const [greeting, setGreeting] = useState(getGreeting);

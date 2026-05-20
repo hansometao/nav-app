@@ -1,10 +1,17 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 
 /**
- * 防抖 Hook
+ * 防抖和节流相关的自定义 Hooks
+ * @module hooks/useDebounce
+ */
+
+/**
+ * 创建一个防抖值，延迟更新直到指定时间内没有新的变化
  * @param {any} value - 需要防抖的值
- * @param {number} delay - 延迟时间（毫秒）
+ * @param {number} [delay=300] - 延迟时间（毫秒）
  * @returns {any} - 防抖后的值
+ * @example
+ * const debouncedSearch = useDebounce(searchQuery, 300);
  */
 export function useDebounce(value, delay = 300) {
   const [debouncedValue, setDebouncedValue] = useState(value);
@@ -29,31 +36,28 @@ export function useDebounce(value, delay = 300) {
  * @returns {Function} - 防抖后的回调函数
  */
 export function useDebouncedCallback(callback, delay = 300) {
-  const [timeoutId, setTimeoutId] = useState(null);
+  const timeoutRef = useRef(null);
 
   const debouncedCallback = useCallback(
     (...args) => {
-      if (timeoutId) {
-        clearTimeout(timeoutId);
+      if (timeoutRef.current) {
+        clearTimeout(timeoutRef.current);
       }
 
-      const newTimeoutId = setTimeout(() => {
+      timeoutRef.current = setTimeout(() => {
         callback(...args);
       }, delay);
-
-      setTimeoutId(newTimeoutId);
     },
-    [callback, delay, timeoutId]
+    [callback, delay]
   );
 
-  // 清理函数
   useEffect(() => {
     return () => {
-      if (timeoutId) {
-        clearTimeout(timeoutId);
+      if (timeoutRef.current) {
+        clearTimeout(timeoutRef.current);
       }
     };
-  }, [timeoutId]);
+  }, []);
 
   return debouncedCallback;
 }
@@ -65,17 +69,17 @@ export function useDebouncedCallback(callback, delay = 300) {
  * @returns {Function} - 节流后的回调函数
  */
 export function useThrottle(callback, limit = 300) {
-  const [lastRun, setLastRun] = useState(0);
+  const lastRunRef = useRef(0);
 
   const throttledCallback = useCallback(
     (...args) => {
       const now = Date.now();
-      if (now - lastRun >= limit) {
-        setLastRun(now);
+      if (now - lastRunRef.current >= limit) {
+        lastRunRef.current = now;
         callback(...args);
       }
     },
-    [callback, lastRun, limit]
+    [callback, limit]
   );
 
   return throttledCallback;

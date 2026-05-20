@@ -1,10 +1,22 @@
+/**
+ * 布局存储和编辑模式管理的自定义 Hooks
+ * @module hooks/useLayoutStorage
+ */
+
 import { useState, useEffect, useCallback } from 'react';
 import { STORAGE_KEYS } from '../config/storage';
 
 const LAYOUT_KEY = STORAGE_KEYS.LAYOUT;
 const EDIT_MODE_KEY = STORAGE_KEYS.EDIT_MODE;
 
-// 网格布局配置 - 网址导航为主区域，其他卡片自动填充
+/**
+ * 默认布局配置 - 网址导航为主区域，其他卡片自动填充
+ * @constant {Object} DEFAULT_LAYOUTS
+ * @property {Array} lg - 大屏幕布局配置（12列网格）
+ * @property {Array} md - 中等屏幕布局配置
+ * @property {Array} sm - 小屏幕布局配置
+ * @property {Array} xs - 超小屏幕布局配置（手机）
+ */
 export const DEFAULT_LAYOUTS = {
   // 大屏幕：网址导航占据主要区域，自动调整适应
   lg: [
@@ -49,8 +61,14 @@ export const DEFAULT_LAYOUTS = {
 };
 
 /**
- * 管理可拖拽网格的布局持久化 + 编辑模式。
- * 初始值从 localStorage 惰性加载，避免额外渲染。
+ * 管理可拖拽网格的布局持久化和编辑模式状态
+ * 初始值从 localStorage 惰性加载，避免额外渲染
+ * @returns {Object} 布局管理对象
+ * @returns {Object} returns.layouts - 当前布局配置（按屏幕尺寸分组）
+ * @returns {boolean} returns.editMode - 是否处于编辑模式
+ * @returns {Function} returns.setEditMode - 设置编辑模式的函数
+ * @returns {Function} returns.onLayoutChange - 布局变化时的回调函数
+ * @returns {Function} returns.resetLayout - 重置为默认布局的函数
  */
 export function useLayoutStorage() {
   const [layouts, setLayouts] = useState(() => {

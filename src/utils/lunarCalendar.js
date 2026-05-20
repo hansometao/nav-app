@@ -1,21 +1,22 @@
 /**
  * 农历万年历计算工具
  * 支持干支纪年、生肖、农历月日、二十四节气等计算
+ * @module lunarCalendar
  */
 
-// 天干
+/** @constant {string[]} TIAN_GAN - 天干数组 */
 const TIAN_GAN = ['甲', '乙', '丙', '丁', '戊', '己', '庚', '辛', '壬', '癸'];
 
-// 地支
+/** @constant {string[]} DI_ZHI - 地支数组 */
 const DI_ZHI = ['子', '丑', '寅', '卯', '辰', '巳', '午', '未', '申', '酉', '戌', '亥'];
 
-// 生肖
+/** @constant {string[]} SHENG_XIAO - 生肖数组 */
 const SHENG_XIAO = ['鼠', '牛', '虎', '兔', '龙', '蛇', '马', '羊', '猴', '鸡', '狗', '猪'];
 
-// 农历月份名
+/** @constant {string[]} LUNAR_MONTH_NAME - 农历月份名称数组 */
 const LUNAR_MONTH_NAME = ['正', '二', '三', '四', '五', '六', '七', '八', '九', '十', '冬', '腊'];
 
-// 农历日期名
+/** @constant {string[]} LUNAR_DAY_NAME - 农历日期名称数组 */
 const LUNAR_DAY_NAME = [
   '初一',
   '初二',
@@ -49,7 +50,7 @@ const LUNAR_DAY_NAME = [
   '三十',
 ];
 
-// 二十四节气
+/** @constant {string[]} JIE_QI - 二十四节气数组 */
 const JIE_QI = [
   '小寒',
   '大寒',
@@ -114,7 +115,15 @@ const LUNAR_INFO = new Map([
   ],
 ]);
 
-// 获取农历年信息
+/**
+ * 获取农历年信息（干支纪年、生肖）
+ * @param {number} year - 公历年份
+ * @returns {Object} 农历年信息
+ * @returns {string} returns.tianGan - 天干（甲、乙、丙...）
+ * @returns {string} returns.diZhi - 地支（子、丑、寅...）
+ * @returns {string} returns.shengXiao - 生肖（鼠、牛、虎...）
+ * @returns {string} returns.ganZhi - 干支组合（如：甲辰）
+ */
 export function getLunarYearInfo(year) {
   const ganIndex = (year - 4) % 10;
   const zhiIndex = (year - 4) % 12;
@@ -128,7 +137,20 @@ export function getLunarYearInfo(year) {
   };
 }
 
-// 农历转换（简化版，使用查表法）
+/**
+ * 将公历日期转换为农历日期
+ * @param {Date} date - 公历日期对象
+ * @returns {Object} 农历日期信息
+ * @returns {number} returns.year - 农历年份
+ * @returns {number} returns.month - 农历月份
+ * @returns {number} returns.day - 农历日期
+ * @returns {boolean} returns.isLeap - 是否为闰月
+ * @returns {string} returns.monthName - 农历月份名称（如：正月）
+ * @returns {string} returns.dayName - 农历日期名称（如：初一）
+ * @returns {string} returns.fullLunar - 完整农历日期（如：正月初一）
+ * @returns {string} returns.ganZhi - 干支纪年
+ * @returns {string} returns.shengXiao - 生肖
+ */
 export function solarToLunar(date) {
   const year = date.getFullYear();
   const lunarInfo = getLunarYearInfo(year);
@@ -187,7 +209,11 @@ function getSpringFestival(year) {
   return new Date(year, 0, 22);
 }
 
-// 获取二十四节气
+/**
+ * 获取指定日期的二十四节气
+ * @param {Date} date - 公历日期对象
+ * @returns {string|null} 节气名称（如：立春），如果不是节气日则返回null
+ */
 export function getJieQi(date) {
   const month = date.getMonth() + 1;
   const day = date.getDate();
@@ -223,7 +249,24 @@ export function getJieQi(date) {
   return null;
 }
 
-// 获取完整的农历信息
+/**
+ * 获取完整的农历信息（包含节气）
+ * @param {Date} date - 公历日期对象
+ * @returns {Object} 完整的农历信息
+ * @returns {number} returns.year - 农历年份
+ * @returns {number} returns.month - 农历月份
+ * @returns {number} returns.day - 农历日期
+ * @returns {boolean} returns.isLeap - 是否为闰月
+ * @returns {string} returns.monthName - 农历月份名称
+ * @returns {string} returns.dayName - 农历日期名称
+ * @returns {string} returns.fullLunar - 完整农历日期
+ * @returns {string} returns.yearGanZhi - 年份干支
+ * @returns {string} returns.yearShengXiao - 年份生肖
+ * @returns {string|null} returns.currentJieQi - 当前节气（如有）
+ * @returns {string} returns.lunarDateStr - 完整农历日期字符串
+ * @returns {string} returns.eraStr - 干支年份字符串（如：甲辰年）
+ * @returns {string} returns.zodiacStr - 生肖字符串（如：【龙】）
+ */
 export function getLunarInfo(date) {
   const lunar = solarToLunar(date);
   const yearInfo = getLunarYearInfo(date.getFullYear());
@@ -240,7 +283,14 @@ export function getLunarInfo(date) {
   };
 }
 
-// 格式化农历日期显示
+/**
+ * 格式化农历日期显示
+ * @param {Date} date - 公历日期对象
+ * @returns {Object} 格式化后的显示文本
+ * @returns {string} returns.main - 主显示文本（如：甲辰年 【龙】）
+ * @returns {string} returns.sub - 副标题（如：正月初一）
+ * @returns {string} returns.full - 完整显示（如：农历2024年 正月初一 · 立春）
+ */
 export function formatLunarDisplay(date) {
   const info = getLunarInfo(date);
   return {

@@ -1,5 +1,11 @@
 import { useEffect, useCallback } from 'react';
 
+/**
+ * 键盘快捷键相关的自定义 Hooks
+ * @module hooks/useKeyboardShortcuts
+ */
+
+/** @constant {Object} SHORTCUTS - 快捷键配置映射 */
 const SHORTCUTS = {
   'Ctrl+K': { action: 'focusSearch', description: '聚焦搜索框' },
   'Ctrl+D': { action: 'toggleTheme', description: '切换主题' },
@@ -7,6 +13,19 @@ const SHORTCUTS = {
   '?': { action: 'showHelp', description: '显示快捷键帮助' },
 };
 
+/**
+ * 全局键盘快捷键监听 Hook
+ * @param {Object} handlers - 快捷键处理函数映射
+ * @param {Function} [handlers.focusSearch] - 聚焦搜索框的回调
+ * @param {Function} [handlers.toggleTheme] - 切换主题的回调
+ * @param {Function} [handlers.closeModal] - 关闭弹窗的回调
+ * @param {Function} [handlers.showHelp] - 显示帮助的回调
+ * @example
+ * useKeyboardShortcuts({
+ *   focusSearch: () => inputRef.current?.focus(),
+ *   toggleTheme: () => setTheme(prev => prev === 'dark' ? 'light' : 'dark'),
+ * });
+ */
 export function useKeyboardShortcuts(handlers = {}) {
   const handleKeyDown = useCallback(
     e => {
