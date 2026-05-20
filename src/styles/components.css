@@ -44,6 +44,164 @@
   box-shadow: var(--shadow-md);
 }
 
+/* 日历Widget卡片样式（独立版本） */
+.calendar-widget-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  overflow: hidden;
+  cursor: pointer;
+  transition: all var(--transition-base);
+}
+
+.calendar-widget-card:hover {
+  border-color: var(--accent-400);
+  box-shadow: var(--shadow-md), 0 0 24px var(--accent-glow);
+  transform: translateY(-2px);
+}
+
+.calendar-widget-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 14px;
+  background: linear-gradient(135deg, var(--accent-500), var(--accent-600));
+  color: white;
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.calendar-widget-icon {
+  font-size: 16px;
+}
+
+.calendar-widget-title {
+  flex: 1;
+}
+
+.calendar-widget-content {
+  padding: 14px;
+}
+
+.today-date-display {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 14px;
+  padding-bottom: 14px;
+  border-bottom: 1px solid var(--border);
+}
+
+.today-date-main {
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+}
+
+.today-date-number {
+  font-size: 48px;
+  font-weight: 700;
+  color: var(--accent-400);
+  line-height: 1;
+}
+
+.today-date-info {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.today-month-name {
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.today-weekday-name {
+  font-size: 13px;
+  color: var(--text-muted);
+}
+
+.today-details {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-bottom: 12px;
+}
+
+.detail-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 13px;
+}
+
+.detail-label {
+  min-width: 40px;
+  color: var(--text-muted);
+  font-weight: 500;
+}
+
+.detail-value {
+  flex: 1;
+  color: var(--text-secondary);
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.leap-badge-small {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 16px;
+  height: 16px;
+  background: var(--warning-soft);
+  color: var(--warning);
+  border-radius: 3px;
+  font-size: 10px;
+  font-weight: 600;
+}
+
+.jieqi-value {
+  color: var(--cyan);
+  font-weight: 500;
+}
+
+.holiday-value {
+  padding: 2px 8px;
+  border-radius: 4px;
+  font-weight: 500;
+}
+
+.holiday-value.national {
+  background: var(--warning-soft);
+  color: var(--warning);
+}
+
+.holiday-value.festival {
+  background: var(--danger-soft);
+  color: var(--danger);
+}
+
+.calendar-widget-hint {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding-top: 10px;
+  font-size: 12px;
+  color: var(--accent-300);
+  border-top: 1px solid var(--border);
+}
+
+.widget-no-collapse {
+  cursor: default;
+}
+
+.widget-no-collapse:hover {
+  transform: none;
+}
+
 .today-display {
   padding: 16px;
 }

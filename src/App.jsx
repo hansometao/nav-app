@@ -2,7 +2,7 @@ import { useState, lazy, Suspense, memo, useCallback, useEffect } from 'react';
 import { useGreeting, useTime, useLayoutStorage, useTheme, useKeyboardShortcuts } from './hooks';
 import { THEMES } from './hooks/useTheme.jsx';
 import {
-  Calendar,
+  CalendarWidget,
   Countdown,
   TodoList,
   Memo,
@@ -20,7 +20,7 @@ const DEFAULT_SE = DEFAULT_SEARCH_ENGINE;
 
 const SIDE_WIDGETS_LEFT = [
   { key: 'weather', title: '天气', Comp: Weather, passProps: false },
-  { key: 'calendar', title: '日历', Comp: Calendar, passProps: false },
+  { key: 'calendar', Component: CalendarWidget, noCollapse: true },
   { key: 'todo', title: '待办', Comp: TodoList, passProps: false },
 ];
 
@@ -78,36 +78,50 @@ const WidgetItem = ({
   widgetKey,
   title,
   Comp,
+  Component,
   passProps,
   searchEngine,
   onSearchEngineChange,
   collapsedWidgets,
   onToggleWidget,
-}) => (
-  <div
-    className={`widget-container ${collapsedWidgets[widgetKey] ? 'collapsed' : ''}`}
-    data-widget={widgetKey}
-  >
-    <div className="widget-header-bar" onClick={() => onToggleWidget(widgetKey)}>
-      <span className="widget-title-label">{title}</span>
-      <button
-        className="widget-toggle-btn"
-        aria-label={collapsedWidgets[widgetKey] ? '展开' : '折叠'}
-      >
-        {collapsedWidgets[widgetKey] ? '▶' : '▼'}
-      </button>
+  noCollapse,
+}) => {
+  const WidgetComponent = Component || Comp;
+  
+  if (noCollapse) {
+    return (
+      <div className="widget-container widget-no-collapse" data-widget={widgetKey}>
+        <WidgetComponent />
+      </div>
+    );
+  }
+
+  return (
+    <div
+      className={`widget-container ${collapsedWidgets[widgetKey] ? 'collapsed' : ''}`}
+      data-widget={widgetKey}
+    >
+      <div className="widget-header-bar" onClick={() => onToggleWidget(widgetKey)}>
+        <span className="widget-title-label">{title}</span>
+        <button
+          className="widget-toggle-btn"
+          aria-label={collapsedWidgets[widgetKey] ? '展开' : '折叠'}
+        >
+          {collapsedWidgets[widgetKey] ? '▶' : '▼'}
+        </button>
+      </div>
+      <div className={`widget-content ${collapsedWidgets[widgetKey] ? 'hidden' : ''}`}>
+        <Suspense fallback={null}>
+          {passProps ? (
+            <Comp searchEngine={searchEngine} onSearchEngineChange={onSearchEngineChange} />
+          ) : (
+            <Comp />
+          )}
+        </Suspense>
+      </div>
     </div>
-    <div className={`widget-content ${collapsedWidgets[widgetKey] ? 'hidden' : ''}`}>
-      <Suspense fallback={null}>
-        {passProps ? (
-          <Comp searchEngine={searchEngine} onSearchEngineChange={onSearchEngineChange} />
-        ) : (
-          <Comp />
-        )}
-      </Suspense>
-    </div>
-  </div>
-);
+  );
+};
 
 const MobileWidgetItem = ({
   widgetKey,
@@ -240,11 +254,13 @@ export default memo(function App() {
                   widgetKey={widget.key}
                   title={widget.title}
                   Comp={widget.Comp}
+                  Component={widget.Component}
                   passProps={widget.passProps}
                   searchEngine={searchEngine}
                   onSearchEngineChange={setSearchEngine}
                   collapsedWidgets={collapsedWidgets}
                   onToggleWidget={toggleWidgetCollapse}
+                  noCollapse={widget.noCollapse}
                 />
               ))}
             </div>
