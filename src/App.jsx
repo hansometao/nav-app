@@ -6,7 +6,6 @@ import {
   Countdown,
   TodoList,
   Memo,
-  LunarCalendar,
   SettingsPanel,
   FlatBookmarks,
 } from './components';
@@ -196,7 +195,6 @@ export default memo(function App() {
           <div className="header-time">
             <span className="time-display">{formatTime(currentTime)}</span>
             <span className="date-display">{formatDate(currentTime)}</span>
-            <LunarCalendar date={currentTime} />
           </div>
           <div className="header-greeting">{greeting}</div>
           <div className="header-controls">
