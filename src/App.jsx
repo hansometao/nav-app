@@ -19,15 +19,15 @@ const HotNews = lazy(() => import('./components/HotNews'));
 const DEFAULT_SE = DEFAULT_SEARCH_ENGINE;
 
 const SIDE_WIDGETS_LEFT = [
-  { key: 'weather', title: '天气', Comp: Weather, passProps: false },
   { key: 'calendar', Component: CalendarWidget, noCollapse: true },
   { key: 'todo', title: '待办', Comp: TodoList, passProps: false },
+  { key: 'countdown', title: '倒计时', Comp: Countdown, passProps: false },
 ];
 
 const SIDE_WIDGETS_RIGHT = [
-  { key: 'hotnews', title: '热榜', Comp: HotNews, passProps: false },
-  { key: 'countdown', title: '倒计时', Comp: Countdown, passProps: false },
   { key: 'memo', title: '备忘', Comp: Memo, passProps: false },
+  { key: 'hotnews', title: '热榜', Comp: HotNews, passProps: false },
+  { key: 'weather', title: '天气', Comp: Weather, passProps: false },
 ];
 
 const SHORTCUTS = [

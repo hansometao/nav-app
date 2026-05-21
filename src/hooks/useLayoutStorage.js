@@ -8,6 +8,7 @@ import { STORAGE_KEYS } from '../config/storage';
 
 const LAYOUT_KEY = STORAGE_KEYS.LAYOUT;
 const EDIT_MODE_KEY = STORAGE_KEYS.EDIT_MODE;
+const LAYOUT_VERSION = '2.0';
 
 /**
  * 默认布局配置 - 网址导航为主区域，其他卡片自动填充
@@ -74,7 +75,15 @@ export function useLayoutStorage() {
   const [layouts, setLayouts] = useState(() => {
     try {
       const saved = localStorage.getItem(LAYOUT_KEY);
-      return saved ? { ...DEFAULT_LAYOUTS, ...JSON.parse(saved) } : DEFAULT_LAYOUTS;
+      if (saved) {
+        const parsed = JSON.parse(saved);
+        if (parsed.version !== LAYOUT_VERSION) {
+          localStorage.removeItem(LAYOUT_KEY);
+          return DEFAULT_LAYOUTS;
+        }
+        return { ...DEFAULT_LAYOUTS, ...parsed };
+      }
+      return DEFAULT_LAYOUTS;
     } catch {
       return DEFAULT_LAYOUTS;
     }
@@ -94,13 +103,13 @@ export function useLayoutStorage() {
 
   const onLayoutChange = useCallback((_currentLayout, allLayouts) => {
     setLayouts(allLayouts);
-    localStorage.setItem(LAYOUT_KEY, JSON.stringify(allLayouts));
+    localStorage.setItem(LAYOUT_KEY, JSON.stringify({ ...allLayouts, version: LAYOUT_VERSION }));
   }, []);
 
   const resetLayout = useCallback(() => {
     if (confirm('确认重置为默认布局？')) {
       setLayouts(DEFAULT_LAYOUTS);
-      localStorage.setItem(LAYOUT_KEY, JSON.stringify(DEFAULT_LAYOUTS));
+      localStorage.setItem(LAYOUT_KEY, JSON.stringify({ ...DEFAULT_LAYOUTS, version: LAYOUT_VERSION }));
     }
   }, []);
 
